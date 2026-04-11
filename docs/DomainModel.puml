@@ -4,173 +4,301 @@ hide empty members
 skinparam packageStyle frame
 
 ' AIRPORT AGGREGATE
+
 package "Aggregate: Airport" <<Frame>> {
-    class Airport <<aggregate root>> {
-        - iataCode: String <<id>>
-        - name: String
-        - status: AirportStatus
-        - region: String
-        + updateStatus(status: AirportStatus)
-    }
 
-    class AirportLocation <<value object>> {
-        - city: String
-        - country: String
-        - timezone: String
-        - latitude: Double
-        - longitude: Double
-    }
-
-    class Facilities <<value object>> {
-        - terminalCount: Integer
-        - gateCount: Integer
-        - services: List<String>
-    }
-
-    class Contact <<value object>> {
-        - type: ContactType
-        - value: String
-        - description: String
-    }
-
-    enum AirportStatus {
-        OPERATIONAL
-        CLOSED
-    }
-
-    enum ContactType {
-        PHONE
-        EMAIL
-        FAX
-    }
-
-    Airport "1"--"1" AirportLocation
-    Airport *-- Facilities
-    Airport *-- "0..*" Contact : "multiples contacts per airport"
+class Airport <<aggregate root>> {
+    - iataCode: String <<id>>
+    - name: String
+    - status: AirportStatus
+    - routeDistance: Double
+    - airportPhotos: List<String>
+    + addRunway(runway: Runway)
+    + removeRunway(runwayId: String)
+    + addPhotos(photosUri: List<String>)
+    + updatePhotos(photosUri: List<String>)
+    + updateFacilities(facilities: Facilities)
+    + addCertification(certification: Certification)
+    + removeCertification(name: String)
+    + updateStatus(status: AirportStatus)
+    + isOperationalForFlight(onDate: Date): Boolean
 }
 
-' ROUTE AGGREGATE
-package "Aggregate: Route" <<Frame>> {
-    class Route <<aggregate root>> {
-        - routeId: String <<id>>
-        - status: RouteStatus
-        - originIataCode: String <<ref>>
-        - destinationIataCode: String <<ref>>
-        - distance: Double
-        - estimatedFlightTime: Double
-    }
-
-    interface SearchStrategy <<interface>> {
-        + findPath(origin, destination)
-    }
-
-    class RouteRequirements <<value object>> {
-        - requiredRange: Double
-        - requiredCapacity: Integer
-    }
-
-    enum RouteStatus {
-        ACTIVE
-        INACTIVE
-    }
-
-    Route *-- RouteRequirements
-    Route ..> SearchStrategy : "strategy for US216"
+class Runway <<entity>> {
+    - runwayId: String <<id>>
+    - runwayName: String
+    - length: Double
+    - orientation: String
+    - status: RunwayStatus
 }
 
-' AIRCRAFT AGGREGATE (CONSOLIDATED)
-package "Aggregate: Aircraft" <<Frame>> {
-    class Aircraft <<aggregate root>> {
-        - registrationNumber: String <<id>>
-        - modelId: String <<ref>>
-        - manufacturingDate: Date
-        - status: AircraftAvailability
-        - seatingCapacity: Integer
-        - features: List<String>
-        - totalOperationalHours: Double
-        + updateStatus(status: AircraftAvailability)
-    }
+class AirportLocation <<value object>> {
+    - city: String
+    - country: String
+    - timezone: String
+    - region: String
+    - latitude: Double
+    - longitude: Double
+}
 
-    class AircraftModel <<entity>> {
-        - modelId: String <<id>>
-        - manufacturer: String
-        - modelName: String
-        - baseSpecs: AircraftSpecs
-    }
+class Facilities <<value object>> {
+    - terminalCount: Integer
+    - gateCount: Integer
+    - services: List<String>
+}
 
-    class AircraftSpecs <<value object>> {
-        - fuelCapacity: Double
-        - maximumRange: Double
-        - cruisingSpeed: Double
-    }
+class Contact <<value object>> {
+    - type: ContactType
+    - value: String
+    - description: String
+}
 
-    enum AircraftAvailability {
-        AVAILABLE
-        ASSIGNED
-        IN_FLIGHT
-        MAINTENANCE
-        INACTIVE
-    }
+class Certification <<value object>> {
+    - name: String
+    - category: String
+    - expiresAt: Date
+}
 
-    Aircraft --> AircraftModel
-    AircraftModel *-- AircraftSpecs
+enum AirportStatus {
+    OPERATIONAL
+    CLOSED
+    UNDER_MAINTENANCE
+}
+
+enum RunwayStatus {
+    OPEN
+    IN_USE
+    UNDER_MAINTENANCE
+}
+
+enum ContactType {
+    PHONE
+    EMAIL
+    FAX
+    SOCIAL_NETWORK
+}
+
+Airport *-- "0..*" Runway
+Airport "1"--"1" AirportLocation
+Airport *-- Facilities
+Airport *-- "0..*" Contact
+Airport *-- "0..*" Certification
 }
 
 ' FLIGHT AGGREGATE
+
 package "Aggregate: Flight" <<Frame>> {
-    class ScheduledFlight <<aggregate root>> {
-        - flightId: String <<id>>
-        - status: FlightStatus
-        - routeId: String <<ref>>
-        - aircraftId: String <<ref>>
-        - scheduledDeparture: DateTime
-        - scheduledArrival: DateTime
-    }
 
-    enum FlightStatus {
-        SCHEDULED
-        DELAYED
-        IN_FLIGHT
-        COMPLETED
-        CANCELED
-    }
+class Flight <<aggregate root>> {
+    - flightId: String <<id>>
+    - flightStatus : FlightStatus
+    - routeId: String <<ref>>
+    - aircraftId: String <<ref>>
+    - scheduledDeparture: DateTime
+    - scheduledArrival: DateTime
+  }
 
-    ScheduledFlight --> Route
-    ScheduledFlight --> Aircraft
+enum FlightStatus {
+    DELAYED
+    SCHEDULED
+    DEPARTED
+    CANCELED
+    ARRIVED
+}
+}
+
+' ROUTE AGGREGATE
+
+package "Aggregate: Route" <<Frame>> {
+
+class Route <<aggregate root>> {
+    - routeId: String <<id>>
+    - status: RouteStatus
+    - usageCount: Integer
+    - originIataCode: String <<ref>>
+    - destinationIataCode: String <<ref>>
+    - routeList: List<String> <<ref>>
+    - estimatedFlightTime: Double
+    - type: RouteType
+    + testRoute()
+    + deactivateRoute()
+    + updateRoute()
+}
+
+class RouteRequirements <<value object>> {
+    - requiredRange: Double
+    - requiredCapacity: Integer
+}
+
+enum RouteStatus {
+    ACTIVE
+    INACTIVE
+    ARCHIVED
+}
+
+enum RouteType{
+    DIRECT
+    SCALED
+}
+
+Route *-- RouteRequirements
+}
+
+' AIRCRAFT MODEL AGGREGATE
+
+package "Aggregate: AircraftModel" <<Frame>> {
+
+class AircraftModel <<aggregate root>> {
+    - modelId: String <<id>>
+    - modelName: String
+    - modelImage: List <String>
+    - manufacturer: String
+    + setupModelImages(imagesURI: List<String>)
+}
+
+class AircraftSpecs <<value object>> {
+    - fuelCapacity: Double
+    - maximumRange: Double
+    - cruisingSpeed: Double
+    - updateAircraftSpecs()
+}
+
+AircraftModel *-- AircraftSpecs
+}
+
+' AIRCRAFT AGGREGATE
+
+package "Aggregate: Aircraft" <<Frame>> {
+
+class Aircraft <<aggregate root>> {
+    - registrationNumber: String <<id>>
+    - modelId: String <<ref>>
+    - manufacturingDate: Date
+    - features: List<String>
+    - totalOperationalHours: Double
+    + updateOperationHours(hours: Double)
+    + updateStatus(status: AircraftAvailability)
+}
+
+class InstalledComponent <<entity>> {
+    - serialNumber: String <<id>>
+    - partNumber: String <<ref>>
+    - status: String
+}
+
+enum AircraftAvailability {
+    AVAILABLE
+    IN_FLIGHT
+    MAINTENANCE
+    INACTIVE
+}
+
+Aircraft *-- "0..*" InstalledComponent
+}
 
 ' MAINTENANCE AGGREGATE
+
 package "Aggregate: Maintenance" <<Frame>> {
-    class MaintenanceRecord <<aggregate root>> {
-        - recordId: String <<id>>
-        - aircraftId: String <<ref>>
-        - templateId: String <<ref>>
-        - startDate: Date
-        - status: MaintenanceStatus
-    }
 
-    class MaintenanceTemplate <<entity>> {
-        - templateId: String <<id>>
-        - name: String
-        - checklist: String
-        - flightHourInterval: Double
-        - calendarDayInterval: Integer
-        - operation: MaintenanceOperation
-    }
-
-    class MaintenancePart <<entity>> {
-        - partNumber: String <<id>>
-        - name: String
-        - stockQuantity: Integer
-        - description: String
-    }
-
-    enum MaintenanceStatus {
-        ONGOING
-        COMPLETED
-    }
-
-    MaintenanceRecord *-- "1" MaintenanceTemplate
-    MaintenanceRecord --> Aircraft
+class MaintenanceRecord <<aggregate root>> {
+    - recordId: String <<id>>
+    - aircraftId: String <<ref>>
+    - templateId: String <<ref>>
+    - description: String
+    - technicians: List <TechnicianId>
+    - supervisor: String <SupervisorId>
+    - startDate: Date
+    - usedParts: usedParts
+    - Duration: Double
+    - status: MaintenanceStatus
+    - completionNotes: String
+    + updateDuration(realDuration: Double)
+    + markAsCompleted(notes: String)
 }
+
+class MaintenanceTemplate <<entity>> {
+    - templateId: String <<id>>
+    - name: String
+    - expectedDuration: Double
+    - checklist: Map<String,Boolean>
+    - attribute: MaintenanceAttribute
+    - operation: MaintenanceOperation
+}
+
+enum MaintenanceOperation {
+    INSPECTION
+    SCHEDULED
+    OVERHAUL
+    MODIFICATION
+}
+
+enum MaintenanceStatus {
+    ONGOING
+    COMPLETED
+}
+
+enum MaintenanceAttribute {
+    ENGINE
+    AIRFRAME
+    AVIONICS
+    INTERIOR
+    EXTERIOR
+}
+
+class Technician <<entity>> {
+    - technicianId: String
+}
+
+class Supervisor <<entity>> {
+   - supervisorId: String
+}
+
+class UsedPart <<entity>> {
+    - partNumber: String
+    - quantity: Integer
+    - price: Double
+}
+
+MaintenanceRecord *-- "1" MaintenanceTemplate
+MaintenanceRecord *-- "1..*" UsedPart
+MaintenanceRecord *-- "0..*" Supervisor
+MaintenanceRecord *-- "0..*" Technician
+}
+
+' LOGISTICS / STOCK (SEPARATE BOUNDED CONTEXT)
+
+package "Bounded Context: Logistics" <<Frame>> {
+
+class Inventory <<aggregate root>> {
+    - partNumber: String <<id>>
+    - name: String
+    - stockQuantity: Integer
+    - minimumQuantity: Integer
+    + updateStock(quantity: Integer)
+    + isNearMinimum(): Boolean
+}
+
+class ComponentDefinition <<entity>> {
+    - partNumber: String <<id>>
+    - name: String
+    - description: String
+}
+
+class FuelInventory <<entity>> {
+    - fuelType: String
+    - quantity: Integer
+}
+
+Inventory *-- "0..*" ComponentDefinition
+Inventory *-- "0..*" FuelInventory
+}
+
+' RELATIONSHIPS
+
+Flight --> Route : routeId <<ref>>
+Flight --> Aircraft : aircraftId <<ref>>
+Aircraft --> AircraftModel : modelId <<ref>>
+Route --> Airport : IATA codes <<ref>>
+MaintenanceRecord --> Aircraft : aircraftId <<ref>>
 
 @enduml

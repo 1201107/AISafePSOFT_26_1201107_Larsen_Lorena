@@ -75,6 +75,7 @@ enum ContactType {
     PHONE
     EMAIL
     FAX
+    SOCIAL_NETWORK
 }
 
 Airport *-- "0..*" Runway
@@ -262,34 +263,6 @@ MaintenanceRecord *-- "1" MaintenanceTemplate
 MaintenanceRecord *-- "1..*" UsedPart
 MaintenanceRecord *-- "0..*" Supervisor
 MaintenanceRecord *-- "0..*" Technician
-}
-
-' LOGISTICS / STOCK (SEPARATE BOUNDED CONTEXT)
-
-package "Bounded Context: Logistics" <<Frame>> {
-
-class Inventory <<aggregate root>> {
-    - partNumber: String <<id>>
-    - name: String
-    - stockQuantity: Integer
-    - minimumQuantity: Integer
-    + updateStock(quantity: Integer)
-    + isNearMinimum(): Boolean
-}
-
-class ComponentDefinition <<entity>> {
-    - partNumber: String <<id>>
-    - name: String
-    - description: String
-}
-
-class FuelInventory <<entity>> {
-    - fuelType: String
-    - quantity: Integer
-}
-
-Inventory *-- "0..*" ComponentDefinition
-Inventory *-- "0..*" FuelInventory
 }
 
 ' RELATIONSHIPS
