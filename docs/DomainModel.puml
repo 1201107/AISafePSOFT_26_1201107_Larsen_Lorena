@@ -112,7 +112,7 @@ package "Aggregate: Aircraft" <<Frame>> {
         INACTIVE
     }
 
-    Aircraft --> AircraftModel : "linked to model [cite: 32, 33]"
+    Aircraft --> AircraftModel
     AircraftModel *-- AircraftSpecs
 }
 
@@ -135,9 +135,8 @@ package "Aggregate: Flight" <<Frame>> {
         CANCELED
     }
 
-    ScheduledFlight --> Route : "ref [cite: 102]"
-    ScheduledFlight --> Aircraft : "ref [cite: 102]"
-}
+    ScheduledFlight --> Route
+    ScheduledFlight --> Aircraft
 
 ' MAINTENANCE AGGREGATE
 package "Aggregate: Maintenance" <<Frame>> {
@@ -171,7 +170,7 @@ package "Aggregate: Maintenance" <<Frame>> {
     }
 
     MaintenanceRecord *-- "1" MaintenanceTemplate
-    MaintenanceRecord --> Aircraft : "ref [cite: 57]"
+    MaintenanceRecord --> Aircraft
 }
 
 @enduml
