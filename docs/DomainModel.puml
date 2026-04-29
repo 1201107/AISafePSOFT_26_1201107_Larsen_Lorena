@@ -9,6 +9,7 @@ package "Aggregate: Airport" <<Frame>> {
 
 class Airport <<aggregate root>> {
     - iataCode: String <<id>>
+    - airportType: String
     - name: String
     - status: AirportStatus
     - routeDistance: Double
@@ -53,9 +54,10 @@ class Contact <<value object>> {
     - description: String
 }
 
-class Certification <<value object>> {
+class Certification <<entity>> {
     - name: String
     - category: String
+    - startsAt: Date
     - expiresAt: Date
 }
 
@@ -117,12 +119,19 @@ class Route <<aggregate root>> {
     - usageCount: Integer
     - originIataCode: String <<ref>>
     - destinationIataCode: String <<ref>>
-    - routeList: List<String> <<ref>>
+    - routeHistory: RouteHistory
     - estimatedFlightTime: Double
     - type: RouteType
     + testRoute()
+    + addRoute()
     + deactivateRoute()
     + updateRoute()
+}
+
+class RouteHistory <<entity>>{
+    - routeId: String
+    - routeBegin: Date
+    - routeFinish: Date
 }
 
 class RouteRequirements <<value object>> {
@@ -142,6 +151,7 @@ enum RouteType{
 }
 
 Route *-- RouteRequirements
+Route "1"--"1" RouteHistory
 }
 
 ' AIRCRAFT MODEL AGGREGATE
@@ -176,14 +186,31 @@ class Aircraft <<aggregate root>> {
     - manufacturingDate: Date
     - features: List<String>
     - totalOperationalHours: Double
+    - totalFlightHours: Double
+    - meanRange: Double
     + updateOperationHours(hours: Double)
+    + updateOperationHours(hours: Double)
+    + updateMeanRange(traveledDistance: Double)
+    + updateSeatingCapacity(hours: Integer)
     + updateStatus(status: AircraftAvailability)
+}
+
+class SeatingPack <<value object>>{
+    - seatingCapacity: Integer
+    - seatingOrientation: String
 }
 
 class InstalledComponent <<entity>> {
     - serialNumber: String <<id>>
     - partNumber: String <<ref>>
     - status: String
+}
+
+class AircraftCertification <<entity>> {
+    - name: String
+    - category: String
+    - startsAt: Date
+    - expiresAt: Date
 }
 
 enum AircraftAvailability {
@@ -194,6 +221,9 @@ enum AircraftAvailability {
 }
 
 Aircraft *-- "0..*" InstalledComponent
+Aircraft *-- "1..*" AircraftCertification
+Aircraft *-- "1..*" SeatingPack
+
 }
 
 ' MAINTENANCE AGGREGATE
@@ -220,12 +250,12 @@ class MaintenanceTemplate <<entity>> {
     - templateId: String <<id>>
     - name: String
     - expectedDuration: Double
-    - checklist: Map<String,Boolean>
+    - templateChecklist: Map<String,Boolean>
     - attribute: MaintenanceAttribute
-    - operation: MaintenanceOperation
+    - operation: MaintenanceType
 }
 
-enum MaintenanceOperation {
+enum MaintenanceType {
     INSPECTION
     SCHEDULED
     OVERHAUL
@@ -259,38 +289,14 @@ class UsedPart <<entity>> {
     - price: Double
 }
 
+class Checklist <<value object>>{
+    - Checklist: Map<String,Boolean>
+}
+
 MaintenanceRecord *-- "1" MaintenanceTemplate
 MaintenanceRecord *-- "1..*" UsedPart
 MaintenanceRecord *-- "0..*" Supervisor
 MaintenanceRecord *-- "0..*" Technician
-}
-
-' LOGISTICS / STOCK (SEPARATE BOUNDED CONTEXT)
-
-package "Bounded Context: Logistics" <<Frame>> {
-
-class Inventory <<aggregate root>> {
-    - partNumber: String <<id>>
-    - name: String
-    - stockQuantity: Integer
-    - minimumQuantity: Integer
-    + updateStock(quantity: Integer)
-    + isNearMinimum(): Boolean
-}
-
-class ComponentDefinition <<entity>> {
-    - partNumber: String <<id>>
-    - name: String
-    - description: String
-}
-
-class FuelInventory <<entity>> {
-    - fuelType: String
-    - quantity: Integer
-}
-
-Inventory *-- "0..*" ComponentDefinition
-Inventory *-- "0..*" FuelInventory
 }
 
 ' RELATIONSHIPS
