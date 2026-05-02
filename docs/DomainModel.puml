@@ -156,7 +156,7 @@ Route "1"--"1" RouteHistory
 
 ' AIRCRAFT MODEL AGGREGATE
 
-package "Aggregate: AircraftModel" <<Frame>> {
+package "Aggregate: AircraftCatalog" <<Frame>> {
 
 class AircraftModel <<aggregate root>> {
     - modelId: String <<id>>
@@ -189,7 +189,8 @@ class Aircraft <<aggregate root>> {
     - totalFlightHours: Double
     - meanRange: Double
     + updateOperationHours(hours: Double)
-    + updateOperationHours(hours: Double)
+    + updateFlightHours(hours: Double)
+    + recordFlight(distance: Double, hours: Double)
     + updateMeanRange(traveledDistance: Double)
     + updateSeatingCapacity(hours: Integer)
     + updateStatus(status: AircraftAvailability)
@@ -207,10 +208,11 @@ class InstalledComponent <<entity>> {
 }
 
 class AircraftCertification <<entity>> {
+    - aircraftCertificationId: Long
     - name: String
     - category: String
-    - startsAt: Date
-    - expiresAt: Date
+    - startAt: LocalDate
+    - expiresAt: LocalDate
 }
 
 enum AircraftAvailability {
@@ -221,38 +223,45 @@ enum AircraftAvailability {
 }
 
 Aircraft *-- "0..*" InstalledComponent
-Aircraft *-- "1..*" AircraftCertification
+Aircraft *-- "0..*" AircraftCertification
 Aircraft *-- "1..*" SeatingPack
 
 }
+
 
 ' MAINTENANCE AGGREGATE
 
 package "Aggregate: Maintenance" <<Frame>> {
 
 class MaintenanceRecord <<aggregate root>> {
-    - recordId: String <<id>>
-    - aircraftId: String <<ref>>
-    - templateId: String <<ref>>
+    - recordId: Long  <<id>>
+    - aircraftRegistrationNumber: String <<ref>>
+    - templateId: Long
     - description: String
-    - technicians: List <TechnicianId>
-    - supervisor: String <SupervisorId>
-    - startDate: Date
+    - technicians: List <collaboratorId>
+    - supervisor: String <collaboratorId>
+    - startDate: LocalDate
+    - endDate: LocalDate
     - usedParts: usedParts
-    - Duration: Double
+    - duration: Double
+    - doneList:DoneList
     - status: MaintenanceStatus
-    - completionNotes: String
     + updateDuration(realDuration: Double)
     + markAsCompleted(notes: String)
 }
 
 class MaintenanceTemplate <<entity>> {
-    - templateId: String <<id>>
+    - templateId: Long <<id>>
     - name: String
     - expectedDuration: Double
     - templateChecklist: Map<String,Boolean>
     - attribute: MaintenanceAttribute
     - operation: MaintenanceType
+}
+
+class DoneList <<value object>>{
+    - tasksDone: Map<String,Boolean>
+    - completionNotes: String
 }
 
 enum MaintenanceType {
@@ -275,28 +284,34 @@ enum MaintenanceAttribute {
     EXTERIOR
 }
 
-class Technician <<entity>> {
-    - technicianId: String
-}
 
-class Supervisor <<entity>> {
-   - supervisorId: String
-}
-
-class UsedPart <<entity>> {
-    - partNumber: String
+class UsedPart <<value object>> {
+    - partSerialNumber: String
     - quantity: Integer
     - price: Double
 }
-
-class Checklist <<value object>>{
-    - Checklist: Map<String,Boolean>
-}
-
 MaintenanceRecord *-- "1" MaintenanceTemplate
 MaintenanceRecord *-- "1..*" UsedPart
-MaintenanceRecord *-- "0..*" Supervisor
-MaintenanceRecord *-- "0..*" Technician
+MaintenanceRecord *-- "1" DoneList
+}
+
+package "Aggregate: Users" <<Frame>> {
+class Technician <<entity>> {
+}
+
+class Supervisor <<entity>> {
+}
+
+class Collaborator <<entity>> {
+    - pk: Long
+    - collaboratorId: UUID
+    - username: String
+    - password: String
+    - email: String
+}
+
+Technician *--"1..1" Collaborator
+Supervisor *--"1..1" Collaborator
 }
 
 ' RELATIONSHIPS
@@ -305,6 +320,6 @@ Flight --> Route : routeId <<ref>>
 Flight --> Aircraft : aircraftId <<ref>>
 Aircraft --> AircraftModel : modelId <<ref>>
 Route --> Airport : IATA codes <<ref>>
-MaintenanceRecord --> Aircraft : aircraftId <<ref>>
-
+MaintenanceRecord --> Aircraft : aircraftRegistrationNumber <<ref>>
+Collaborator --> MaintenanceRecord : collaboratorId <<ref>>
 @enduml
