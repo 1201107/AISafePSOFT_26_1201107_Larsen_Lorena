@@ -12,7 +12,9 @@ class Airport <<aggregate root>> {
     - airportType: String
     - name: String
     - status: AirportStatus
+    - airportLocation: AirportLocation
     - routeDistance: Double
+    - airportRunways: List<Long<<ref>>>
     - airportPhotos: List<String>
     + addRunway(runway: Runway)
     + removeRunway(runwayId: String)
@@ -26,7 +28,7 @@ class Airport <<aggregate root>> {
 }
 
 class Runway <<entity>> {
-    - runwayId: String <<id>>
+    - runwayId: Long <<id>>
     - runwayName: String
     - length: Double
     - orientation: String
@@ -51,7 +53,6 @@ class Facilities <<value object>> {
 class Contact <<value object>> {
     - type: ContactType
     - value: String
-    - description: String
 }
 
 class Certification <<entity>> {
@@ -92,9 +93,9 @@ Airport *-- "0..*" Certification
 package "Aggregate: Flight" <<Frame>> {
 
 class Flight <<aggregate root>> {
-    - flightId: String <<id>>
+    - flightId: Long <<id>>
     - flightStatus : FlightStatus
-    - routeId: String <<ref>>
+    - routeId: Long <<ref>>
     - aircraftId: String <<ref>>
     - scheduledDeparture: DateTime
     - scheduledArrival: DateTime
@@ -114,9 +115,8 @@ enum FlightStatus {
 package "Aggregate: Route" <<Frame>> {
 
 class Route <<aggregate root>> {
-    - routeId: String <<id>>
+    - routeId: Long <<id>>
     - status: RouteStatus
-    - usageCount: Integer
     - originIataCode: String <<ref>>
     - destinationIataCode: String <<ref>>
     - routeHistory: RouteHistory
@@ -128,10 +128,11 @@ class Route <<aggregate root>> {
     + updateRoute()
 }
 
-class RouteHistory <<entity>>{
-    - routeId: String
+class RouteHistory <<value object>>{
     - routeBegin: Date
     - routeFinish: Date
+    - routeUsage: Integer
+    +updateRouteUsage(usage: Integer)
 }
 
 class RouteRequirements <<value object>> {
