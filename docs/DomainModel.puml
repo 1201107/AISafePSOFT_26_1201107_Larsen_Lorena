@@ -12,9 +12,11 @@ class Airport <<aggregate root>> {
     - airportType: String
     - name: String
     - status: AirportStatus
+    - contacts: List<Contact>
+    - facilities: Facilities
     - airportLocation: AirportLocation
     - routeDistance: Double
-    - airportRunways: List<Long<<ref>>>
+    - airportRunways: List<Runway>
     - airportPhotos: List<String>
     + addRunway(runway: Runway)
     + removeRunway(runwayId: String)
@@ -168,9 +170,9 @@ class AircraftModel <<aggregate root>> {
 }
 
 class AircraftSpecs <<value object>> {
-    - fuelCapacity: Double
-    - maximumRange: Double
-    - cruisingSpeed: Double
+    - fuelCapacityLiters: Double
+    - maximumRangeKm: Double
+    - cruisingSpeedKph: Double
     - updateAircraftSpecs()
 }
 

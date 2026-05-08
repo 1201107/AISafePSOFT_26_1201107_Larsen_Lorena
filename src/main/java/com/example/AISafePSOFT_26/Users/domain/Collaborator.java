@@ -13,7 +13,6 @@ import java.util.UUID;
 @Table(name="company_colaborators")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Collaborator {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pk;

@@ -1,8 +1,6 @@
-package com.example.AISafePSOFT_26.Airport;
+package com.example.AISafePSOFT_26.Airport.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +14,12 @@ public class Facilities {
     private Integer gateCount;
 
     @ElementCollection
-    private List<String> services= new ArrayList<>();
+    @CollectionTable(
+            name = "facility_services",
+            joinColumns = @JoinColumn(name = "airport_iata_code")
+    )
+    @Column(name = "service")
+    private List<String> services = new ArrayList<>();
 
     public Facilities() {}
 

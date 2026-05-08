@@ -1,7 +1,8 @@
-package com.example.AISafePSOFT_26.Airport;
+package com.example.AISafePSOFT_26.Airport.domain;
 
 import jakarta.persistence.*;
 
+@Table(name = "company_airports_runways")
 @Entity
 public class Runway {
     @Id

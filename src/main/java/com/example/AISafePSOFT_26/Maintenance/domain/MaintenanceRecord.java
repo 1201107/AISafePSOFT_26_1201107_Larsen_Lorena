@@ -11,10 +11,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "company_maintenance_records")
 public class MaintenanceRecord {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID recordId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long recordId;
 
     private String aircraftRegistrationNumber;
 

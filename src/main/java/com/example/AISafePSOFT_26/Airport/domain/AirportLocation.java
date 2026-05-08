@@ -1,4 +1,4 @@
-package com.example.AISafePSOFT_26.Airport;
+package com.example.AISafePSOFT_26.Airport.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

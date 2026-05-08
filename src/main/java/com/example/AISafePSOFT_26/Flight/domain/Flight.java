@@ -1,4 +1,4 @@
-package com.example.AISafePSOFT_26.Flight;
+package com.example.AISafePSOFT_26.Flight.domain;
 
 import jakarta.persistence.*;
 

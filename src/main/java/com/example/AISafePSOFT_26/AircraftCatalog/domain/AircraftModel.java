@@ -1,4 +1,4 @@
-package com.example.AISafePSOFT_26.AircraftCatalog;
+package com.example.AISafePSOFT_26.AircraftCatalog.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +19,8 @@ public class AircraftModel {
     @Column(nullable = false, unique = true)
     private String modelName;
 
-    @ElementCollection@CollectionTable(
+    @ElementCollection
+    @CollectionTable(
             name = "aircraft_images",
             joinColumns = @JoinColumn(name = "model_id")
     )
