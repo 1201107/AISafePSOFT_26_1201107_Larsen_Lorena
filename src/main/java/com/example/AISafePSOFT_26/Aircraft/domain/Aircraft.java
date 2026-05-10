@@ -1,140 +1,253 @@
 package com.example.AISafePSOFT_26.Aircraft.domain;
 
+import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
-@Table(name="company_aircrafts")
+@Table(name = "company_aircrafts")
 public class Aircraft {
+
     @Id
+    @Column(nullable = false, updatable = false)
     private String registrationNumber;
 
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "model_id")
+    private AircraftModel model;
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private AircraftAvailability status;
 
     @Column(nullable = false)
     private LocalDate manufacturingDate;
 
+    @Column(nullable = false)
     private Double totalOperationalHours;
+
+    @Column(nullable = false)
     private Double totalFlightHours;
+
     private Double meanRange;
 
     @ElementCollection
+    @CollectionTable(
+            name = "aircraft_features",
+            joinColumns = @JoinColumn(name = "registration_number")
+    )
+    @Column(name = "feature")
     private List<String> features = new ArrayList<>();
 
     @Embedded
     private SeatingPack seatingPack;
 
-    @OneToMany(mappedBy = "aircraft", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "aircraft",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<InstalledComponent> components = new ArrayList<>();
 
-    @OneToMany(mappedBy = "aircraft", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "aircraft",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<AircraftCertification> certifications = new ArrayList<>();
 
-    protected Aircraft() {}
+    protected Aircraft() {
+    }
 
-    public Aircraft(String registrationNumber, LocalDate manufacturingDate, Double totalOperationalHours, Double totalFlightHours) {
+    public Aircraft(String registrationNumber, AircraftModel model,LocalDate manufacturingDate,
+                    Double totalOperationalHours, Double totalFlightHours) {
+        if (registrationNumber == null || registrationNumber.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Registration number cannot be empty"
+            );
+        }
+        if (model == null) {
+            throw new IllegalArgumentException(
+                    "Aircraft model cannot be null"
+            );
+        }
+        if (manufacturingDate == null) {
+            throw new IllegalArgumentException(
+                    "Manufacturing date cannot be null"
+            );
+        }
+        if (totalOperationalHours == null || totalOperationalHours < 0) {
+            throw new IllegalArgumentException(
+                    "Operational hours cannot be negative"
+            );
+        }
+        if (totalFlightHours == null || totalFlightHours < 0) {
+            throw new IllegalArgumentException(
+                    "Flight hours cannot be negative"
+            );
+        }
+
         this.registrationNumber = registrationNumber;
+        this.model = model;
         this.manufacturingDate = manufacturingDate;
         this.totalOperationalHours = totalOperationalHours;
         this.totalFlightHours = totalFlightHours;
+
+        this.status = AircraftAvailability.AVAILABLE;
+    }
+
+    public void sendToMaintenance() {
+        if (status == AircraftAvailability.INACTIVE) {
+            throw new IllegalStateException(
+                    "Retired aircraft cannot enter maintenance"
+            );
+        }
+        this.status = AircraftAvailability.MAINTENANCE;
+    }
+
+    public void activateAircraft() {
+        if (status == AircraftAvailability.INACTIVE) {
+            throw new IllegalStateException(
+                    "Retired aircraft cannot be reactivated"
+            );
+        }
+        this.status = AircraftAvailability.AVAILABLE;
+    }
+
+    public void retireAircraft() {
+        this.status = AircraftAvailability.INACTIVE;
+    }
+
+    public void installComponent(InstalledComponent component) {
+        if (component == null) {
+            throw new IllegalArgumentException(
+                    "Component cannot be null"
+            );
+        }
+        boolean alreadyInstalled = components.stream()
+                .anyMatch(c ->
+                        c.getSerialNumber()
+                                .equals(component.getSerialNumber())
+                );
+        if (alreadyInstalled) {
+            throw new IllegalStateException(
+                    "Component already installed"
+            );
+        }
+        components.add(component);
+        component.setAircraft(this);
+    }
+
+    public void removeComponent(InstalledComponent component) {
+        if (component == null) {
+            throw new IllegalArgumentException(
+                    "Component cannot be null"
+            );
+        }
+        components.remove(component);
+        component.setAircraft(null);
+    }
+
+    public void addCertification(AircraftCertification certification) {
+        if (certification == null) {
+            throw new IllegalArgumentException(
+                    "Certification cannot be null"
+            );
+        }
+        certifications.add(certification);
+        certification.setAircraft(this);
+    }
+
+    public void configureSeating(SeatingPack seatingPack) {
+        if (seatingPack == null) {
+            throw new IllegalArgumentException(
+                    "Seating configuration cannot be null"
+            );
+        }
+        this.seatingPack = seatingPack;
+    }
+
+    public void addFeature(String feature) {
+        if (feature == null || feature.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Feature cannot be empty"
+            );
+        }
+        if (!features.contains(feature)) {
+            features.add(feature);
+        }
+    }
+
+    public void updateOperationalHours(Double additionalHours) {
+        if (additionalHours == null || additionalHours <= 0) {
+            throw new IllegalArgumentException(
+                    "Hours must be positive"
+            );
+        }
+        this.totalOperationalHours += additionalHours;
+    }
+
+    public void updateFlightHours(Double additionalHours) {
+        if (additionalHours == null || additionalHours <= 0) {
+            throw new IllegalArgumentException(
+                    "Hours must be positive"
+            );
+        }
+
+        this.totalFlightHours += additionalHours;
+    }
+
+    public boolean isReadyForFlight() {
+        return status == AircraftAvailability.AVAILABLE
+                && certifications.stream()
+                .allMatch(AircraftCertification::isValid);
+    }
+
+    public List<InstalledComponent> getComponents() {
+        return Collections.unmodifiableList(components);
+    }
+
+    public List<AircraftCertification> getCertifications() {
+        return Collections.unmodifiableList(certifications);
+    }
+
+    public List<String> getFeatures() {
+        return Collections.unmodifiableList(features);
     }
 
     public String getRegistrationNumber() {
         return registrationNumber;
     }
 
-    public AircraftAvailability getStatus() {
-        return status;
+    public AircraftModel getModel() {
+        return model;
     }
 
-    public void setStatus(AircraftAvailability status) {
-        this.status = status;
+    public AircraftAvailability getStatus() {
+        return status;
     }
 
     public LocalDate getManufacturingDate() {
         return manufacturingDate;
     }
 
-    public void setManufacturingDate(LocalDate manufacturingDate) {
-        this.manufacturingDate = manufacturingDate;
-    }
-
     public Double getTotalOperationalHours() {
         return totalOperationalHours;
-    }
-
-    public void setTotalOperationalHours(Double totalOperationalHours) {
-        this.totalOperationalHours = totalOperationalHours;
-    }
-
-    public Double getMeanRange() {
-        return meanRange;
-    }
-
-    public void setMeanRange(Double meanRange) {
-        this.meanRange = meanRange;
     }
 
     public Double getTotalFlightHours() {
         return totalFlightHours;
     }
 
-    public void setTotalFlightHours(Double totalFlightHours) {
-        this.totalFlightHours = totalFlightHours;
-    }
-
-    public List<String> getFeatures() {
-        return features;
-    }
-
-    public void setFeatures(List<String> features) {
-        this.features = features;
-    }
-
-    public List<InstalledComponent> getComponents() {
-        return components;
-    }
-
-    public void setComponents(List<InstalledComponent> components) {
-        this.components = components;
+    public Double getMeanRange() {
+        return meanRange;
     }
 
     public SeatingPack getSeatingPack() {
         return seatingPack;
     }
-
-    public void setSeatingPack(SeatingPack seatingPack) {
-        this.seatingPack = seatingPack;
-    }
-
-    public List<AircraftCertification> getCertifications() {
-        return certifications;
-    }
-
-    public void setCertifications(List<AircraftCertification> certifications) {
-        this.certifications = certifications;
-    }
-
-    public void setRegistrationNumber(String registrationNumber) {
-        this.registrationNumber = registrationNumber;
-    }
-
-    public void recordFlight(Double distance, Double hours) {
-        this.totalFlightHours += hours;
-        this.totalOperationalHours += hours;
-        this.meanRange = distance / hours;
-    }
-
-    public void updateStatus(AircraftAvailability status) {
-        this.status = status;
-    }
-
-    public void updateSeatingPack(SeatingPack seatingPack) {
-        this.seatingPack = seatingPack;
-    }
-
 }

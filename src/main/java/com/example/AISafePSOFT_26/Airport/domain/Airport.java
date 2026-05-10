@@ -50,19 +50,10 @@ public class Airport {
 
     public Airport(){}
 
-    public Airport(
-            String iataCode,
-            String airportType,
-            String name,
-            AirportStatus status,
-            AirportLocation airportLocation,
-            Facilities facilities,
-            Double routeDistance,
-            List<Runway> airportRunways,
-            List<Certification> certifications,
-            List<Contact> contacts,
-            List<String> airportPhotos
-    ) {
+    public Airport(String iataCode,String airportType, String name, AirportStatus status,
+            AirportLocation airportLocation,Facilities facilities,Double routeDistance,
+            List<Runway> airportRunways, List<Certification> certifications, List<Contact> contacts,
+            List<String> airportPhotos) {
         this.iataCode = iataCode;
         this.airportType = airportType;
         this.name = name;
@@ -74,5 +65,13 @@ public class Airport {
         this.certifications = certifications;
         this.contacts = contacts;
         this.airportPhotos = airportPhotos;
+    }
+
+    public String getIataCode() {
+        return iataCode;
+    }
+
+    public String getName() {
+        return name;
     }
 }

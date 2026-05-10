@@ -43,4 +43,8 @@ public class AircraftModel {
         this.aircraftModelSpecs = aircraftModelSpecs;
         this.modelImage = modelImage;
     }
+
+    public String getModelName() {
+        return modelName;
+    }
 }

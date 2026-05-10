@@ -22,4 +22,24 @@ public class AircraftCertification {
     private LocalDate expiresAt;
 
     protected AircraftCertification() {}
+
+    public AircraftCertification(
+            String name,
+            String category,
+            LocalDate startAt,
+            LocalDate expiresAt
+    ) {
+        this.name = name;
+        this.category = category;
+        this.startAt = startAt;
+        this.expiresAt = expiresAt;
+    }
+
+    public void setAircraft(Aircraft aircraft) {
+        this.aircraft = aircraft;
+    }
+
+    public boolean isValid() {
+        return !LocalDate.now().isAfter(expiresAt);
+    }
 }

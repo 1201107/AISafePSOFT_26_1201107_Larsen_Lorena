@@ -1,37 +1,142 @@
 package com.example.AISafePSOFT_26.Flight.domain;
 
+import com.example.AISafePSOFT_26.Aircraft.domain.Aircraft;
+import com.example.AISafePSOFT_26.Route.domain.Route;
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(schema = "company_flights")
+@Table(name = "company_flights")
 public class Flight {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightId;
 
-    @Column(nullable = false)
-    private Long routeId;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "route_id")
+    private Route route;
 
-    @Column(nullable = false)
-    private String aircraftId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "aircraft_registration")
+    private Aircraft aircraft;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private FlightStatus flightStatus;
 
-    private Date scheduledDeparture;
+    @Column(nullable = false)
+    private LocalDateTime scheduledDeparture;
 
-    private Date scheduledArrival;
+    @Column(nullable = false)
+    private LocalDateTime scheduledArrival;
 
-    public Flight() {}
+    protected Flight() {
+    }
 
-    public Flight(Date scheduledArrival, Date scheduledDeparture, FlightStatus flightStatus, Long routeId, String aircraftId, Long flightId) {
-        this.scheduledArrival = scheduledArrival;
+    public Flight(Route route, Aircraft aircraft, LocalDateTime scheduledDeparture,
+            LocalDateTime scheduledArrival) {
+        if (route == null) {
+            throw new IllegalArgumentException("Route cannot be null");
+        }
+        if (scheduledDeparture == null) {
+            throw new IllegalArgumentException("Departure cannot be null");
+        }
+        if (scheduledArrival == null) {
+            throw new IllegalArgumentException("Arrival cannot be null");
+        }
+        if (scheduledArrival.isBefore(scheduledDeparture)) {
+            throw new IllegalArgumentException(
+                    "Arrival cannot be before departure"
+            );
+        }
+        this.flightStatus=FlightStatus.SCHEDULED;
+        this.route = route;
+        this.aircraft = aircraft;
         this.scheduledDeparture = scheduledDeparture;
-        this.flightStatus = flightStatus;
-        this.routeId = routeId;
-        this.aircraftId = aircraftId;
-        this.flightId = flightId;
+        this.scheduledArrival = scheduledArrival;
+    }
+
+    public void updateAircraft(Aircraft aircraft) {
+        if (aircraft == null) {
+            throw new IllegalArgumentException(
+                    "Aircraft cannot be null"
+            );
+        }
+        if (this.flightStatus == FlightStatus.ARRIVED) {
+            throw new IllegalStateException(
+                    "Cannot change aircraft of completed flight"
+            );
+        }
+        this.aircraft = aircraft;
+    }
+
+    public void changeRoute(Route route) {
+        if (route == null) {
+            throw new IllegalArgumentException(
+                    "Route cannot be null"
+            );
+        }
+        if (this.flightStatus == FlightStatus.ARRIVED) {
+            throw new IllegalStateException(
+                    "Cannot change route of completed flight"
+            );
+        }
+        this.route = route;
+    }
+
+    public void startFlight() {
+        if (flightStatus != FlightStatus.SCHEDULED) {
+            throw new IllegalStateException(
+                    "Flight cannot be started"
+            );
+        }
+        this.flightStatus = FlightStatus.IN_PROGRESS;
+    }
+
+    public void completeFlight() {
+        if (flightStatus != FlightStatus.IN_PROGRESS) {
+            throw new IllegalStateException(
+                    "Flight is not in progress"
+            );
+        }
+        this.flightStatus = FlightStatus.ARRIVED;
+    }
+
+    public void cancelFlight() {
+        if (flightStatus == FlightStatus.ARRIVED) {
+            throw new IllegalStateException(
+                    "Completed flight cannot be cancelled"
+            );
+        }
+        this.flightStatus = FlightStatus.CANCELED;
+    }
+
+    public boolean isActive() {
+        return flightStatus == FlightStatus.IN_PROGRESS;
+    }
+
+    public Long getFlightId() {
+        return flightId;
+    }
+
+    public Route getRoute() {
+        return route;
+    }
+
+    public Aircraft getAircraft() {
+        return aircraft;
+    }
+
+    public FlightStatus getFlightStatus() {
+        return flightStatus;
+    }
+
+    public LocalDateTime getScheduledDeparture() {
+        return scheduledDeparture;
+    }
+
+    public LocalDateTime getScheduledArrival() {
+        return scheduledArrival;
     }
 }

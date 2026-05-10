@@ -1,38 +1,186 @@
 package com.example.AISafePSOFT_26.Route.domain;
 
+import com.example.AISafePSOFT_26.Airport.domain.Airport;
 import jakarta.persistence.*;
 
 @Entity
-@Table(schema = "company_routes")
+@Table(name = "company_routes")
 public class Route {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long routeId;
 
+    @Column(nullable = false)
+    private String routeName;
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private RouteStatus status;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private RouteType type;
 
-    private String originIataCode;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "origin_airport_id")
+    private Airport originAirport;
 
-    private String destinationIataCode;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "destination_airport_id")
+    private Airport destinationAirport;
 
     @Embedded
     private RouteHistory routeHistory;
 
-    private Double estimatedFlightTime;
+    @Column(nullable = false)
+    private Double estimatedFlightTimeHours;
 
-    public Route() {}
+    @Embedded
+    private RouteRequirements routeRequirements;
 
-    public Route(Long routeId, RouteStatus status, String originIataCode, RouteType type, String destinationIataCode, RouteHistory routeHistory, Double estimatedFlightTime) {
-        this.routeId = routeId;
+    protected Route() {
+    }
+
+    public Route(RouteRequirements routeRequirements, RouteStatus status, RouteType type,
+            RouteHistory routeHistory, Double estimatedFlightTimeHours, Airport originAirport,
+            Airport destinationAirport,String routeName) {
+
+        if (routeRequirements == null) {
+            throw new IllegalArgumentException(
+                    "Route requirements cannot be null"
+            );
+        }
+        if (status == null) {
+            throw new IllegalArgumentException(
+                    "Route status cannot be null"
+            );
+        }
+        if (type == null) {
+            throw new IllegalArgumentException(
+                    "Route type cannot be null"
+            );
+        }
+        if (estimatedFlightTimeHours == null
+                || estimatedFlightTimeHours <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Estimated flight time must be positive"
+            );
+        }
+        if (originAirport == null) {
+            throw new IllegalArgumentException(
+                    "Origin airport cannot be null"
+            );
+        }
+        if (destinationAirport == null) {
+            throw new IllegalArgumentException(
+                    "Destination airport cannot be null"
+            );
+        }
+        if (originAirport.equals(destinationAirport)) {
+            throw new IllegalArgumentException(
+                    "Origin and destination airports cannot be the same"
+            );
+        }
+        if(routeName==null){
+            throw new IllegalArgumentException(
+                    "Route name cannot be null"
+            );
+        }
+
+        this.routeRequirements = routeRequirements;
         this.status = status;
-        this.originIataCode = originIataCode;
         this.type = type;
-        this.destinationIataCode = destinationIataCode;
         this.routeHistory = routeHistory;
-        this.estimatedFlightTime = estimatedFlightTime;
+        this.estimatedFlightTimeHours = estimatedFlightTimeHours;
+        this.originAirport = originAirport;
+        this.destinationAirport = destinationAirport;
+        this.routeName = routeName;
+    }
+
+    public void activateRoute() {
+        if (status == RouteStatus.INACTIVE) {
+            throw new IllegalStateException(
+                    "Retired routes cannot be activated"
+            );
+        }
+        this.status = RouteStatus.ACTIVE;
+    }
+
+    public void suspendRoute() {
+        if (status == RouteStatus.ARCHIVED) {
+            throw new IllegalStateException(
+                    "Archived routes cannot be suspended"
+            );
+        }
+
+        this.status = RouteStatus.INACTIVE;
+    }
+
+    public void retireRoute() {
+        this.status = RouteStatus.ARCHIVED;
+    }
+
+    public void updateEstimatedFlightTime(Double estimatedFlightTimeHours) {
+        if (estimatedFlightTimeHours == null
+                || estimatedFlightTimeHours <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Estimated flight time must be positive"
+            );
+        }
+        this.estimatedFlightTimeHours =
+                estimatedFlightTimeHours;
+    }
+
+    public void changeDestination(Airport newDestination) {
+        if (newDestination == null) {
+            throw new IllegalArgumentException(
+                    "Destination airport cannot be null"
+            );
+        }
+        if (newDestination.equals(originAirport)) {
+            throw new IllegalArgumentException(
+                    "Destination airport cannot equal origin airport"
+            );
+        }
+        this.destinationAirport = newDestination;
+    }
+
+    public boolean isOperational() {
+
+        return status == RouteStatus.ACTIVE;
+    }
+
+    public Long getRouteId() {
+        return routeId;
+    }
+
+    public RouteStatus getStatus() {
+        return status;
+    }
+
+    public RouteType getType() {
+        return type;
+    }
+
+    public Airport getOriginAirport() {
+        return originAirport;
+    }
+
+    public Airport getDestinationAirport() {
+        return destinationAirport;
+    }
+
+    public RouteHistory getRouteHistory() {
+        return routeHistory;
+    }
+
+    public Double getEstimatedFlightTimeHours() {
+        return estimatedFlightTimeHours;
+    }
+
+    public RouteRequirements getRouteRequirements() {
+        return routeRequirements;
     }
 }

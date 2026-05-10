@@ -26,4 +26,25 @@ public class MaintenanceTemplate {
 
     @Enumerated(EnumType.STRING)
     private MaintenanceAttribute attribute;
+
+    public MaintenanceTemplate(
+            String name,
+            Double expectedDuration,
+            Map<String, Boolean> templateChecklist,
+            MaintenanceType operation,
+            MaintenanceAttribute attribute
+    ) {
+        this.name = name;
+        this.expectedDuration = expectedDuration;
+        this.templateChecklist = templateChecklist;
+        this.operation = operation;
+        this.attribute = attribute;
+    }
+
+    protected MaintenanceTemplate() {}
+
+
+    public Long getTemplateId() {
+        return templateId;
+    }
 }
