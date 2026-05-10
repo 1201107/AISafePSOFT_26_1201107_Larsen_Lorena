@@ -304,7 +304,10 @@ class MaintenanceRecord <<aggregate root>> {
    - durationHours: Double
    - doneList: DoneList
    - status: MaintenanceStatus
-   + MaintenanceRecord(usedParts: List<UsedPart>,durationHours: Double,startDate: LocalDate,supervisor: Collaborator,description: String,technicians: List<Collaborator>,maintenanceTemplate: MaintenanceTemplate,aircraft: Aircraft)
+   + MaintenanceRecord(usedParts: List<UsedPart>,durationHours: Double,
+    startDate: LocalDate,supervisor: Collaborator,description: String,
+    technicians: List<Collaborator>,maintenanceTemplate: MaintenanceTemplate,
+    aircraft: Aircraft)
    + updateDuration(realDuration: Double): void
    + assignTechnician(technician: Collaborator): void
    + addUsedPart(part: UsedPart): void

@@ -5,7 +5,6 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class AircraftSpecs {
-
     @Column(nullable = false)
     private Double fuelCapacityLiters;
 
@@ -15,12 +14,15 @@ public class AircraftSpecs {
     @Column(nullable = false)
     private Double cruisingSpeedKph;
 
+    private Integer standardSeatingCapacity;
+
     public AircraftSpecs() {}
 
-    public AircraftSpecs(Double fuelCapacity, Double maximumRange, Double cruisingSpeed) {
+    public AircraftSpecs(Double fuelCapacity, Double maximumRange, Double cruisingSpeed, Integer standardSeatingCapacity) {
         this.fuelCapacityLiters = fuelCapacity;
         this.maximumRangeKm = maximumRange;
         this.cruisingSpeedKph = cruisingSpeed;
+        this.standardSeatingCapacity = standardSeatingCapacity;
     }
 
     public Double getFuelCapacity() { return fuelCapacityLiters; }
@@ -32,6 +34,10 @@ public class AircraftSpecs {
 
     public Double getCruisingSpeed() {
         return cruisingSpeedKph;
+    }
+
+    public Integer getStandardSeatingCapacity() {
+        return standardSeatingCapacity;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.AISafePSOFT_26.authUsers;
 
+import com.example.AISafePSOFT_26.Users.domain.Role;
 import com.example.AISafePSOFT_26.authUsers.infrastructure.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers(POST, "/auth/login").permitAll();
                     auth.requestMatchers(GET, "/api/welcome").permitAll();
+                    auth.requestMatchers(POST, "/catalog/models").hasAnyRole(Role.BACKOFFICE.name(), Role.ADMIN.name());
                     if (h2ConsoleEnabled) {
                         auth.requestMatchers("/h2-console/**").permitAll();
                     }
@@ -49,7 +51,6 @@ public class SecurityConfig {
         } else {
             http.headers(h -> h.frameOptions(f -> f.deny()));
         }
-
         return http.build();
     }
 

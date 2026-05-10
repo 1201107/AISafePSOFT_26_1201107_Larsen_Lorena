@@ -118,19 +118,19 @@ public class Bootstrap implements ApplicationRunner {
     private void seedAircraftModels() {
         aircraftModelRepository.saveAll(List.of(
                 new AircraftModel("Boeing 737-800", "Boeing",
-                        new AircraftSpecs(26020.0, 5436.0, 842.0),
+                        new AircraftSpecs(26020.0, 5436.0, 842.0,120),
                         List.of("b737-front.jpg", "b737-side.jpg")),
 
                 new AircraftModel("Airbus A320neo", "Airbus",
-                        new AircraftSpecs(24210.0, 6300.0, 828.0),
+                        new AircraftSpecs(24210.0, 6300.0, 828.0,120),
                         List.of("a320-1.jpg", "a320-2.jpg")),
 
                 new AircraftModel("Boeing 787-9 Dreamliner", "Boeing",
-                        new AircraftSpecs(126000.0, 14140.0, 913.0),
+                        new AircraftSpecs(126000.0, 14140.0, 913.0,120),
                         List.of("b787-1.jpg")),
 
                 new AircraftModel("Embraer E195-E2", "Embraer",
-                        new AircraftSpecs(13200.0, 4815.0, 870.0),
+                        new AircraftSpecs(13200.0, 4815.0, 870.0,120),
                         List.of("e195.jpg"))
         ));
     }

@@ -47,4 +47,16 @@ public class AircraftModel {
     public String getModelName() {
         return modelName;
     }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public AircraftSpecs getAircraftModelSpecs() {
+        return aircraftModelSpecs;
+    }
+
+    public List<String> getModelImage() {
+        return modelImage;
+    }
 }
