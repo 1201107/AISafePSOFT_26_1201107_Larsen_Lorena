@@ -42,7 +42,7 @@ The system must provide meaningful error messages and appropriate HTTP status co
 APIs must follow consistent naming conventions for endpoints.
 
 ### Navigation
-Resource representations must include links (HATEOAS) to guide the user/frontend through the application state.
+Resource representations must include links (HATEOAS) to guide the collaborator/frontend through the application state.
 
 ---
 

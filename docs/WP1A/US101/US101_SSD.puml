@@ -1,0 +1,12 @@
+@startuml
+actor BackOffice as Bo
+participant "System" as System
+
+
+Bo -> System: Authenticate User
+System --> Bo: Authentication Successful
+
+Bo -> System: Register Aircraft Model
+System --> Bo: Inform Success
+
+@enduml
