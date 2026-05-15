@@ -17,6 +17,9 @@ public class Collaborator {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pk;
 
+    @Version
+    private Long version;
+
     @Column(nullable = false, unique = true)
     private UUID collaboratorId = UUID.randomUUID();
 

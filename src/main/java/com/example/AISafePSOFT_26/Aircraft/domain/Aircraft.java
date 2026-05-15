@@ -16,6 +16,9 @@ public class Aircraft {
     @Column(nullable = false, updatable = false)
     private String registrationNumber;
 
+    @Version
+     private Long version;
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "model_id")
     private AircraftModel model;

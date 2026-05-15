@@ -10,6 +10,9 @@ public class Route {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long routeId;
 
+    @Version
+    private Long version;
+
     @Column(nullable = false)
     private String routeName;
 
