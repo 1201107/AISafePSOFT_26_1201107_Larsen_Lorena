@@ -1,15 +1,9 @@
-  @startuml
-'https://plantuml.com/sequence-diagram
+@startuml SSD_US119_UpdateMaintenanceRecord
 
-autonumber
+actor "Maintenance Technician" as TECH
+participant "System" as SYS
 
-== Initialization ==
+TECH -> SYS : PATCH /api/maintenance/{recordId}/complete\n{completionNotes}
+SYS --> TECH : 200 OK\n{updatedMaintenanceRecordDTO}
 
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
-
-== Repetition ==
-
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
 @enduml

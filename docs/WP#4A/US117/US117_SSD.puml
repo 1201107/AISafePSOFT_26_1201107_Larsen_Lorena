@@ -1,15 +1,9 @@
-@startuml
-'https://plantuml.com/sequence-diagram
+@startuml SSD_US117_ViewTotalMaintenanceHours
 
-autonumber
+actor "ATCC" as USER
+participant "System" as SYS
 
-== Initialization ==
+USER -> SYS : GET /api/maintenance/aircraft/{registration}/hours
+SYS --> USER : 200 OK\n{totalMaintenanceHours}
 
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
-
-== Repetition ==
-
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
 @enduml
