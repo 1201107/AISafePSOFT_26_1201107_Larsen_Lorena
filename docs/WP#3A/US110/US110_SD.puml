@@ -1,1 +1,67 @@
-:;
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+title Sequence Diagram: US110 - Create Flight Route
+
+actor "ATCC" as User
+participant ":AuthController" as Auth
+participant ":RouteController" as Ctrl
+participant ":RouteService" as Service
+participant "origin:AirportRepository" as RepoOrig
+participant "dest:AirportRepository" as RepoDest
+participant "route:Route" as Route <<Aggregate Root>>
+participant ":RouteRepository" as RepoRoute
+
+activate User
+
+
+User -> Auth : Authenticate User
+activate Auth
+Auth --> User : Authentication Successful
+deactivate Auth
+
+
+User -> Ctrl : createRoute(origin, dest, time, reqs)
+activate Ctrl
+
+Ctrl -> Service : createRoute(origin, dest, flightTime, requirements)
+activate Service
+
+    Service -> RepoOrig : findByIataCode(originIATA)
+    activate RepoOrig
+    RepoOrig --> Service : originAirport
+    deactivate RepoOrig
+
+    Service -> RepoDest : findByIataCode(destIATA)
+    activate RepoDest
+    RepoDest --> Service : destAirport
+    deactivate RepoDest
+
+    note over Service
+        Verifica se ambos os aeroportos
+        existem e estão operacionais.
+    end note
+
+    Service -> Route** : <<create>> (origin, dest, time, requirements)
+
+    Service -> RepoRoute : save(route)
+    activate RepoRoute
+    RepoRoute --> Service : savedRoute
+    deactivate RepoRoute
+
+    Service --> Ctrl : routeDTO
+
+    note over Ctrl
+        Define status com base no
+        resultado do Service.
+    end note
+
+    Ctrl --> User : Success (201 Created + Links)
+
+    Ctrl --> User : Error (400 Bad Request / 404 Not Found)
+
+deactivate Service
+deactivate Ctrl
+deactivate User
+@enduml
