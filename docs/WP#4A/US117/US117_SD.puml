@@ -1,15 +1,21 @@
-@startuml
-'https://plantuml.com/sequence-diagram
+@startuml SD_US117_ViewTotalMaintenanceHours
 
-autonumber
+actor "ATCC" as USER
+participant "MaintenanceController" as CTRL
+participant "MaintenanceService" as SVC
+participant "MaintenanceRecordRepository" as REPO
 
-== Initialization ==
+USER -> CTRL : GET /maintenance/aircraft/{reg}/hours\n[JWT: ATCC]
 
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
+CTRL -> CTRL : validar JWT + role
+CTRL -> SVC : getTotalMaintenanceHours(registration)
 
-== Repetition ==
+SVC -> REPO : findByAircraftRegistration(registration)
+REPO --> SVC : List<MaintenanceRecord>
 
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
+SVC -> SVC : calcular horas totais\n(sum(end - start))
+SVC --> CTRL : TotalHoursDTO
+
+CTRL --> USER : 200 OK\n{totalHours + HATEOAS links}
+
 @enduml
