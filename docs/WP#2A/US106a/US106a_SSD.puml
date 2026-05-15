@@ -1,15 +1,9 @@
-@startuml
-'https://plantuml.com/sequence-diagram
+@startuml SSD_US106a_AddCertification
 
-autonumber
+actor "Backoffice Operator / ATCC" as USER
+participant "System" as SYS
 
-== Initialization ==
+USER -> SYS : POST /api/airports/{iata}/certifications\n{modelName, startAt, expiresAt}
+SYS --> USER : 201 Created\n{certificationDTO + links}
 
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
-
-== Repetition ==
-
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
 @enduml

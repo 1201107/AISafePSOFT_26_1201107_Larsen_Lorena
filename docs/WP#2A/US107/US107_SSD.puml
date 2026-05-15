@@ -1,15 +1,9 @@
-@startuml
-'https://plantuml.com/sequence-diagram
+@startuml SSD_US107_GetAirport
 
-autonumber
+actor "Backoffice Operator / ATCC" as USER
+participant "System" as SYS
 
-== Initialization ==
+USER -> SYS : GET /api/airports/{iata}
+SYS --> USER : 200 OK\n{airportDTO + links}
 
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
-
-== Repetition ==
-
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
 @enduml

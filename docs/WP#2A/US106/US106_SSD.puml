@@ -1,10 +1,9 @@
 @startuml SSD_US106_RegisterAirport
-title SSD – US106: Registar aeroporto
 
 actor "Backoffice Operator" as BO
-participant ":System" as SYS
+participant "System" as SYS
 
-BO -> SYS : POST /api/airports\n{iataCode, name, airportType, timezone,\nlocation, runways}
-SYS --> BO : 201 Created\n{airportId, iataCode, name, status,\nlocation, runways, _links}
+BO -> SYS : POST /api/airports\n{iataCode, name, type, timezone,\nlocation, runways}
+SYS --> BO : 201 Created\n{airportDTO + links}
 
 @enduml

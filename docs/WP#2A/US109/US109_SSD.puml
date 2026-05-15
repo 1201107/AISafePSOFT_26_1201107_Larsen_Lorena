@@ -1,15 +1,9 @@
-@startuml
-'https://plantuml.com/sequence-diagram
+@startuml SSD_US109_UpdateStatus
 
-autonumber
+actor "Backoffice Operator" as BO
+participant "System" as SYS
 
-== Initialization ==
+BO -> SYS : PATCH /api/airports/{iata}/status\n{newStatus}
+SYS --> BO : 200 OK\n{airportDTO + links}
 
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
-
-== Repetition ==
-
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
 @enduml
