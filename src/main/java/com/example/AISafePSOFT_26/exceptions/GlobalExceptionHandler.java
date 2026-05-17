@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -18,7 +19,8 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger log =
+            LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // 404
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -62,10 +64,44 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException ex,
             HttpServletRequest request) {
 
+        log.warn("Malformed JSON at {}", request.getRequestURI());
+
         return buildError(
                 HttpStatus.BAD_REQUEST,
                 "Malformed JSON",
-                ex.getMessage(),
+                "Request body is invalid or malformed",
+                request.getRequestURI(),
+                null
+        );
+    }
+
+    // 400 invalid enum / invalid arguments
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDetails> handleIllegalArgument(
+            IllegalArgumentException ex,
+            HttpServletRequest request) {
+
+        log.warn("Invalid argument at {}", request.getRequestURI());
+
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "Invalid Value",
+                "One or more request values are invalid",
+                request.getRequestURI(),
+                null
+        );
+    }
+
+    // 400 missing path variable
+    @ExceptionHandler(MissingPathVariableException.class)
+    public ResponseEntity<ErrorDetails> handleMissingPathVariable(
+            MissingPathVariableException ex,
+            HttpServletRequest request) {
+
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "Missing Path Variable",
+                "Required path variable is missing",
                 request.getRequestURI(),
                 null
         );
@@ -97,7 +133,7 @@ public class GlobalExceptionHandler {
         return buildError(
                 HttpStatus.CONFLICT,
                 "Database Constraint Violation",
-                ex.getMostSpecificCause().getMessage(),
+                "Database integrity constraint violated",
                 request.getRequestURI(),
                 null
         );
@@ -113,8 +149,8 @@ public class GlobalExceptionHandler {
 
         return buildError(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                ex.getClass().getSimpleName(),
-                ex.getMessage(),
+                "Internal Server Error",
+                "An unexpected error occurred",
                 request.getRequestURI(),
                 null
         );

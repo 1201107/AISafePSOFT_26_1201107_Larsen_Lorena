@@ -4,11 +4,10 @@ import com.example.AISafePSOFT_26.Aircraft.domain.Aircraft;
 import com.example.AISafePSOFT_26.Aircraft.infrastructure.AircraftRepository;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftSpecs;
-import com.example.AISafePSOFT_26.AircraftCatalog.infrastructure.AircraftModelRepository;
 import com.example.AISafePSOFT_26.UseCase;
 
 import java.time.LocalDate;
-import java.util.List;
+
 /**
  * Use case: a ATCC operator adds a new aircraft instance to the company aircraft.
  *

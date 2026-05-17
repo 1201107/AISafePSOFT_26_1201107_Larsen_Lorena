@@ -1,5 +1,6 @@
-package com.example.AISafePSOFT_26.Aircraft.application;
+package com.example.AISafePSOFT_26.WP1A.US102;
 
+import com.example.AISafePSOFT_26.Aircraft.application.AddAircraftUseCase;
 import com.example.AISafePSOFT_26.Aircraft.domain.Aircraft;
 import com.example.AISafePSOFT_26.Aircraft.infrastructure.AircraftRepository;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
         import static org.mockito.Mockito.*;
 
-class AddAircraftUseCaseTest {
+class AddAircraftUseCaseToRepoTest {
     private AircraftRepository aircraftRepository;
     private AddAircraftUseCase useCase;
 

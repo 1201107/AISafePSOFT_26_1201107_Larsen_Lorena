@@ -13,12 +13,6 @@ import jakarta.persistence.*;
 @Table(name="aircraft_models_catalog")
 public class AircraftModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long modelId;
-
-    @Version
-    private Long version;
-
     @Column(nullable = false, unique = true)
     private String modelName;
 

@@ -8,6 +8,7 @@ import com.example.AISafePSOFT_26.AircraftCatalog.application.AircraftModelSearc
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
 import com.example.AISafePSOFT_26.exceptions.DomainException;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/hangar")
+@RequestMapping("/api/hangar")
 public class HangarController {
     private final AddAircraftUseCase addAircraftUseCase;
     private final AircraftModelSearchService aircraftModelSearchService;
@@ -59,10 +60,10 @@ public class HangarController {
     /**
      * Selects an aircraft with a specific Id.
      */
-    @GetMapping("/aircraft/{id}")
-    public AircraftResponse getAircraft(@PathVariable String id) {
+    @GetMapping("/aircraft/{registrationNumber}")
+    public AircraftResponse getAircraft(@PathVariable String registrationNumber) {
         Aircraft aircraft = aircraftSearchService
-                .spotAircraftInHangar(id)
+                .spotAircraftInHangar(registrationNumber)
                 .orElseThrow(() ->
                         new DomainException(
                                 "Aircraft does not exist in hangar"
@@ -72,8 +73,51 @@ public class HangarController {
     }
 
     /**
-     * Response body representing an aircraft.
-     */
+    *Request body for PATCH /hangar/aircraft{id}
+    */
+    record  PatchAircraftAvailabilityRequest(String registrationNumber,String availability) {}
+
+    /**
+    * Changes aircraft availability to the requested valid value.
+    */
+    @PatchMapping("/aircraft/{registrationNumber}")
+    public void changeAircraft(
+            @PathVariable String registrationNumber,
+            @Valid @RequestBody PatchAircraftAvailabilityRequest request) {
+        if (!registrationNumber.equals(request.registrationNumber())) {
+            throw new DomainException("Non matching info");
+        }
+
+        Aircraft aircraft = aircraftSearchService
+                .spotAircraftInHangar(request.registrationNumber())
+                .orElseThrow(() ->
+                        new DomainException(
+                                "Aircraft does not exist in hangar"
+                        )
+                );
+        aircraftLifeCycleUpdaterService.changeAvailability(aircraft,AircraftAvailability.valueOf(request.availability()));
+    }
+
+    @GetMapping("/aircraft")
+    public List<AircraftResponse> getAircrafts(
+            @RequestParam(required = false) String model,
+            @RequestParam(required = false) String status,
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate manufacturingDate) {
+        return aircraftSearchService
+                .findAircraftsMatchingFilter(
+                        model,
+                        status,
+                        manufacturingDate
+                )
+                .stream()
+                .map(AircraftResponse::from)
+                .toList();
+    }
+
+    /**
+    * Response body representing an aircraft.
+    */
     public record AircraftResponse(String registrationNumber, String modelName, AircraftAvailability status,
             LocalDate manufacturingDate, Double totalOperationalHours, Double totalFlightHours,
             Double meanRange, List<String> features) {

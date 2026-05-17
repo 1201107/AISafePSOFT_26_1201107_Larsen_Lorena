@@ -5,12 +5,12 @@ participant "System" as Sys
 ATCC -> Sys: Authenticate User
 Sys --> ATCC: Authentication Successful
 
-ATCC -> Sys: Register Aircraft\n(registration number, model, airline, etc.)
+ATCC -> Sys: Register Aircraft
 
 alt Aircraft model exists
-    Sys --> ATCC: Aircraft registered successfully
+    Sys --> ATCC: Inform Successful Register
 else Aircraft model not found
-    Sys --> ATCC: Inform registration failure
+    Sys --> ATCC: Inform Registration Failure
 end
 
 @enduml
