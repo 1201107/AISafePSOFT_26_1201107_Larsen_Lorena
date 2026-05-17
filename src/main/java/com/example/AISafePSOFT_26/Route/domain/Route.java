@@ -47,50 +47,6 @@ public class Route {
     public Route(RouteRequirements routeRequirements, RouteStatus status, RouteType type,
             RouteHistory routeHistory, Double estimatedFlightTimeHours, Airport originAirport,
             Airport destinationAirport,String routeName) {
-
-        if (routeRequirements == null) {
-            throw new IllegalArgumentException(
-                    "Route requirements cannot be null"
-            );
-        }
-        if (status == null) {
-            throw new IllegalArgumentException(
-                    "Route status cannot be null"
-            );
-        }
-        if (type == null) {
-            throw new IllegalArgumentException(
-                    "Route type cannot be null"
-            );
-        }
-        if (estimatedFlightTimeHours == null
-                || estimatedFlightTimeHours <= 0) {
-
-            throw new IllegalArgumentException(
-                    "Estimated flight time must be positive"
-            );
-        }
-        if (originAirport == null) {
-            throw new IllegalArgumentException(
-                    "Origin airport cannot be null"
-            );
-        }
-        if (destinationAirport == null) {
-            throw new IllegalArgumentException(
-                    "Destination airport cannot be null"
-            );
-        }
-        if (originAirport.equals(destinationAirport)) {
-            throw new IllegalArgumentException(
-                    "Origin and destination airports cannot be the same"
-            );
-        }
-        if(routeName==null){
-            throw new IllegalArgumentException(
-                    "Route name cannot be null"
-            );
-        }
-
         this.routeRequirements = routeRequirements;
         this.status = status;
         this.type = type;

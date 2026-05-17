@@ -1,5 +1,6 @@
-package com.example.AISafePSOFT_26.AircraftCatalog.application;
+package com.example.AISafePSOFT_26.WP1A.US101;
 
+import com.example.AISafePSOFT_26.AircraftCatalog.application.AddModelUseCase;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftSpecs;
 import com.example.AISafePSOFT_26.AircraftCatalog.infrastructure.AircraftModelRepository;
@@ -14,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class AddModelUseCaseTest {
+class AddModelToRepoTest {
     @Mock
     AircraftModelRepository aircraftModelRepository;
 

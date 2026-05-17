@@ -66,22 +66,6 @@ public class MaintenanceRecord {
             LocalDate startDate,Collaborator supervisor,String description,
             List<Collaborator> technicians,MaintenanceTemplate maintenanceTemplate,
             Aircraft aircraft) {
-        if (startDate == null) {
-            throw new IllegalArgumentException("Start date cannot be null");
-        }
-
-        if (supervisor == null) {
-            throw new IllegalArgumentException("Supervisor cannot be null");
-        }
-
-        if (maintenanceTemplate == null) {
-            throw new IllegalArgumentException("Maintenance template cannot be null");
-        }
-
-        if (aircraft == null) {
-            throw new IllegalArgumentException("Aircraft cannot be null");
-        }
-
         this.status = MaintenanceStatus.INLINE;
         this.usedParts = usedParts != null ? usedParts : new ArrayList<>();
         this.durationHours = durationHours;

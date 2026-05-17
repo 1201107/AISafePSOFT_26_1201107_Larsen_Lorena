@@ -20,7 +20,6 @@ import static org.springframework.http.HttpMethod.*;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-
     private final JwtAuthenticationFilter jwtFilter;
 
     @Value("${spring.h2.console.enabled:false}")
@@ -38,7 +37,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers(POST, "/auth/login").permitAll();
                     auth.requestMatchers(GET, "/api/welcome").permitAll();
-                    auth.requestMatchers(POST, "/catalog/models").hasAnyRole(Role.BACKOFFICE.name(), Role.ADMIN.name());
+                    auth.requestMatchers(POST, "/api/catalog/model").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
+                    auth.requestMatchers(POST, "/api/hangar/aircraft").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET,"/api/hangar/aircraft").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET,"/api/hangar/aircraft/{id}").hasAnyRole(Role.BACKOFFICE.name(),Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(PATCH,"/api/hangar/aircraft/{id}").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
                     if (h2ConsoleEnabled) {
                         auth.requestMatchers("/h2-console/**").permitAll();
                     }

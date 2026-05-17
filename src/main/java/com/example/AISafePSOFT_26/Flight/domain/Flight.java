@@ -39,20 +39,6 @@ public class Flight {
 
     public Flight(Route route, Aircraft aircraft, LocalDateTime scheduledDeparture,
             LocalDateTime scheduledArrival) {
-        if (route == null) {
-            throw new IllegalArgumentException("Route cannot be null");
-        }
-        if (scheduledDeparture == null) {
-            throw new IllegalArgumentException("Departure cannot be null");
-        }
-        if (scheduledArrival == null) {
-            throw new IllegalArgumentException("Arrival cannot be null");
-        }
-        if (scheduledArrival.isBefore(scheduledDeparture)) {
-            throw new IllegalArgumentException(
-                    "Arrival cannot be before departure"
-            );
-        }
         this.flightStatus=FlightStatus.SCHEDULED;
         this.route = route;
         this.aircraft = aircraft;

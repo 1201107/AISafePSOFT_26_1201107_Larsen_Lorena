@@ -1,6 +1,7 @@
 package com.example.AISafePSOFT_26.Aircraft.domain;
 
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
+import com.example.AISafePSOFT_26.exceptions.DomainException;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -11,13 +12,9 @@ import java.util.List;
 @Entity
 @Table(name = "company_aircrafts")
 public class Aircraft {
-
     @Id
     @Column(nullable = false, updatable = false)
     private String registrationNumber;
-
-    @Version
-     private Long version;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "model_id")
@@ -68,56 +65,20 @@ public class Aircraft {
 
     public Aircraft(String registrationNumber, AircraftModel model,LocalDate manufacturingDate,
                     Double totalOperationalHours, Double totalFlightHours) {
-        if (registrationNumber == null || registrationNumber.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Registration number cannot be empty"
-            );
-        }
-        if (model == null) {
-            throw new IllegalArgumentException(
-                    "Aircraft model cannot be null"
-            );
-        }
-        if (manufacturingDate == null) {
-            throw new IllegalArgumentException(
-                    "Manufacturing date cannot be null"
-            );
-        }
-        if (totalOperationalHours == null || totalOperationalHours < 0) {
-            throw new IllegalArgumentException(
-                    "Operational hours cannot be negative"
-            );
-        }
-        if (totalFlightHours == null || totalFlightHours < 0) {
-            throw new IllegalArgumentException(
-                    "Flight hours cannot be negative"
-            );
-        }
-
         this.registrationNumber = registrationNumber;
         this.model = model;
         this.manufacturingDate = manufacturingDate;
         this.totalOperationalHours = totalOperationalHours;
         this.totalFlightHours = totalFlightHours;
 
-        this.status = AircraftAvailability.AVAILABLE;
+        this.status = AircraftAvailability.INACTIVE;
     }
 
     public void sendToMaintenance() {
-        if (status == AircraftAvailability.INACTIVE) {
-            throw new IllegalStateException(
-                    "Retired aircraft cannot enter maintenance"
-            );
-        }
         this.status = AircraftAvailability.MAINTENANCE;
     }
 
     public void activateAircraft() {
-        if (status == AircraftAvailability.INACTIVE) {
-            throw new IllegalStateException(
-                    "Retired aircraft cannot be reactivated"
-            );
-        }
         this.status = AircraftAvailability.AVAILABLE;
     }
 

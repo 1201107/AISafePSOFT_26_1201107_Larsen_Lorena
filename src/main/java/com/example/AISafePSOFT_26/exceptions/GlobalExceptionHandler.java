@@ -1,36 +1,43 @@
 package com.example.AISafePSOFT_26.exceptions;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.MissingPathVariableException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    //404 - Resource not found
+    private static final Logger log =
+            LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    // 404
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorDetails> handleResourceNotFound(
             ResourceNotFoundException ex,
             HttpServletRequest request) {
 
-        ErrorDetails error = new ErrorDetails(
-                LocalDateTime.now(),
-                HttpStatus.NOT_FOUND.value(),
+        return buildError(
+                HttpStatus.NOT_FOUND,
                 "Not Found",
                 ex.getMessage(),
-                request.getRequestURI()
+                request.getRequestURI(),
+                null
         );
-
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
-    //400 - Validation errors
+    // 400 validation
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDetails> handleValidationErrors(
             MethodArgumentNotValidException ex,
@@ -42,49 +49,130 @@ public class GlobalExceptionHandler {
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
                 .collect(Collectors.toList());
 
-        ErrorDetails error = new ErrorDetails(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
+        return buildError(
+                HttpStatus.BAD_REQUEST,
                 "Validation Failed",
                 "Invalid input data",
                 request.getRequestURI(),
                 errors
         );
-
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    //400 - Bad JSON (your previous error)
-    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    // 400 malformed JSON
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorDetails> handleJsonError(
-            Exception ex,
+            HttpMessageNotReadableException ex,
             HttpServletRequest request) {
 
-        ErrorDetails error = new ErrorDetails(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "Malformed JSON",
-                "Request body is invalid",
-                request.getRequestURI()
-        );
+        log.warn("Malformed JSON at {}", request.getRequestURI());
 
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "Malformed JSON",
+                "Request body is invalid or malformed",
+                request.getRequestURI(),
+                null
+        );
     }
 
-    //500 - Server Error
+    // 400 invalid enum / invalid arguments
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDetails> handleIllegalArgument(
+            IllegalArgumentException ex,
+            HttpServletRequest request) {
+
+        log.warn("Invalid argument at {}", request.getRequestURI());
+
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "Invalid Value",
+                "One or more request values are invalid",
+                request.getRequestURI(),
+                null
+        );
+    }
+
+    // 400 missing path variable
+    @ExceptionHandler(MissingPathVariableException.class)
+    public ResponseEntity<ErrorDetails> handleMissingPathVariable(
+            MissingPathVariableException ex,
+            HttpServletRequest request) {
+
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "Missing Path Variable",
+                "Required path variable is missing",
+                request.getRequestURI(),
+                null
+        );
+    }
+
+    // 409 domain errors
+    @ExceptionHandler(DomainException.class)
+    public ResponseEntity<ErrorDetails> handleDomainException(
+            DomainException ex,
+            HttpServletRequest request) {
+
+        return buildError(
+                HttpStatus.CONFLICT,
+                "Domain Error",
+                ex.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+    }
+
+    // 409 database constraint errors
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorDetails> handleDBError(
+            DataIntegrityViolationException ex,
+            HttpServletRequest request) {
+
+        log.error("Database error at {}", request.getRequestURI(), ex);
+
+        return buildError(
+                HttpStatus.CONFLICT,
+                "Database Constraint Violation",
+                "Database integrity constraint violated",
+                request.getRequestURI(),
+                null
+        );
+    }
+
+    // 500 fallback
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> handleGlobalException(
             Exception ex,
             HttpServletRequest request) {
 
-        ErrorDetails error = new ErrorDetails(
-                LocalDateTime.now(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+        log.error("Unexpected error at {}", request.getRequestURI(), ex);
+
+        return buildError(
+                HttpStatus.INTERNAL_SERVER_ERROR,
                 "Internal Server Error",
-                ex.getMessage(),
-                request.getRequestURI()
+                "An unexpected error occurred",
+                request.getRequestURI(),
+                null
+        );
+    }
+
+    // helper
+    private ResponseEntity<ErrorDetails> buildError(
+            HttpStatus status,
+            String error,
+            String message,
+            String path,
+            List<String> validationErrors) {
+
+        ErrorDetails body = new ErrorDetails(
+                LocalDateTime.now(),
+                status.value(),
+                error,
+                message,
+                path,
+                validationErrors
         );
 
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(body, status);
     }
 }

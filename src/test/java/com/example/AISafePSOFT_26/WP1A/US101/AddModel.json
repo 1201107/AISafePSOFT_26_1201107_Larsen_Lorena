@@ -1,0 +1,14 @@
+{
+  "modelName": "Airbus A320",
+  "manufacturer": "Airbus",
+  "modelImage": [
+    "https://example.com/images/a320-front.jpg",
+    "https://example.com/images/a320-side.jpg"
+  ],
+  "specs": {
+    "fuelCapacityLiters": 24210,
+    "maximumRangeKm": 6150,
+    "cruisingSpeedKph": 840,
+    "standardSeatingCapacity": 180
+  }
+}

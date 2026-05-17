@@ -1,0 +1,60 @@
+POST http://localhost:8081/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+###
+POST http://localhost:8081/api/catalog/model
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4MzBmMzg2NS00MWQ2LTRiNzAtOTNiZC1lNTQ4ZWM4YTZhYTgiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3NzkwMzE5OTMsImV4cCI6MTc3OTAzNTU5M30.-SKCk__djW5fsbrvhvPyPzqhTBnw_GUsjEbUZq0v2K0
+
+{
+  "modelName": "A320",
+  "manufacturer": "Airbus",
+  "modelImage": [
+    "https://example.com/images/a320-front.jpg",
+    "https://example.com/images/a320-side.jpg"
+  ],
+  "specs": {
+    "fuelCapacityLiters": 24210,
+    "maximumRangeKm": 6150,
+    "cruisingSpeedKph": 840,
+    "standardSeatingCapacity": 180
+  }
+}
+
+###
+POST http://localhost:8081/api/hangar/aircraft
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4MzBmMzg2NS00MWQ2LTRiNzAtOTNiZC1lNTQ4ZWM4YTZhYTgiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3NzkwMzE5OTMsImV4cCI6MTc3OTAzNTU5M30.-SKCk__djW5fsbrvhvPyPzqhTBnw_GUsjEbUZq0v2K0
+
+{
+  "registrationNumber": "CS-TU",
+  "modelName": "A320",
+  "manufacturingDate": "2025-06-15",
+  "totalOperationalHours": 12450.5,
+  "totalFlightHours": 11890.0,
+  "availability": "AVAILABLE"
+}
+
+###
+GET http://localhost:8081/api/hangar/aircraft/CS-TU
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4MzBmMzg2NS00MWQ2LTRiNzAtOTNiZC1lNTQ4ZWM4YTZhYTgiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3NzkwMzE5OTMsImV4cCI6MTc3OTAzNTU5M30.-SKCk__djW5fsbrvhvPyPzqhTBnw_GUsjEbUZq0v2K0
+
+###
+PATCH http://localhost:8081/api/hangar/aircraft/CS-TU
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4MzBmMzg2NS00MWQ2LTRiNzAtOTNiZC1lNTQ4ZWM4YTZhYTgiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3NzkwMzE5OTMsImV4cCI6MTc3OTAzNTU5M30.-SKCk__djW5fsbrvhvPyPzqhTBnw_GUsjEbUZq0v2K0
+
+{
+  "registrationNumber": "CS-TU",
+  "availability": "MAINTENANCE"
+}
+
+###
+@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwM2FlNjdmYi1mODBiLTRkYmEtOWJkYy1lY2YyNjUwZGVjY2EiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3NzkwMzM2NjcsImV4cCI6MTc3OTAzNzI2N30.pqqHs12UJx9qYYC2slH8Scgc2jIH3EExsPwFCZ9KTwc
+GET http://localhost:8081/api/hangar/aircraft?model=A320&status=AVAILABLE&manufacturingDate=2025-06-15
+Authorization: Bearer {{token}}
