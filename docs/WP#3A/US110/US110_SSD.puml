@@ -1,0 +1,23 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - US110
+
+actor "ATCC" as User
+participant "System" as System
+
+activate User
+
+User -> System : Authenticate User
+activate System
+System --> User : Authentication Successful
+deactivate System
+
+User -> System : Create Flight Route (origin, dest, time, reqs)
+
+System --> User : Inform Success (201 Created)
+deactivate System
+
+deactivate User
+@enduml

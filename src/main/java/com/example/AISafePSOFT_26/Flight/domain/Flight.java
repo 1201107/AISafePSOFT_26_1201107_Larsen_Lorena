@@ -13,6 +13,9 @@ public class Flight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightId;
 
+    @Version
+    private Long version;
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "route_id")
     private Route route;

@@ -14,6 +14,9 @@ public class Airport {
 
     private String name;
 
+    @Version
+    private Long version;
+
     @Enumerated(EnumType.STRING)
     private AirportStatus status;
 

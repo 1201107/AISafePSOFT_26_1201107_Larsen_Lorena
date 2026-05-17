@@ -16,6 +16,9 @@ public class AircraftModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long modelId;
 
+    @Version
+    private Long version;
+
     @Column(nullable = false, unique = true)
     private String modelName;
 
