@@ -25,7 +25,7 @@ public class ModelCatalogController {
     /**
      * Adds a new aircraft model to the catalog.
      */
-    @PostMapping("/models")
+    @PostMapping("/model")
     @ResponseStatus(HttpStatus.CREATED)
     public void addModel(@Valid @RequestBody AddModelRequest request) {
         AircraftSpecs specs = new AircraftSpecs(request.specs().fuelCapacityLiters(),request.specs().maximumRangeKm(),

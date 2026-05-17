@@ -9,8 +9,8 @@ package com.example.AISafePSOFT_26.exceptions;
  * exception type to the correct HTTP status and provides meaningful names that reflect the
  * ubiquitous language.</p>
  */
-public abstract class DomainException extends RuntimeException {
-    protected DomainException(String message) {
+public class DomainException extends RuntimeException {
+    public DomainException(String message) {
         super(message);
     }
 }

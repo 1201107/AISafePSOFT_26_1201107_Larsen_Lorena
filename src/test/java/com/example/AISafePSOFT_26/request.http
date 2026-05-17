@@ -1,0 +1,50 @@
+POST http://localhost:8081/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+###
+POST http://localhost:8081/catalog/model
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5MTM5MTU5NC1kMjQ4LTQzNzItOTIyNi0yNWIzOTYxNDhiMmUiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3Nzg2NzcxMDksImV4cCI6MTc3ODY4MDcwOX0.pJdMYiut5WzGJBDbhBafyLpErjE-49BzSTvELHf1C-M
+
+{
+  "modelName": "Airbus A320",
+  "manufacturer": "Airbus",
+  "modelImage": [
+    "https://example.com/images/a320-front.jpg",
+    "https://example.com/images/a320-side.jpg"
+  ],
+  "specs": {
+    "fuelCapacityLiters": 24210,
+    "maximumRangeKm": 6150,
+    "cruisingSpeedKph": 840,
+    "standardSeatingCapacity": 180
+  }
+}
+
+###
+POST http://localhost:8081/hangar/aircraft
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5MTM5MTU5NC1kMjQ4LTQzNzItOTIyNi0yNWIzOTYxNDhiMmUiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3Nzg2NzcxMDksImV4cCI6MTc3ODY4MDcwOX0.pJdMYiut5WzGJBDbhBafyLpErjE-49BzSTvELHf1C-M
+
+{
+  "registrationNumber": "CS-TUA",
+  "modelName": "Airbus A320",
+  "manufacturingDate": "2025-06-15",
+  "totalOperationalHours": 12450.5,
+  "totalFlightHours": 11890.0,
+  "availability": "AVAILABLE"
+}
+
+###
+GET http://localhost:8081/hangar/aircraft/CS-TUA
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5MTM5MTU5NC1kMjQ4LTQzNzItOTIyNi0yNWIzOTYxNDhiMmUiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3Nzg2NzcxMDksImV4cCI6MTc3ODY4MDcwOX0.pJdMYiut5WzGJBDbhBafyLpErjE-49BzSTvELHf1C-M
+
+
+
+
