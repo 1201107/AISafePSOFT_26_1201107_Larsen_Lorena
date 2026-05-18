@@ -1,1 +1,43 @@
-:;
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+title Sequence Diagram: US114 - Search Routes
+
+actor "ATCC" as User
+participant ":AuthController" as Auth
+participant ":RouteController" as Ctrl
+participant ":RouteService" as Service
+participant ":RouteRepository" as RepoRoute
+participant "route:Route" as Route <<Aggregate Root>>
+
+activate User
+
+
+User -> Auth : Authenticate User
+activate Auth
+Auth --> User : Authentication Successful (Token JWT)
+deactivate Auth
+
+
+User -> Ctrl : searchRoutes(origin, destination)
+activate Ctrl
+
+Ctrl -> Service : searchRoutes(origin, destination)
+activate Service
+
+    Service -> RepoRoute : findByOriginAndDestination(origin, destination)
+    activate RepoRoute
+    RepoRoute --> Service : list<Route>
+    deactivate RepoRoute
+
+    Service --> Ctrl : routeDTOList / Error
+
+    Ctrl --> User : Success (200 OK + Filtered Routes List)
+
+    Ctrl --> User : Error (400 Bad Request)
+
+deactivate Service
+deactivate Ctrl
+deactivate User
+@enduml

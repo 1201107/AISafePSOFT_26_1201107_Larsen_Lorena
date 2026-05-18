@@ -1,1 +1,64 @@
-:;
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+title Sequence Diagram: US113 - View Routes
+
+actor "ATCC" as User
+participant ":AuthController" as Auth
+participant ":RouteController" as Ctrl
+participant ":RouteService" as Service
+participant ":RouteRepository" as RepoRoute
+participant "route:Route" as Route <<Aggregate Root>>
+
+activate User
+
+
+User -> Auth : Authenticate User
+activate Auth
+Auth --> User : Authentication Successful (Token JWT)
+deactivate Auth
+
+
+User -> Ctrl : getRoutesFromAirport(airportIATA)
+activate Ctrl
+
+Ctrl -> Service : getRoutesFromAirport(airportIATA)
+activate Service
+
+    Service -> RepoRoute : findByOriginAirportIata(airportIATA)
+    activate RepoRoute
+    RepoRoute --> Service : list<Route>
+    deactivate RepoRoute
+
+    Service --> Ctrl : routeDTOList / Error
+
+    Ctrl --> User : Success (200 OK + Routes List)
+
+    Ctrl --> User : Error (404 Not Found)
+deactivate Service
+deactivate Ctrl
+
+User -> Ctrl : getRouteDetails(routeId)
+activate Ctrl
+
+Ctrl -> Service : getRouteDetails(routeId)
+activate Service
+
+    Service -> RepoRoute : findById(routeId)
+    activate RepoRoute
+    RepoRoute --> Service : route
+    deactivate RepoRoute
+
+
+    Service --> Ctrl : routeDTO / Error
+
+
+    Ctrl --> User : Success (200 OK + Route Details + Links)
+
+    Ctrl --> User : Error (404 Not Found)
+
+deactivate Service
+deactivate Ctrl
+deactivate User
+@enduml

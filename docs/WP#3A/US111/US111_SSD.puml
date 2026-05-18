@@ -1,1 +1,27 @@
-f
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+title Sequence Diagram: US111 - Track Route History (Based on SSD)
+
+actor "ATCC" as User
+participant ":System" as System
+
+activate User
+
+
+User -> System : Authenticate User
+activate System
+System --> User : Authentication Successful (Token JWT)
+deactivate System
+
+
+User -> System : getRouteHistory(routeId)
+activate System
+
+    System --> User : Success (200 OK + History Data)
+    System --> User : Error (404 Not Found)
+
+deactivate System
+deactivate User
+@enduml

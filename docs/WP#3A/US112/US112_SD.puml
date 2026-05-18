@@ -1,1 +1,59 @@
-:;
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+title Sequence Diagram: US112 - Update or Deactivate Route
+
+actor "ATCC / Backoffice" as User
+participant ":AuthController" as Auth
+participant ":RouteController" as Ctrl
+participant ":RouteService" as Service
+participant ":RouteRepository" as RepoRoute
+participant "route:Route" as Route <<Aggregate Root>>
+
+activate User
+
+
+User -> Auth : Authenticate User
+activate Auth
+Auth --> User : Authentication Successful (Token JWT)
+deactivate Auth
+
+
+User -> Ctrl : updateRoute(routeId, updateData)
+activate Ctrl
+
+Ctrl -> Service : updateRoute(routeId, updateData)
+activate Service
+
+    Service -> RepoRoute : findById(routeId)
+    activate RepoRoute
+    RepoRoute --> Service : route
+    deactivate RepoRoute
+
+
+    Service -> Route : updateOrDeactivate(updateData)
+    activate Route
+    Route --> Service
+    deactivate Route
+
+    Service -> RepoRoute : save(route)
+    activate RepoRoute
+    note over RepoRoute : Controlo de concorrência\n(Optimistic Locking)
+    RepoRoute --> Service : savedRoute
+    deactivate RepoRoute
+
+    Service --> Ctrl : routeDTO / Error
+
+
+
+    Ctrl --> User : Success (200 OK)
+
+    Ctrl --> User : Error (404 Not Found / 400 Bad Request)
+
+    Ctrl --> User : Error (409 Conflict - Falha de Concorrência)
+
+deactivate Service
+deactivate Ctrl
+deactivate User
+@enduml
