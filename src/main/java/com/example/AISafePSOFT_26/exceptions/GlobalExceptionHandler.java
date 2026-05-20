@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +23,9 @@ public class GlobalExceptionHandler {
     private static final Logger log =
             LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    // 404
+    // =========================
+    // 404 - Custom not found
+    // =========================
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorDetails> handleResourceNotFound(
             ResourceNotFoundException ex,
@@ -37,7 +40,9 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 400 validation
+    // =========================
+    // 400 - Validation errors
+    // =========================
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDetails> handleValidationErrors(
             MethodArgumentNotValidException ex,
@@ -58,13 +63,13 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 400 malformed JSON
+    // =========================
+    // 400 - Bad JSON
+    // =========================
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorDetails> handleJsonError(
             HttpMessageNotReadableException ex,
             HttpServletRequest request) {
-
-        log.warn("Malformed JSON at {}", request.getRequestURI());
 
         return buildError(
                 HttpStatus.BAD_REQUEST,
@@ -75,13 +80,13 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 400 invalid enum / invalid arguments
+    // =========================
+    // 400 - Illegal argument
+    // =========================
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorDetails> handleIllegalArgument(
             IllegalArgumentException ex,
             HttpServletRequest request) {
-
-        log.warn("Invalid argument at {}", request.getRequestURI());
 
         return buildError(
                 HttpStatus.BAD_REQUEST,
@@ -92,7 +97,9 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 400 missing path variable
+    // =========================
+    // 400 - Missing path variable
+    // =========================
     @ExceptionHandler(MissingPathVariableException.class)
     public ResponseEntity<ErrorDetails> handleMissingPathVariable(
             MissingPathVariableException ex,
@@ -107,7 +114,9 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 409 domain errors
+    // =========================
+    // 409 - Domain errors
+    // =========================
     @ExceptionHandler(DomainException.class)
     public ResponseEntity<ErrorDetails> handleDomainException(
             DomainException ex,
@@ -122,7 +131,9 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 409 database constraint errors
+    // =========================
+    // 409 - DB constraint errors
+    // =========================
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorDetails> handleDBError(
             DataIntegrityViolationException ex,
@@ -139,24 +150,38 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 500 fallback
+    // =========================
+    // 404 - Spring static resources (IMPORTANT FIX)
+    // =========================
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Void> handleNoResourceFound(NoResourceFoundException ex) {
+        return ResponseEntity.notFound().build();
+    }
+
+    // =========================
+    // 500 - fallback (SAFE)
+    // =========================
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> handleGlobalException(
             Exception ex,
             HttpServletRequest request) {
 
-        log.error("Unexpected error at {}", request.getRequestURI(), ex);
+        String path = request.getRequestURI();
+
+        log.error("Unexpected error at {}", path, ex);
 
         return buildError(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Internal Server Error",
                 "An unexpected error occurred",
-                request.getRequestURI(),
+                path,
                 null
         );
     }
 
+    // =========================
     // helper
+    // =========================
     private ResponseEntity<ErrorDetails> buildError(
             HttpStatus status,
             String error,

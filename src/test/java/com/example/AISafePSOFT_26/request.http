@@ -7,9 +7,11 @@ Content-Type: application/json
 }
 
 ###
+@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ZDFiYmEwYi0xYzE1LTRkYzgtYjJmZS1hNGYzYmQ2YjhlMmUiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3NzkwNDE5ODMsImV4cCI6MTc3OTA0NTU4M30.r8a6SqqAnupAJY3Ed4-XC-isH0EkjR0xXokwryz_YSo
+
 POST http://localhost:8081/api/catalog/model
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4MzBmMzg2NS00MWQ2LTRiNzAtOTNiZC1lNTQ4ZWM4YTZhYTgiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3NzkwMzE5OTMsImV4cCI6MTc3OTAzNTU5M30.-SKCk__djW5fsbrvhvPyPzqhTBnw_GUsjEbUZq0v2K0
+Authorization: Bearer {{token}}
 
 {
   "modelName": "A320",
@@ -29,7 +31,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4MzBmMzg2NS00MWQ2LTRiNzAtO
 ###
 POST http://localhost:8081/api/hangar/aircraft
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4MzBmMzg2NS00MWQ2LTRiNzAtOTNiZC1lNTQ4ZWM4YTZhYTgiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3NzkwMzE5OTMsImV4cCI6MTc3OTAzNTU5M30.-SKCk__djW5fsbrvhvPyPzqhTBnw_GUsjEbUZq0v2K0
+Authorization: Bearer {{token}}
 
 {
   "registrationNumber": "CS-TU",
@@ -42,12 +44,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4MzBmMzg2NS00MWQ2LTRiNzAtO
 
 ###
 GET http://localhost:8081/api/hangar/aircraft/CS-TU
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4MzBmMzg2NS00MWQ2LTRiNzAtOTNiZC1lNTQ4ZWM4YTZhYTgiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3NzkwMzE5OTMsImV4cCI6MTc3OTAzNTU5M30.-SKCk__djW5fsbrvhvPyPzqhTBnw_GUsjEbUZq0v2K0
+Authorization: Bearer {{token}}
 
 ###
 PATCH http://localhost:8081/api/hangar/aircraft/CS-TU
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4MzBmMzg2NS00MWQ2LTRiNzAtOTNiZC1lNTQ4ZWM4YTZhYTgiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3NzkwMzE5OTMsImV4cCI6MTc3OTAzNTU5M30.-SKCk__djW5fsbrvhvPyPzqhTBnw_GUsjEbUZq0v2K0
+Authorization: Bearer {{token}}
 
 {
   "registrationNumber": "CS-TU",
@@ -55,6 +57,5 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4MzBmMzg2NS00MWQ2LTRiNzAtO
 }
 
 ###
-@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwM2FlNjdmYi1mODBiLTRkYmEtOWJkYy1lY2YyNjUwZGVjY2EiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3NzkwMzM2NjcsImV4cCI6MTc3OTAzNzI2N30.pqqHs12UJx9qYYC2slH8Scgc2jIH3EExsPwFCZ9KTwc
-GET http://localhost:8081/api/hangar/aircraft?model=A320&status=AVAILABLE&manufacturingDate=2025-06-15
+GET http://localhost:8081/api/hangar/aircraft?model=A320&status=AVAILABLE
 Authorization: Bearer {{token}}
