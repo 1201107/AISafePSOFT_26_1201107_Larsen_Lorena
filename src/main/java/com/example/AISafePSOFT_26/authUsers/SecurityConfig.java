@@ -43,6 +43,7 @@ public class SecurityConfig {
                     auth.requestMatchers(GET,"/api/hangar/aircraft").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET,"/api/hangar/aircraft/{id}").hasAnyRole(Role.BACKOFFICE.name(),Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(PATCH,"/api/hangar/aircraft/{id}").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(POST, "/api/maintenance/record").hasAnyRole(Role.MAINTENANCE_TECHNICIAN.name(),Role.ADMIN.name());
                     if (h2ConsoleEnabled) {
                         auth.requestMatchers("/h2-console/**").permitAll();
                     }
