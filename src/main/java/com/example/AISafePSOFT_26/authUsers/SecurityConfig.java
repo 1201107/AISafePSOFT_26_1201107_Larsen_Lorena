@@ -15,7 +15,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.http.HttpMethod.*;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -37,6 +36,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers(POST, "/auth/login").permitAll();
                     auth.requestMatchers(GET, "/api/welcome").permitAll();
+                    auth.requestMatchers("/api/swagger-ui/**").permitAll();
+                    auth.requestMatchers("/api/docs/**").permitAll();
                     auth.requestMatchers(POST, "/api/catalog/model").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
                     auth.requestMatchers(POST, "/api/hangar/aircraft").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET,"/api/hangar/aircraft").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());

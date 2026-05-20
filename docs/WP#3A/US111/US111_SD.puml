@@ -1,1 +1,48 @@
-:;
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+title Sequence Diagram: US111 - Track Route History
+
+actor "ATCC" as User
+participant ":AuthController" as Auth
+participant ":RouteController" as Ctrl
+participant ":RouteService" as Service
+participant ":RouteRepository" as RepoRoute
+participant "route:Route" as Route <<Aggregate Root>>
+
+activate User
+
+
+User -> Auth : Authenticate User
+activate Auth
+Auth --> User : Token JWT
+deactivate Auth
+
+
+User -> Ctrl : getRouteHistory(routeId)
+activate Ctrl
+
+Ctrl -> Service : getRouteHistory(routeId)
+activate Service
+
+    Service -> RepoRoute : findById(routeId)
+    activate RepoRoute
+    RepoRoute --> Service : route
+    deactivate RepoRoute
+
+    Service -> Route : getRouteHistory()
+    activate Route
+    Route --> Service : list<RouteHistory>
+    deactivate Route
+
+    Service --> Ctrl : routeHistoryDTOList
+
+    Ctrl --> User : Success (200 OK + History Links) 
+
+    Ctrl --> User : Error (404 Not Found)
+
+deactivate Service
+deactivate Ctrl
+deactivate User
+@enduml

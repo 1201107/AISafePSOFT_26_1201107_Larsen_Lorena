@@ -1,1 +1,27 @@
-f
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - US114
+
+actor "ATCC" as User
+participant "System" as System
+
+activate User
+
+
+User -> System : Authenticate User
+activate System
+System --> User : Authentication Successful (Token JWT)
+deactivate System
+
+
+User -> System : searchRoutes(origin, destination)
+activate System
+
+System --> User : Inform Success (200 OK + Filtered Routes List)
+System --> User : Error (400 Bad Request)
+deactivate System
+
+deactivate User
+@enduml

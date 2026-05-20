@@ -187,7 +187,6 @@ Route "1"--"1" RouteHistory
 package "Aggregate: AircraftCatalog" <<Frame>> {
 
 class AircraftModel {
-    - modelId: Long <<id>>
     - modelName: String
     - modelImage: List<String>
     - manufacturer: String
