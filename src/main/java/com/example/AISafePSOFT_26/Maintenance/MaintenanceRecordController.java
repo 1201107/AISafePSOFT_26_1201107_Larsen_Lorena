@@ -2,9 +2,12 @@ package com.example.AISafePSOFT_26.Maintenance;
 
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftSearchService;
 import com.example.AISafePSOFT_26.Aircraft.domain.Aircraft;
+import com.example.AISafePSOFT_26.Maintenance.aplication.AddMaintenanceTemplateUseCase;
 import com.example.AISafePSOFT_26.Maintenance.aplication.AddMaintenanceRecordUseCase;
 import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceTemplateSearchService;
+import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceAttribute;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceTemplate;
+import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceType;
 import com.example.AISafePSOFT_26.exceptions.DomainException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -14,18 +17,34 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/maintenance")
 public class MaintenanceRecordController {
+    private final AddMaintenanceTemplateUseCase addMaintenanceTemplateUseCase;
     private final AddMaintenanceRecordUseCase addMaintenanceRecordUseCase;
     private final AircraftSearchService aircraftSearchService;
     private final MaintenanceTemplateSearchService maintenanceTemplateSearchService;
 
-    public MaintenanceRecordController(AddMaintenanceRecordUseCase addMaintenanceRecordUseCase, AircraftSearchService aircraftSearchService, MaintenanceTemplateSearchService maintenanceTemplateSearchService) {
+    public MaintenanceRecordController(AddMaintenanceTemplateUseCase addMaintenanceTemplateUseCase, AddMaintenanceRecordUseCase addMaintenanceRecordUseCase, AircraftSearchService aircraftSearchService, MaintenanceTemplateSearchService maintenanceTemplateSearchService) {
+        this.addMaintenanceTemplateUseCase = addMaintenanceTemplateUseCase;
         this.addMaintenanceRecordUseCase = addMaintenanceRecordUseCase;
         this.aircraftSearchService = aircraftSearchService;
         this.maintenanceTemplateSearchService = maintenanceTemplateSearchService;
+    }
+
+    @PostMapping("/templates")
+    @ResponseStatus(HttpStatus.CREATED)
+    public MaintenanceTemplateResponse addTemplate(@Valid @RequestBody AddTemplateRequest request) {
+        MaintenanceTemplate template = addMaintenanceTemplateUseCase.execute(
+                request.name(),
+                request.expectedDuration(),
+                request.templateChecklist(),
+                MaintenanceType.valueOf(request.operation()),
+                MaintenanceAttribute.valueOf(request.attribute())
+        );
+        return MaintenanceTemplateResponse.from(template);
     }
 
     /**
@@ -57,4 +76,25 @@ public class MaintenanceRecordController {
     record AddRecordShortRequest(@NotBlank String registrationNumber,@NotNull Long templateId,
             @NotNull Double durationHours, @NotBlank String description,
             @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate){}
+
+    record AddTemplateRequest(@NotBlank String name, @NotNull Double expectedDuration,
+                              @NotNull Map<String, Boolean> templateChecklist,
+                              @NotBlank String operation, @NotBlank String attribute) {}
+
+    record MaintenanceTemplateResponse(Long templateId, String name,
+                                       Double expectedDuration,
+                                       Map<String, Boolean> templateChecklist,
+                                       MaintenanceType operation,
+                                       MaintenanceAttribute attribute) {
+        static MaintenanceTemplateResponse from(MaintenanceTemplate template) {
+            return new MaintenanceTemplateResponse(
+                    template.getTemplateId(),
+                    template.getName(),
+                    template.getExpectedDuration(),
+                    template.getTemplateChecklist(),
+                    template.getOperation(),
+                    template.getAttribute()
+            );
+        }
+    }
 }

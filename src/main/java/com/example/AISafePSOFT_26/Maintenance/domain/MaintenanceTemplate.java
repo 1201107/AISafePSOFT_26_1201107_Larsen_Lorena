@@ -47,4 +47,24 @@ public class MaintenanceTemplate {
     public Long getTemplateId() {
         return templateId;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public Double getExpectedDuration() {
+        return expectedDuration;
+    }
+
+    public Map<String, Boolean> getTemplateChecklist() {
+        return templateChecklist;
+    }
+
+    public MaintenanceType getOperation() {
+        return operation;
+    }
+
+    public MaintenanceAttribute getAttribute() {
+        return attribute;
+    }
 }

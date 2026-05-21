@@ -2,7 +2,7 @@
 skinparam monochrome true
 skinparam shadowing false
 
-title System Sequence Diagram (SSD) - US115
+title System Sequence Diagram (SSD) - US116
 
 actor "Maintenance Technician" as User
 participant "System" as System
@@ -15,13 +15,14 @@ activate System
 System --> User : Authentication Successful (Token JWT)
 deactivate System
 
-User -> System : createMaintenanceTemplate(name, type, aircraftModels, checklist)
+
+User -> System : logMaintenanceActivity(aircraftReg, templateId, date, technicians, status, notes)
 activate System
 
 
-System --> User : Inform Success (201 Created + Template Data)
-System --> User : Error (400 Bad Request)
+System --> User : Inform Success (201 Created + Activity Data)
+System --> User : Error (400 Bad Request / 404 Not Found)
 deactivate System
 
 deactivate User
-@endif
+@enduml
