@@ -1,4 +1,4 @@
-package com.example.AISafePSOFT_26.Airport.Application;
+package com.example.AISafePSOFT_26.Airport.application;
 
 import com.example.AISafePSOFT_26.Airport.domain.Airport;
 import com.example.AISafePSOFT_26.Airport.domain.AirportLocation;

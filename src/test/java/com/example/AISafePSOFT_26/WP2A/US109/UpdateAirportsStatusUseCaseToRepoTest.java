@@ -1,7 +1,7 @@
 package com.example.AISafePSOFT_26.WP2A.US109;
 
 
-import com.example.AISafePSOFT_26.Airport.Application.AirportService;
+import com.example.AISafePSOFT_26.Airport.application.AirportService;
 import com.example.AISafePSOFT_26.Airport.domain.*;
 import com.example.AISafePSOFT_26.Airport.infrastructure.AirportRepository;
 import org.junit.jupiter.api.BeforeEach;

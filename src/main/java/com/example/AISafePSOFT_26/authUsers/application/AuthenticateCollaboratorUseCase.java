@@ -8,7 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Application use case that authenticates a patron by username and password and returns a JWT token.
+ * application use case that authenticates a patron by username and password and returns a JWT token.
  *
  * <p>Annotated with {@link SuppressArgLogging} so that {@link com.example.AISafePSOFT_26.UseCaseLoggingAdvice}
  * logs {@code [SUPPRESSED]} in place of the raw credentials instead of printing them to the

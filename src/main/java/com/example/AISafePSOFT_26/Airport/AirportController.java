@@ -1,6 +1,6 @@
 package com.example.AISafePSOFT_26.Airport;
 
-import com.example.AISafePSOFT_26.Airport.Application.AirportService;
+import com.example.AISafePSOFT_26.Airport.application.AirportService;
 import com.example.AISafePSOFT_26.Airport.domain.*;
 import com.example.AISafePSOFT_26.exceptions.DomainException;
 import jakarta.validation.Valid;
