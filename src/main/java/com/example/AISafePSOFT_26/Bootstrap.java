@@ -42,15 +42,10 @@ public class Bootstrap implements ApplicationRunner {
     private final MaintenanceRecordRepository maintenanceRecordRepository;
     private final MaintenanceTemplateRepository maintenanceTemplateRepository;
 
-    public Bootstrap(
-            CollaboratorRepository collaboratorRepository,
-            PasswordEncoder passwordEncoder,
-            AircraftModelRepository aircraftModelRepository,
-            AirportRepository airportRepository,
-            AircraftRepository aircraftRepository,
-            FlightRepository flightRepository,
-            RouteRepository routeRepository,
-            MaintenanceRecordRepository maintenanceRecordRepository,
+    public Bootstrap(CollaboratorRepository collaboratorRepository, PasswordEncoder passwordEncoder,
+            AircraftModelRepository aircraftModelRepository, AirportRepository airportRepository,
+            AircraftRepository aircraftRepository, FlightRepository flightRepository,
+            RouteRepository routeRepository, MaintenanceRecordRepository maintenanceRecordRepository,
             MaintenanceTemplateRepository maintenanceTemplateRepository) {
         this.collaboratorRepository = collaboratorRepository;
         this.passwordEncoder = passwordEncoder;
@@ -66,7 +61,6 @@ public class Bootstrap implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-
         if (collaboratorRepository.count() == 0) {
             seedCollaborators();
         }

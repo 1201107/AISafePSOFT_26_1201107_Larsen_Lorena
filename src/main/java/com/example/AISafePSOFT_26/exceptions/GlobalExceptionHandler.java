@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
             LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // =========================
-    // 404 - Custom not found
+    // 404 - not found
     // =========================
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorDetails> handleResourceNotFound(
@@ -151,7 +151,7 @@ public class GlobalExceptionHandler {
     }
 
     // =========================
-    // 404 - Spring static resources (IMPORTANT FIX)
+    // 404 - Spring static resources
     // =========================
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<Void> handleNoResourceFound(NoResourceFoundException ex) {
@@ -159,7 +159,7 @@ public class GlobalExceptionHandler {
     }
 
     // =========================
-    // 500 - fallback (SAFE)
+    // 500 - fallback
     // =========================
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> handleGlobalException(

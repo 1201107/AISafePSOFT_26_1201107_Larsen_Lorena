@@ -12,7 +12,6 @@ import java.util.Map;
 @Entity
 @Table(name = "company_maintenance_records")
 public class MaintenanceRecord {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long recordId;
@@ -24,10 +23,11 @@ public class MaintenanceRecord {
     @JoinColumn(name = "aircraft_id")
     private Aircraft aircraft;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "maintenance_template_id")
     private MaintenanceTemplate maintenanceTemplate;
 
+    @Column(nullable = false)
     private String description;
 
     @ManyToMany
@@ -38,7 +38,7 @@ public class MaintenanceRecord {
     )
     private List<Collaborator> technicians = new ArrayList<>();
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "supervisor_id")
     private Collaborator supervisor;
 
@@ -51,6 +51,7 @@ public class MaintenanceRecord {
     @CollectionTable(name = "maintenance_used_parts")
     private List<UsedPart> usedParts = new ArrayList<>();
 
+    @Column(nullable = false)
     private Double durationHours;
 
     @Embedded
@@ -60,6 +61,16 @@ public class MaintenanceRecord {
     private MaintenanceStatus status;
 
     protected MaintenanceRecord() {
+    }
+
+    public MaintenanceRecord(Aircraft aircraft,MaintenanceTemplate maintenanceTemplate,
+                             Double durationHours, String description, LocalDate startDate){
+        this.aircraft = aircraft;
+        this.maintenanceTemplate = maintenanceTemplate;
+        this.durationHours = durationHours;
+        this.description = description;
+        this.startDate = startDate;
+        this.status = MaintenanceStatus.INLINE;
     }
 
     public MaintenanceRecord(List<UsedPart> usedParts,Double durationHours,
