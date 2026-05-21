@@ -175,6 +175,30 @@ public class MaintenanceRecord {
         return status;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public List<UsedPart> getUsedParts() {
+        return usedParts;
+    }
+
+    public Double getDurationHours() {
+        return durationHours;
+    }
+
+    public DoneList getDoneList() {
+        return doneList;
+    }
+
     public void updateDoneList(DoneList list){
         this.doneList = list;
     }

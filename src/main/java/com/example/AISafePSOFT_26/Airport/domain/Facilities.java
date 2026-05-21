@@ -28,4 +28,16 @@ public class Facilities {
         this.services = services;
         this.gateCount = gateCount;
     }
+
+    public Integer getTerminalCount() {
+        return terminalCount;
+    }
+
+    public Integer getGateCount() {
+        return gateCount;
+    }
+
+    public List<String> getServices() {
+        return services;
+    }
 }

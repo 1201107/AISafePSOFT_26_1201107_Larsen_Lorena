@@ -59,3 +59,79 @@ Authorization: Bearer {{token}}
 ###
 GET http://localhost:8081/api/hangar/aircraft?model=A320&status=AVAILABLE
 Authorization: Bearer {{token}}
+
+###
+POST http://localhost:8081/api/airports
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "iataCode": "LIS",
+  "airportType": "International",
+  "name": "Humberto Delgado Airport",
+  "status": "OPERATIONAL",
+  "location": {
+    "city": "Lisbon",
+    "longitude": -9.1359,
+    "latitude": 38.7742,
+    "region": "Lisbon",
+    "timezone": "Europe/Lisbon",
+    "country": "Portugal"
+  },
+  "facilities": {
+    "terminalCount": 2,
+    "services": [
+      "fuel",
+      "maintenance"
+    ],
+    "gateCount": 48
+  },
+  "routeDistance": 0.0,
+  "runways": [
+    {
+      "runwayName": "03/21",
+      "length": 3805.0,
+      "orientation": "NE/SW",
+      "status": "OPEN"
+    }
+  ],
+  "certifications": [],
+  "contacts": [
+    {
+      "type": "EMAIL",
+      "value": "ops@lis.pt"
+    }
+  ],
+  "airportPhotos": [
+    "https://example.com/images/lis-front.jpg"
+  ]
+}
+
+###
+GET http://localhost:8081/api/airports/LIS
+Authorization: Bearer {{token}}
+
+###
+GET http://localhost:8081/api/airports?city=Lisbon&country=Portugal&name=Humberto Delgado Airport
+Authorization: Bearer {{token}}
+
+###
+POST http://localhost:8081/api/airports/LIS/certifications
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "EASA Aerodrome Certificate",
+  "category": "SAFETY",
+  "startsAt": "2026-01-01",
+  "expiresAt": "2028-01-01"
+}
+
+###
+PATCH http://localhost:8081/api/airports/LIS/status
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "status": "UNDER_MAINTENANCE"
+}

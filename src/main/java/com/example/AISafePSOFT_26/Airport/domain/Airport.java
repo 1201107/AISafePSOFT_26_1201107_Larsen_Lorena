@@ -2,6 +2,7 @@ package com.example.AISafePSOFT_26.Airport.domain;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,33 +31,34 @@ public class Airport {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "airport_iata_code")
-    private List<Runway> airportRunways;
+    private List<Runway> airportRunways = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "airport_iata_code")
-    private List<Certification> certifications;
+    private List<Certification> certifications = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(
             name = "airport_contacts",
             joinColumns = @JoinColumn(name = "airport_iata_code")
     )
-    private List<Contact> contacts;
+    private List<Contact> contacts = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(
             name = "airport_images",
-            joinColumns = @JoinColumn(name = "iata_code")
+            joinColumns = @JoinColumn(name = "airport_iata_code")
     )
     @Column(name = "image_url")
-    private List<String> airportPhotos;
+    private List<String> airportPhotos = new ArrayList<>();
 
-    public Airport(){}
+    public Airport() {
+    }
 
-    public Airport(String iataCode,String airportType, String name, AirportStatus status,
-            AirportLocation airportLocation,Facilities facilities,Double routeDistance,
-            List<Runway> airportRunways, List<Certification> certifications, List<Contact> contacts,
-            List<String> airportPhotos) {
+    public Airport(String iataCode, String airportType, String name, AirportStatus status,
+                   AirportLocation airportLocation, Facilities facilities, Double routeDistance,
+                   List<Runway> airportRunways, List<Certification> certifications,
+                   List<Contact> contacts, List<String> airportPhotos) {
         this.iataCode = iataCode;
         this.airportType = airportType;
         this.name = name;
@@ -64,17 +66,62 @@ public class Airport {
         this.airportLocation = airportLocation;
         this.facilities = facilities;
         this.routeDistance = routeDistance;
-        this.airportRunways = airportRunways;
-        this.certifications = certifications;
-        this.contacts = contacts;
-        this.airportPhotos = airportPhotos;
+        this.airportRunways = airportRunways == null ? new ArrayList<>() : new ArrayList<>(airportRunways);
+        this.certifications = certifications == null ? new ArrayList<>() : new ArrayList<>(certifications);
+        this.contacts = contacts == null ? new ArrayList<>() : new ArrayList<>(contacts);
+        this.airportPhotos = airportPhotos == null ? new ArrayList<>() : new ArrayList<>(airportPhotos);
     }
 
     public String getIataCode() {
         return iataCode;
     }
 
+    public String getAirportType() {
+        return airportType;
+    }
+
     public String getName() {
         return name;
     }
+
+    public AirportStatus getStatus() {
+        return status;
+    }
+
+    public AirportLocation getAirportLocation() {
+        return airportLocation;
+    }
+
+    public Facilities getFacilities() {
+        return facilities;
+    }
+
+    public Double getRouteDistance() {
+        return routeDistance;
+    }
+
+    public List<Runway> getAirportRunways() {
+        return airportRunways;
+    }
+
+    public List<Certification> getCertifications() {
+        return certifications;
+    }
+
+    public List<Contact> getContacts() {
+        return contacts;
+    }
+
+    public List<String> getAirportPhotos() {
+        return airportPhotos;
+    }
+
+    public void addCertification(Certification certification) {
+        certifications.add(certification);
+    }
+
+    public void changeStatus(AirportStatus status) {
+        this.status = status;
+    }
+
 }

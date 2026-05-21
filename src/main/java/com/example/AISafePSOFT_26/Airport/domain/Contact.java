@@ -21,4 +21,12 @@ public class Contact {
         this.type = type;
         this.value = value;
     }
+
+    public ContactType getType() {
+        return type;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

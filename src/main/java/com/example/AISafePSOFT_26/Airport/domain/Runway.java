@@ -27,4 +27,24 @@ public class Runway {
         this.orientation = orientation;
         this.status = status;
     }
+
+    public Long getRunwayId() {
+        return runwayId;
+    }
+
+    public String getRunwayName() {
+        return runwayName;
+    }
+
+    public Double getLength() {
+        return length;
+    }
+
+    public String getOrientation() {
+        return orientation;
+    }
+
+    public RunwayStatus getStatus() {
+        return status;
+    }
 }

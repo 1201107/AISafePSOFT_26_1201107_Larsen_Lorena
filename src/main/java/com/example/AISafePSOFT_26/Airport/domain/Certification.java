@@ -39,5 +39,30 @@ public class Certification {
     }
 
     public void setAirport(Airport airport) {
+        this.airport = airport;
+    }
+
+    public Long getCertificationId() {
+        return certificationId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public LocalDate getStartsAt() {
+        return startsAt;
+    }
+
+    public LocalDate getExpiresAt() {
+        return expiresAt;
+    }
+
+    public Airport getAirport() {
+        return airport;
     }
 }

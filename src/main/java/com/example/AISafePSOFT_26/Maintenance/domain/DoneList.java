@@ -25,4 +25,7 @@ public class DoneList {
         return completionNotes;
     }
 
+    public Map<String, Boolean> getTasksDone() {
+        return tasksDone;
+    }
 }

@@ -33,4 +33,28 @@ public class AirportLocation {
         this.timezone = timezone;
         this.country = country;
     }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
 }
