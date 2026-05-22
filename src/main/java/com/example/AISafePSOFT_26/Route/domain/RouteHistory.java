@@ -28,4 +28,16 @@ public class RouteHistory {
     private void updateRouteUsage(Integer routeUsage) {
         this.routeUsage += routeUsage;
     }
+
+    public LocalDate getRouteBegin() {
+        return routeBegin;
+    }
+
+    public LocalDate getRouteFinish() {
+        return routeFinish;
+    }
+
+    public Integer getRouteUsage() {
+        return routeUsage;
+    }
 }

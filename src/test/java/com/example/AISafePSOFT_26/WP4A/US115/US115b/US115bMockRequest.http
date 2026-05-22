@@ -1,0 +1,28 @@
+POST http://localhost:8081/auth/login
+Content-Type: application/json
+
+{
+  "username": "technician",
+  "password": "technician123"
+}
+
+###
+@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4ZWZjN2VjOS1iZmYzLTRhMWQtODhjMy1mOGNjMjY1YjQ0YjciLCJyb2xlcyI6WyJNQUlOVEVOQU5DRV9URUNITklDSUFOIl0sImlhdCI6MTc3OTI4MTY5MywiZXhwIjoxNzc5Mjg1MjkzfQ.5G1hggm0k2GN2KGTjSXwCXuSJgZH68ZSipjAMKyRIug
+
+###
+POST http://localhost:8081/api/maintenance/templates
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "A-Check Engine Inspection",
+  "expectedDuration": 6.5,
+  "templateChecklist": {
+    "Check oil levels": true,
+    "Inspect engine turbine blades": true,
+    "Verify hydraulic pressure systems": true,
+    "Run engine ground test": true
+  },
+  "operation": "INSPECTION",
+  "attribute": "ENGINE"
+}

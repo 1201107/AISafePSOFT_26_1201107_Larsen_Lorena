@@ -2,45 +2,54 @@
 skinparam monochrome true
 skinparam shadowing false
 
-title Sequence Diagram: US115 - Create Maintenance Template
+title Sequence Diagram: US116 - Log Maintenance Activity
 
 actor "Maintenance Technician" as User
 participant ":AuthController" as Auth
 participant ":MaintenanceController" as Ctrl
-participant ":MaintenanceTemplateService" as Service
-participant ":AircraftModelRepository" as RepoModel
-participant "template:MaintenanceTemplate" as Template <<Aggregate Root>>
+participant ":MaintenanceService" as Service
+participant ":AircraftRepository" as RepoAircraft
 participant ":MaintenanceTemplateRepository" as RepoTemplate
+participant "activity:MaintenanceActivity" as Activity <<Aggregate Root>>
+participant ":MaintenanceActivityRepository" as RepoActivity
 
 activate User
+
 
 User -> Auth : Authenticate User
 activate Auth
 Auth --> User : Authentication Successful (Token JWT)
 deactivate Auth
 
-User -> Ctrl : createMaintenanceTemplate(name, type, aircraftModels, checklist)
+
+User -> Ctrl : logMaintenanceActivity(aircraftReg, templateId, date, technicians, status, notes)
 activate Ctrl
 
-Ctrl -> Service : createTemplate(name, type, aircraftModels, checklist)
+Ctrl -> Service : logActivity(aircraftReg, templateId, date, technicians, status, notes)
 activate Service
 
-    Service -> RepoModel : verifyModelsExist(aircraftModels)
-    activate RepoModel
-    RepoModel --> Service : modelsValid
-    deactivate RepoModel
+    Service -> RepoAircraft : findByRegistration(aircraftReg)
+    activate RepoAircraft
+    RepoAircraft --> Service : aircraft
+    deactivate RepoAircraft
 
-    Service -> Template** : <<create>> (name, type, aircraftModels, checklist)
-
-    Service -> RepoTemplate : save(template)
+    Service -> RepoTemplate : findById(templateId)
     activate RepoTemplate
-    RepoTemplate --> Service : savedTemplate
+    RepoTemplate --> Service : template
     deactivate RepoTemplate
 
-    Service --> Ctrl : templateDTO / Error
+
+    Service -> Activity** : <<create>> (aircraft, template, date, technicians, status, notes)
+
+    Service -> RepoActivity : save(activity)
+    activate RepoActivity
+    RepoActivity --> Service : savedActivity
+    deactivate RepoActivity
+
+    Service --> Ctrl : maintenanceActivityDTO / Error
 
     Ctrl --> User : Success (201 Created + Links)
-    Ctrl --> User : Error (400 Bad Request)
+    Ctrl --> User : Error (400 Bad Request / 404 Not Found)
 
 deactivate Service
 deactivate Ctrl

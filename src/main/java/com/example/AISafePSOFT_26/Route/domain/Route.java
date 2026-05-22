@@ -3,6 +3,8 @@ package com.example.AISafePSOFT_26.Route.domain;
 import com.example.AISafePSOFT_26.Airport.domain.Airport;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "company_routes")
 public class Route {
@@ -58,7 +60,7 @@ public class Route {
     }
 
     public void activateRoute() {
-        if (status == RouteStatus.INACTIVE) {
+        if (status == RouteStatus.ARCHIVED) {
             throw new IllegalStateException(
                     "Retired routes cannot be activated"
             );
@@ -77,6 +79,9 @@ public class Route {
     }
 
     public void retireRoute() {
+        if (routeHistory != null) {
+            routeHistory.endRoute(LocalDate.now());
+        }
         this.status = RouteStatus.ARCHIVED;
     }
 
@@ -141,5 +146,13 @@ public class Route {
 
     public RouteRequirements getRouteRequirements() {
         return routeRequirements;
+    }
+
+    public String getRouteName() {
+        return routeName;
+    }
+
+    public Long getVersion() {
+        return version;
     }
 }

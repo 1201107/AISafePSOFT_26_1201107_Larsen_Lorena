@@ -1,0 +1,15 @@
+POST http://localhost:8081/auth/login
+Content-Type: application/json
+
+{
+  "username": "atcc",
+  "password": "atcc123"
+}
+
+###
+@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ZDFiYmEwYi0xYzE1LTRkYzgtYjJmZS1hNGYzYmQ2YjhlMmUiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3NzkwNDE5ODMsImV4cCI6MTc3OTA0NTU4M30.r8a6SqqAnupAJY3Ed4-XC-isH0EkjR0xXokwryz_YSo
+@routeId=1
+
+###
+GET http://localhost:8081/api/routes/{{routeId}}/history
+Authorization: Bearer {{token}}

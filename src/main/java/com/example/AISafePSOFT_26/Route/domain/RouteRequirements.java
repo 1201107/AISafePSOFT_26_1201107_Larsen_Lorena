@@ -13,4 +13,12 @@ public class RouteRequirements {
         this.requiredRange = requiredRange;
         this.requiredCapacity = requiredCapacity;
     }
+
+    public Double getRequiredRange() {
+        return requiredRange;
+    }
+
+    public Integer getRequiredCapacity() {
+        return requiredCapacity;
+    }
 }
