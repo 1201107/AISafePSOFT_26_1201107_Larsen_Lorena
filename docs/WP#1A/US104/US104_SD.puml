@@ -2,7 +2,7 @@
 skinparam monochrome true
 skinparam shadowing false
 
-title Sequence Diagram: US102 - Register Aircraft
+title Sequence Diagram: US104 - Search Aircraft by model, status, or manufacturing year
 
 participant ":AuthController" as Auth
 
@@ -33,12 +33,12 @@ activate Ctrl
 Ctrl -> aircraftModelSearchService : spotAircraftInCatalog(modelName)
 activate aircraftModelSearchService
 
-aircraftModelSearchService -> Repo :findByModelName(modelName)
-activate Repo
-Repo --> aircraftModelSearchService : Optional<AircraftModel>
-deactivate Repo
-aircraftModelSearchService-->Ctrl : Optional<AircraftModel>
-deactivate aircraftModelSearchService
+aircraftSearchService -> RepoAircraft :findByRegistrationNumber(registrationNumber)
+activate RepoAircraft
+RepoAircraft --> aircraftSearchService : Optional<Aircraft>
+deactivate RepoAircraft
+aircraftSearchService-->Ctrl : Optional<Aircraft>
+deactivate aircraftSearchService
 
 
 Ctrl -> Aircraft: Aircraft(registrationNumber,model,manufacturingDate,totalOperationalHours,totalFlightHours)

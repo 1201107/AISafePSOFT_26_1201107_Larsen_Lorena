@@ -9,8 +9,6 @@ public class LandingController {
 
     @GetMapping("/welcome")
     public String welcome() {
-        return "Welcome to the AISafePSOFT_26 made by: 1201107";
+        return "Welcome to the AISafePSOFT_26";
     }
-
-
 }

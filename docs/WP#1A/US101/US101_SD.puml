@@ -2,15 +2,19 @@
 
 actor "Backoffice Operator" as BO
 
+participant ":AuthController" as Auth
 participant "ModelCatalogController" as CC
 participant "AddModelUseCase" as AMC
 participant "AircraftModel" as AM
 participant "AircraftModelRepository" as AMR
 
+BO -> Auth : Authenticate User
+activate Auth
+Auth --> BO : Authentication Successful (Token JWT)
+deactivate Auth
+
 BO -> CC : POST /aircraft-models\n{ modelName, manufacturer,\n aircraftModelSpecs, modelImage }
 activate CC
-
-CC -> CC : extract collaboratorId from JWT
 
 CC -> AMC : execute(model)
 activate AMC

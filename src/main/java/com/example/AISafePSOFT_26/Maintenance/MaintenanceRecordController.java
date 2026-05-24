@@ -12,6 +12,7 @@ import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceStatus;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceTemplate;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceType;
 import com.example.AISafePSOFT_26.exceptions.DomainException;
+import com.example.AISafePSOFT_26.exceptions.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/maintenance")
+@RequestMapping("api/maintenance")
 public class MaintenanceRecordController {
 
     private final AddMaintenanceTemplateUseCase addMaintenanceTemplateUseCase;
@@ -83,11 +84,11 @@ public class MaintenanceRecordController {
     public void addRecord(@Valid @RequestBody AddRecordShortRequest request) {
         Aircraft aircraft = aircraftSearchService
                 .spotAircraftInHangar(request.registrationNumber())
-                .orElseThrow(() -> new DomainException("Aircraft does not exist in hangar"));
+                .orElseThrow(() -> new ResourceNotFoundException("Aircraft does not exist in hangar"));
 
         MaintenanceTemplate maintenanceTemplate = maintenanceTemplateSearchService
                 .findByTemplateId(request.templateId())
-                .orElseThrow(() -> new DomainException("Maintenance Template does not exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("Maintenance Template does not exist"));
 
         addMaintenanceRecordUseCase.executeShort(
                 aircraft,

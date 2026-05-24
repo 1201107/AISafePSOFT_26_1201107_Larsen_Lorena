@@ -7,8 +7,7 @@ Content-Type: application/json
 }
 
 ###
-@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ZDFiYmEwYi0xYzE1LTRkYzgtYjJmZS1hNGYzYmQ2YjhlMmUiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3NzkwNDE5ODMsImV4cCI6MTc3OTA0NTU4M30.r8a6SqqAnupAJY3Ed4-XC-isH0EkjR0xXokwryz_YSo
-
+@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYjFkYjNkZi01ZTZlLTQxYWQtOGZkNi0xY2RhZGVhMGU3YjUiLCJyb2xlcyI6WyJBVENDIl0sImlhdCI6MTc3OTYzMzk1MSwiZXhwIjoxNzc5NjM3NTUxfQ.RHfe32UUFZWKTWOJv6dfGoDX97LuWmLnIwtcT9x2ugQ
 ###
-GET http://localhost:8081/api/hangar/aircraft?model=A320&status=AVAILABLE
+GET http://localhost:8081/api/hangar/aircraft?model=A320&status=MAINTENANCE
 Authorization: Bearer {{token}}

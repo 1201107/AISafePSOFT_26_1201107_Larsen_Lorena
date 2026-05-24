@@ -39,7 +39,7 @@ public class ModelCatalogController {
     /**
      * Request body for POST /catalog/models
      */
-    record AddModelRequest(@NotBlank String modelName, List<String> modelImage,
+    public record AddModelRequest(@NotBlank String modelName, List<String> modelImage,
             @NotBlank String manufacturer, @Valid ModelSpecsRequest specs) {}
 
     /**

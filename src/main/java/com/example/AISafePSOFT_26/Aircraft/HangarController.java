@@ -7,6 +7,7 @@ import com.example.AISafePSOFT_26.Aircraft.application.AircraftLifeCycleUpdaterS
 import com.example.AISafePSOFT_26.AircraftCatalog.application.AircraftModelSearchService;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
 import com.example.AISafePSOFT_26.exceptions.DomainException;
+import com.example.AISafePSOFT_26.exceptions.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -39,7 +40,7 @@ public class HangarController {
         AircraftModel model = aircraftModelSearchService
                 .spotAircraftInCatalog(request.modelName())
                 .orElseThrow(() ->
-                        new DomainException("Model does not exist in catalog"));
+                        new ResourceNotFoundException("Model does not exist in catalog"));
         Aircraft aircraft = new Aircraft(
                 request.registrationNumber(),
                 model,
@@ -54,7 +55,7 @@ public class HangarController {
     /**
      * Request body for POST /hangar/aircraft
      */
-    record AddAircraftRequest(String registrationNumber, String modelName, LocalDate manufacturingDate,
+    public record AddAircraftRequest(String registrationNumber, String modelName, LocalDate manufacturingDate,
                               Double totalOperationalHours, Double totalFlightHours, String availability) {}
 
     /**
@@ -65,7 +66,7 @@ public class HangarController {
         Aircraft aircraft = aircraftSearchService
                 .spotAircraftInHangar(registrationNumber)
                 .orElseThrow(() ->
-                        new DomainException(
+                        new ResourceNotFoundException(
                                 "Aircraft does not exist in hangar"
                         )
                 );
@@ -75,7 +76,7 @@ public class HangarController {
     /**
     *Request body for PATCH /hangar/aircraft{id}
     */
-    record  PatchAircraftAvailabilityRequest(String registrationNumber,String availability) {}
+    public record  PatchAircraftAvailabilityRequest(String registrationNumber,String availability) {}
 
     /**
     * Changes aircraft availability to the requested valid value.
@@ -91,7 +92,7 @@ public class HangarController {
         Aircraft aircraft = aircraftSearchService
                 .spotAircraftInHangar(request.registrationNumber())
                 .orElseThrow(() ->
-                        new DomainException(
+                        new ResourceNotFoundException(
                                 "Aircraft does not exist in hangar"
                         )
                 );
@@ -99,7 +100,7 @@ public class HangarController {
     }
 
     @GetMapping("/aircraft")
-    public List<AircraftResponse> getAircrafts(
+    public List<AircraftResponse> getAircraftsWithFiltering(
             @RequestParam(required = false) String model,
             @RequestParam(required = false) String status,
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
