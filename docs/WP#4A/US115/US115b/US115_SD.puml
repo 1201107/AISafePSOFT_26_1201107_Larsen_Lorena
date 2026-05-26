@@ -1,0 +1,52 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+title Sequence Diagram: US115 - Create Maintenance Template
+
+actor "Maintenance Technician" as User
+participant ":AuthController" as Auth
+participant ":MaintenanceController" as Ctrl
+participant ":CreateMaintenanceTemplateUseCase" as UseCase
+participant ":AircraftModelRepository" as RepoModel
+participant "template:MaintenanceTemplate" as Template <<Aggregate Root>>
+participant ":MaintenanceTemplateRepository" as RepoTemplate
+
+activate User
+
+
+User -> Auth : Authenticate User
+activate Auth
+Auth --> User : Authentication Successful (Token JWT)
+deactivate Auth
+
+
+User -> Ctrl : createMaintenanceTemplate(name, type, aircraftModels, checklist)
+activate Ctrl
+
+Ctrl -> UseCase : execute(requestDTO)
+activate UseCase
+
+    UseCase -> RepoModel : verifyModelsExist(aircraftModels)
+    activate RepoModel
+    RepoModel --> UseCase : modelsValid
+    deactivate RepoModel
+
+
+    UseCase -> Template** : <<create>> (name, type, aircraftModels, checklist)
+
+    UseCase -> RepoTemplate : save(template)
+    activate RepoTemplate
+    RepoTemplate --> UseCase : savedTemplate
+    deactivate RepoTemplate
+
+    UseCase --> Ctrl : templateResponseDTO / Error
+
+    Ctrl --> User : Success (201 Created + Links)
+
+    Ctrl --> User : Error (400 Bad Request)
+
+deactivate UseCase
+deactivate Ctrl
+deactivate User
+@endif
