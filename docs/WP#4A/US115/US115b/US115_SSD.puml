@@ -2,26 +2,24 @@
 skinparam monochrome true
 skinparam shadowing false
 
-title System Sequence Diagram (SSD) - US115
+title Diagrama de Sequência do Sistema (SSD) - US115
 
-actor "Maintenance Technician" as User
-participant "System" as System
+actor "Técnico de Manutenção" as User
+participant "Sistema" as System
 
 activate User
 
-
-User -> System : Authenticate User
+User -> System : Autenticar Utilizador
 activate System
-System --> User : Authentication Successful (Token JWT)
+System --> User : Autenticação Bem-sucedida (Token JWT)
 deactivate System
 
-User -> System : createMaintenanceTemplate(name, type, aircraftModels, checklist)
+User -> System : criarModeloManutencao(nome, tipo, modelosAeronave, checklist)
 activate System
 
+System --> User : Informar Sucesso (201 Criado + Dados do Modelo)
+System --> User : Erro (400 Pedido Inválido)
 
-System --> User : Inform Success (201 Created + Template Data)
-System --> User : Error (400 Bad Request)
 deactivate System
-
 deactivate User
-@endif
+@enduml

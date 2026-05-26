@@ -2,61 +2,58 @@
 skinparam monochrome true
 skinparam shadowing false
 
-title Sequence Diagram: US113 - View Routes
+title Diagrama de Sequência: US113 - Consultar Rotas
 
 actor "ATCC" as User
-participant ":AuthController" as Auth
-participant ":RouteController" as Ctrl
-participant ":RouteService" as Service
-participant ":RouteRepository" as RepoRoute
-participant "route:Route" as Route <<Aggregate Root>>
+participant ":ControladorAutenticacao" as Auth
+participant ":ControladorRota" as Ctrl
+participant ":ServicoRota" as Service
+participant ":RepositorioRota" as RepoRoute
+participant "rota:Rota" as Route <<Raiz do Agregado>>
 
 activate User
 
-
-User -> Auth : Authenticate User
+User -> Auth : Autenticar Utilizador
 activate Auth
-Auth --> User : Authentication Successful (Token JWT)
+Auth --> User : Autenticação Bem-sucedida (Token JWT)
 deactivate Auth
 
-
-User -> Ctrl : getRoutesFromAirport(airportIATA)
+User -> Ctrl : obterRotasDoAeroporto(airportIATA)
 activate Ctrl
 
-Ctrl -> Service : getRoutesFromAirport(airportIATA)
+Ctrl -> Service : obterRotasDoAeroporto(airportIATA)
 activate Service
 
-    Service -> RepoRoute : findByOriginAirportIata(airportIATA)
+    Service -> RepoRoute : procurarPorIataAeroportoOrigem(airportIATA)
     activate RepoRoute
-    RepoRoute --> Service : list<Route>
+    RepoRoute --> Service : lista<Route>
     deactivate RepoRoute
 
-    Service --> Ctrl : routeDTOList / Error
+    Service --> Ctrl : listaRouteDTO / Erro
 
-    Ctrl --> User : Success (200 OK + Routes List)
+    Ctrl --> User : Sucesso (200 OK + Lista de Rotas)
 
-    Ctrl --> User : Error (404 Not Found)
+    Ctrl --> User : Erro (404 Não Encontrado)
+
 deactivate Service
 deactivate Ctrl
 
-User -> Ctrl : getRouteDetails(routeId)
+User -> Ctrl : obterDetalhesRota(routeId)
 activate Ctrl
 
-Ctrl -> Service : getRouteDetails(routeId)
+Ctrl -> Service : obterDetalhesRota(routeId)
 activate Service
 
-    Service -> RepoRoute : findById(routeId)
+    Service -> RepoRoute : procurarPorId(routeId)
     activate RepoRoute
-    RepoRoute --> Service : route
+    RepoRoute --> Service : rota
     deactivate RepoRoute
 
+    Service --> Ctrl : routeDTO / Erro
 
-    Service --> Ctrl : routeDTO / Error
+    Ctrl --> User : Sucesso (200 OK + Detalhes da Rota + Ligações)
 
-
-    Ctrl --> User : Success (200 OK + Route Details + Links)
-
-    Ctrl --> User : Error (404 Not Found)
+    Ctrl --> User : Erro (404 Não Encontrado)
 
 deactivate Service
 deactivate Ctrl

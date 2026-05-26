@@ -2,51 +2,48 @@
 skinparam monochrome true
 skinparam shadowing false
 
-title Sequence Diagram: US115 - Create Maintenance Template
+title Diagrama de Sequência: US115 - Criar Modelo de Manutenção
 
-actor "Maintenance Technician" as User
-participant ":AuthController" as Auth
-participant ":MaintenanceController" as Ctrl
-participant ":CreateMaintenanceTemplateUseCase" as UseCase
-participant ":AircraftModelRepository" as RepoModel
-participant "template:MaintenanceTemplate" as Template <<Aggregate Root>>
-participant ":MaintenanceTemplateRepository" as RepoTemplate
+actor "Técnico de Manutenção" as User
+participant ":ControladorAutenticacao" as Auth
+participant ":ControladorManutencao" as Ctrl
+participant ":CasoDeUsoCriarModeloManutencao" as UseCase
+participant ":RepositorioModeloAeronave" as RepoModel
+participant "template:ModeloManutencao" as Template <<Raiz do Agregado>>
+participant ":RepositorioModeloManutencao" as RepoTemplate
 
 activate User
 
-
-User -> Auth : Authenticate User
+User -> Auth : Autenticar Utilizador
 activate Auth
-Auth --> User : Authentication Successful (Token JWT)
+Auth --> User : Autenticação Bem-sucedida (Token JWT)
 deactivate Auth
 
-
-User -> Ctrl : createMaintenanceTemplate(name, type, aircraftModels, checklist)
+User -> Ctrl : criarModeloManutencao(nome, tipo, modelosAeronave, checklist)
 activate Ctrl
 
-Ctrl -> UseCase : execute(requestDTO)
+Ctrl -> UseCase : executar(requestDTO)
 activate UseCase
 
-    UseCase -> RepoModel : verifyModelsExist(aircraftModels)
+    UseCase -> RepoModel : verificarSeModelosExistem(modelosAeronave)
     activate RepoModel
-    RepoModel --> UseCase : modelsValid
+    RepoModel --> UseCase : modelosValidos
     deactivate RepoModel
 
+    UseCase -> Template** : <<criar>> (nome, tipo, modelosAeronave, checklist)
 
-    UseCase -> Template** : <<create>> (name, type, aircraftModels, checklist)
-
-    UseCase -> RepoTemplate : save(template)
+    UseCase -> RepoTemplate : guardar(template)
     activate RepoTemplate
-    RepoTemplate --> UseCase : savedTemplate
+    RepoTemplate --> UseCase : modeloGuardado
     deactivate RepoTemplate
 
-    UseCase --> Ctrl : templateResponseDTO / Error
+    UseCase --> Ctrl : templateResponseDTO / Erro
 
-    Ctrl --> User : Success (201 Created + Links)
+    Ctrl --> User : Sucesso (201 Criado + Ligações)
 
-    Ctrl --> User : Error (400 Bad Request)
+    Ctrl --> User : Erro (400 Pedido Inválido)
 
 deactivate UseCase
 deactivate Ctrl
 deactivate User
-@endif
+@enduml
