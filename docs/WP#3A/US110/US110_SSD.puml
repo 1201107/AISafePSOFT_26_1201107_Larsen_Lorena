@@ -2,21 +2,21 @@
 skinparam monochrome true
 skinparam shadowing false
 
-title System Sequence Diagram (SSD) - US110
+title Diagrama de Sequência do Sistema (SSD) - US110
 
 actor "ATCC" as User
-participant "System" as System
+participant "Sistema" as System
 
 activate User
 
-User -> System : Authenticate User
+User -> System : Autenticar Utilizador
 activate System
-System --> User : Authentication Successful
+System --> User : Autenticação Bem-sucedida
 deactivate System
 
-User -> System : Create Flight Route (origin, dest, time, reqs)
+User -> System : Criar Rota de Voo (origem, destino, tempo, requisitos)
 
-System --> User : Inform Success (201 Created)
+System --> User : Informar Sucesso (201 Criado)
 deactivate System
 
 deactivate User

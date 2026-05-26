@@ -2,45 +2,43 @@
 skinparam monochrome true
 skinparam shadowing false
 
-title Sequence Diagram: US111 - Track Route History
+title Diagrama de Sequência: US111 - Consultar Histórico de Rotas
 
 actor "ATCC" as User
-participant ":AuthController" as Auth
-participant ":RouteController" as Ctrl
-participant ":RouteService" as Service
-participant ":RouteRepository" as RepoRoute
-participant "route:Route" as Route <<Aggregate Root>>
+participant ":ControladorAutenticacao" as Auth
+participant ":ControladorRota" as Ctrl
+participant ":ServicoRota" as Service
+participant ":RepositorioRota" as RepoRoute
+participant "rota:Rota" as Route <<Raiz do Agregado>>
 
 activate User
 
-
-User -> Auth : Authenticate User
+User -> Auth : Autenticar Utilizador
 activate Auth
 Auth --> User : Token JWT
 deactivate Auth
 
-
-User -> Ctrl : getRouteHistory(routeId)
+User -> Ctrl : obterHistoricoRota(routeId)
 activate Ctrl
 
-Ctrl -> Service : getRouteHistory(routeId)
+Ctrl -> Service : obterHistoricoRota(routeId)
 activate Service
 
-    Service -> RepoRoute : findById(routeId)
+    Service -> RepoRoute : procurarPorId(routeId)
     activate RepoRoute
-    RepoRoute --> Service : route
+    RepoRoute --> Service : rota
     deactivate RepoRoute
 
-    Service -> Route : getRouteHistory()
+    Service -> Route : obterHistoricoRota()
     activate Route
-    Route --> Service : list<RouteHistory>
+    Route --> Service : lista<RouteHistory>
     deactivate Route
 
-    Service --> Ctrl : routeHistoryDTOList
+    Service --> Ctrl : listaRouteHistoryDTO
 
-    Ctrl --> User : Success (200 OK + History Links) 
+    Ctrl --> User : Sucesso (200 OK + Ligações do Histórico)
 
-    Ctrl --> User : Error (404 Not Found)
+    Ctrl --> User : Erro (404 Não Encontrado)
 
 deactivate Service
 deactivate Ctrl

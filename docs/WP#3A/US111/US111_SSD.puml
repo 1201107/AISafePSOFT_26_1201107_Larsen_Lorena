@@ -2,25 +2,23 @@
 skinparam monochrome true
 skinparam shadowing false
 
-title Sequence Diagram: US111 - Track Route History (Based on SSD)
+title Diagrama de Sequência do Sistema (SSD) - US111
 
 actor "ATCC" as User
-participant ":System" as System
+participant ":Sistema" as System
 
 activate User
 
-
-User -> System : Authenticate User
+User -> System : Autenticar Utilizador
 activate System
-System --> User : Authentication Successful (Token JWT)
+System --> User : Autenticação Bem-sucedida (Token JWT)
 deactivate System
 
-
-User -> System : getRouteHistory(routeId)
+User -> System : obterHistoricoRota(routeId)
 activate System
 
-    System --> User : Success (200 OK + History Data)
-    System --> User : Error (404 Not Found)
+    System --> User : Sucesso (200 OK + Dados do Histórico)
+    System --> User : Erro (404 Não Encontrado)
 
 deactivate System
 deactivate User

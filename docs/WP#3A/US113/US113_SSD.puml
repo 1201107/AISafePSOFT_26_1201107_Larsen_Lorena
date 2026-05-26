@@ -1,36 +1,34 @@
+
 @startuml
 skinparam monochrome true
 skinparam shadowing false
 
-title System Sequence Diagram (SSD) - US113
+title Diagrama de Sequência do Sistema (SSD) - US113
 
 actor "ATCC" as User
-participant "System" as System
+participant "Sistema" as System
 
 activate User
 
-
-User -> System : Authenticate User
+User -> System : Autenticar Utilizador
 activate System
-System --> User : Authentication Successful (Token JWT)
+System --> User : Autenticação Bem-sucedida (Token JWT)
 deactivate System
 
-
-User -> System : getRoutesFromAirport(airportIATA)
+User -> System : obterRotasDoAeroporto(airportIATA)
 activate System
 
-System --> User : Inform Success (200 OK + Routes List)
+System --> User : Informar Sucesso (200 OK + Lista de Rotas)
 
-System --> User : Error (404 Not Found)
+System --> User : Erro (404 Não Encontrado)
 deactivate System
 
-
-User -> System : getRouteDetails(routeId)
+User -> System : obterDetalhesRota(routeId)
 activate System
 
-System --> User : Inform Success (200 OK + Route Details)
+System --> User : Informar Sucesso (200 OK + Detalhes da Rota)
 
-System --> User : Error (404 Not Found)
+System --> User : Erro (404 Não Encontrado)
 deactivate System
 
 deactivate User
