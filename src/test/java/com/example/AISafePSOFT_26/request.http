@@ -212,3 +212,28 @@ Authorization: Bearer {{token}}
 GET http://localhost:8081/api/airports/grouped?by=country
 Authorization: Bearer {{token}}
 
+
+### WP#4A ENDPOINTS
+
+### US117 - GET MAINTENANCE TEMPLATE BY ID (us117)
+GET http://localhost:8081/api/maintenance/templates/1
+Authorization: Bearer {{token}}
+
+### US117 - LIST MAINTENANCE TEMPLATES (us117)
+GET http://localhost:8081/api/maintenance/templates
+Authorization: Bearer {{token}}
+
+### US119 - GET MAINTENANCE RECORD BY ID (us119)
+GET http://localhost:8081/api/maintenance/records/1
+Authorization: Bearer {{token}}
+
+### US119 - ADVANCE MAINTENANCE RECORD STATUS (us119)
+PATCH http://localhost:8081/api/maintenance/records/1/status
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "status": "ONGOING"
+}
+
+
