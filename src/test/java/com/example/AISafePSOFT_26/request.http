@@ -1,4 +1,4 @@
-### LOGIN
+### LOGIN (us000-auth)
 POST http://localhost:8081/auth/login
 Content-Type: application/json
 
@@ -11,7 +11,7 @@ Content-Type: application/json
     client.global.set("token", response.body.token);
 %}
 
-### US101 - ADD AIRCRAFT MODEL
+### US101 - ADD AIRCRAFT MODEL (us101)
 POST http://localhost:8081/api/catalog/model
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -30,7 +30,7 @@ Authorization: Bearer {{token}}
   }
 }
 
-### US102 - ADD AIRCRAFT
+### US102 - ADD AIRCRAFT (us102)
 POST http://localhost:8081/api/hangar/aircraft
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -44,11 +44,11 @@ Authorization: Bearer {{token}}
   "availability": "AVAILABLE"
 }
 
-### GET AIRCRAFT
+### GET AIRCRAFT (us103)
 GET http://localhost:8081/api/hangar/aircraft/CS-TVA
 Authorization: Bearer {{token}}
 
-### UPDATE AIRCRAFT STATUS
+### UPDATE AIRCRAFT STATUS (us105)
 PATCH http://localhost:8081/api/hangar/aircraft/CS-TVA
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -58,11 +58,11 @@ Authorization: Bearer {{token}}
   "availability": "MAINTENANCE"
 }
 
-### SEARCH AIRCRAFT
+### SEARCH AIRCRAFT (us104)
 GET http://localhost:8081/api/hangar/aircraft?model=A320neo&status=AVAILABLE
 Authorization: Bearer {{token}}
 
-### US106 - REGISTER AIRPORT
+### US106 - REGISTER AIRPORT (us106)
 POST http://localhost:8081/api/airports
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -110,15 +110,15 @@ Authorization: Bearer {{token}}
   ]
 }
 
-### US107 - GET AIRPORT BY IATA
+### US107 - GET AIRPORT BY IATA (us107)
 GET http://localhost:8081/api/airports/XPT
 Authorization: Bearer {{token}}
 
-### US108 - SEARCH AIRPORTS
+### US108 - SEARCH AIRPORTS (us108)
 GET http://localhost:8081/api/airports?city=Porto&country=Portugal&name=Francisco S%C3%A1 Carneiro Airport
 Authorization: Bearer {{token}}
 
-### US106A - ADD CERTIFICATION
+### US106A - ADD CERTIFICATION (us106a)
 POST http://localhost:8081/api/airports/OPO/certifications
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -130,7 +130,7 @@ Authorization: Bearer {{token}}
   "expiresAt": "2027-01-01"
 }
 
-### US109 - UPDATE AIRPORT STATUS
+### US109 - UPDATE AIRPORT STATUS (us109)
 PATCH http://localhost:8081/api/airports/OPO/status
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -141,7 +141,7 @@ Authorization: Bearer {{token}}
 
 ### WP#2B ENDPOINTS
 
-### US207 - REGISTER ENHANCED AIRPORT with OPERATIONAL HOURS
+### US207 - REGISTER ENHANCED AIRPORT with OPERATIONAL HOURS (us207)
 POST http://localhost:8081/api/airports
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -184,7 +184,7 @@ Authorization: Bearer {{token}}
   "airportPhotos": ["https://example.com/lis-front.jpg"]
 }
 
-### US208 - UPDATE AIRPORT DETAILS (name, operationalHours, contacts)
+### US208 - UPDATE AIRPORT DETAILS
 PATCH http://localhost:8081/api/airports/LIS/details
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -200,15 +200,15 @@ Authorization: Bearer {{token}}
   ]
 }
 
-### US209 - GET AIRPORT ROUTES
+### US209 - GET AIRPORT ROUTES (us209)
 GET http://localhost:8081/api/airports/LIS/routes
 Authorization: Bearer {{token}}
 
-### US210 - GET BUSIEST AIRPORTS
+### US210 - GET BUSIEST AIRPORTS (us210)
 GET http://localhost:8081/api/airports/busiest
 Authorization: Bearer {{token}}
 
-### US211 - GROUP AIRPORTS BY CRITERIA
+### US211 - GROUP AIRPORTS BY CRITERIA (us211)
 GET http://localhost:8081/api/airports/grouped?by=country
 Authorization: Bearer {{token}}
 
