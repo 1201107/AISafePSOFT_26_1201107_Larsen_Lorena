@@ -68,7 +68,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "iataCode": "XPT",
+  "iataCode": "ZCX",
   "airportType": "International",
   "name": "Francisco Sá Carneiro Airport",
   "status": "OPERATIONAL",
