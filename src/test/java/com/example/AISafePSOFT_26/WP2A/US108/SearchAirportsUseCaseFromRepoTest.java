@@ -3,6 +3,7 @@ package com.example.AISafePSOFT_26.WP2A.US108;
 import com.example.AISafePSOFT_26.Airport.application.AirportService;
 import com.example.AISafePSOFT_26.Airport.domain.Airport;
 import com.example.AISafePSOFT_26.Airport.infrastructure.AirportRepository;
+import com.example.AISafePSOFT_26.Route.infrastructure.RouteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,7 +21,7 @@ class SearchAirportsUseCaseFromRepoTest {
     @BeforeEach
     void setUp() {
         airportRepository = mock(AirportRepository.class);
-        useCase = new AirportService(airportRepository);
+        useCase = new AirportService(airportRepository, mock(RouteRepository.class));
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.example.AISafePSOFT_26.Airport;
 
 import com.example.AISafePSOFT_26.Airport.application.AirportService;
 import com.example.AISafePSOFT_26.Airport.domain.*;
+import com.example.AISafePSOFT_26.Route.domain.*;
 import com.example.AISafePSOFT_26.exceptions.DomainException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/airports")
@@ -127,6 +129,54 @@ public class AirportController {
         return AirportResponse.from(airport);
     }
 
+    @PatchMapping("/{iataCode}/details")
+    public AirportResponse updateAirportDetails(
+            @PathVariable String iataCode,
+            @Valid @RequestBody UpdateAirportDetailsRequest request) {
+        Airport airport = airportService.updateDetails(
+                iataCode,
+                request.name(),
+                request.operationalHours(),
+                request.contacts() == null ? List.of() :
+                    request.contacts().stream()
+                        .map(contact -> new Contact(
+                            ContactType.valueOf(contact.type()),
+                            contact.value()
+                        ))
+                        .toList()
+        );
+        return AirportResponse.from(airport);
+    }
+
+    @GetMapping("/{iataCode}/routes")
+    public List<RouteResponse> getAirportRoutes(@PathVariable String iataCode) {
+        return airportService.findRoutesByAirport(iataCode)
+                .stream()
+                .map(RouteResponse::from)
+                .toList();
+    }
+
+    @GetMapping("/busiest")
+    public List<AirportRouteStatisticResponse> getBusiestAirports() {
+        return airportService.busiestAirports()
+                .stream()
+                .map(AirportRouteStatisticResponse::from)
+                .toList();
+    }
+
+    @GetMapping("/grouped")
+    public Map<String, List<AirportResponse>> getGroupedAirports(
+            @RequestParam(required = false, defaultValue = "country") String by) {
+        return airportService.groupAirportsBy(by)
+                .entrySet().stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> e.getValue().stream()
+                                .map(AirportResponse::from)
+                                .toList()
+                ));
+    }
+
     record AddAirportRequest(String iataCode, String airportType, String name,
                              String status, AirportLocationRequest location,
                              FacilitiesRequest facilities, Double routeDistance,
@@ -152,6 +202,9 @@ public class AirportController {
                                    LocalDate startsAt, LocalDate expiresAt) {}
 
     record UpdateAirportStatusRequest(String status) {}
+
+    record UpdateAirportDetailsRequest(String name, String operationalHours,
+                                          List<ContactRequest> contacts) {}
 
     public record AirportResponse(String iataCode, String airportType,
                                   String name, AirportStatus status, AirportLocationResponse location,
@@ -221,6 +274,57 @@ public class AirportController {
     record ContactResponse(ContactType type, String value) {
         static ContactResponse from(Contact contact) {
             return new ContactResponse(contact.getType(), contact.getValue());
+        }
+    }
+
+    public record RouteResponse(Long routeId, String routeName, RouteStatus status,
+                               RouteType type, String originIataCode,
+                               String destinationIataCode, Double estimatedFlightTimeHours,
+                               RouteRequirementsResponse requirements,
+                               RouteHistoryResponse history) {
+        static RouteResponse from(Route route) {
+            return new RouteResponse(
+                    route.getRouteId(),
+                    route.getRouteName(),
+                    route.getStatus(),
+                    route.getType(),
+                    route.getOriginAirport().getIataCode(),
+                    route.getDestinationAirport().getIataCode(),
+                    route.getEstimatedFlightTimeHours(),
+                    RouteRequirementsResponse.from(route.getRouteRequirements()),
+                    RouteHistoryResponse.from(route.getRouteHistory())
+            );
+        }
+    }
+
+    record RouteRequirementsResponse(Double requiredRange, Integer requiredCapacity) {
+        static RouteRequirementsResponse from(RouteRequirements requirements) {
+            return new RouteRequirementsResponse(
+                    requirements.getRequiredRange(),
+                    requirements.getRequiredCapacity()
+            );
+        }
+    }
+
+    record RouteHistoryResponse(LocalDate routeBegin,
+                               LocalDate routeFinish,
+                               Integer routeUsage) {
+        static RouteHistoryResponse from(RouteHistory history) {
+            return new RouteHistoryResponse(
+                    history.getRouteBegin(),
+                    history.getRouteFinish(),
+                    history.getRouteUsage()
+            );
+        }
+    }
+
+    record AirportRouteStatisticResponse(String iataCode, String name, Long numberOfRoutes) {
+        static AirportRouteStatisticResponse from(AirportService.AirportRouteStatistic stat) {
+            return new AirportRouteStatisticResponse(
+                    stat.airport().getIataCode(),
+                    stat.airport().getName(),
+                    stat.numberOfRoutes()
+            );
         }
     }
 }

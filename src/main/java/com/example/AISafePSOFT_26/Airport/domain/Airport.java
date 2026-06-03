@@ -52,6 +52,8 @@ public class Airport {
     @Column(name = "image_url")
     private List<String> airportPhotos = new ArrayList<>();
 
+    private String operationalHours;
+
     public Airport() {
     }
 
@@ -122,6 +124,22 @@ public class Airport {
 
     public void changeStatus(AirportStatus status) {
         this.status = status;
+    }
+
+    public String getOperationalHours() {
+        return operationalHours;
+    }
+
+    public void updateDetails(String name, String operationalHours, List<Contact> contacts) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (operationalHours != null) {
+            this.operationalHours = operationalHours;
+        }
+        if (contacts != null) {
+            this.contacts = new ArrayList<>(contacts);
+        }
     }
 
 }

@@ -8,22 +8,33 @@ import com.example.AISafePSOFT_26.Airport.domain.Contact;
 import com.example.AISafePSOFT_26.Airport.domain.Facilities;
 import com.example.AISafePSOFT_26.Airport.domain.Runway;
 import com.example.AISafePSOFT_26.Airport.infrastructure.AirportRepository;
+import com.example.AISafePSOFT_26.Route.domain.Route;
+import com.example.AISafePSOFT_26.Route.infrastructure.RouteRepository;
 import com.example.AISafePSOFT_26.UseCase;
 import com.example.AISafePSOFT_26.exceptions.DomainException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @UseCase
 @Transactional
 public class AirportService {
     private final AirportRepository airportRepository;
+    private final RouteRepository routeRepository;
 
-    public AirportService(AirportRepository airportRepository) {
+    public AirportService(AirportRepository airportRepository, RouteRepository routeRepository) {
         this.airportRepository = airportRepository;
+        this.routeRepository = routeRepository;
+    }
+
+    public record AirportRouteStatistic(Airport airport, long numberOfRoutes) {
     }
 
     public void execute(Airport airport) {
@@ -76,6 +87,7 @@ public class AirportService {
 
         Certification certification =
                 new Certification(name, category, startsAt, expiresAt);
+        certification.setAirport(airport);
         airport.addCertification(certification);
         airportRepository.save(airport);
         return certification;
@@ -86,6 +98,43 @@ public class AirportService {
                 .orElseThrow(() -> new DomainException("Airport does not exist"));
         airport.changeStatus(status);
         return airportRepository.save(airport);
+    }
+
+    public Airport updateDetails(String iataCode, String name, String operationalHours,
+                                 List<Contact> contacts) {
+        Airport airport = airportRepository.findByIataCode(iataCode)
+                .orElseThrow(() -> new DomainException("Airport does not exist"));
+        airport.updateDetails(name, operationalHours, contacts);
+        return airportRepository.save(airport);
+    }
+
+    public List<Route> findRoutesByAirport(String iataCode) {
+        airportRepository.findByIataCode(iataCode)
+                .orElseThrow(() -> new DomainException("Airport does not exist"));
+        return routeRepository.findByOriginAirport_IataCodeOrDestinationAirport_IataCode(
+                iataCode, iataCode);
+    }
+
+    public List<AirportRouteStatistic> busiestAirports() {
+        List<Route> routes = routeRepository.findAll();
+        Map<Airport, Long> counts = new HashMap<>();
+        for (Route route : routes) {
+            counts.merge(route.getOriginAirport(), 1L, Long::sum);
+            counts.merge(route.getDestinationAirport(), 1L, Long::sum);
+        }
+        return counts.entrySet().stream()
+                .map(e -> new AirportRouteStatistic(e.getKey(), e.getValue()))
+                .sorted(Comparator.comparingLong(AirportRouteStatistic::numberOfRoutes).reversed())
+                .collect(Collectors.toList());
+    }
+
+    public Map<String, List<Airport>> groupAirportsBy(String criteria) {
+        List<Airport> airports = airportRepository.findAll();
+        return airports.stream().collect(Collectors.groupingBy(airport -> switch (criteria) {
+            case "country" -> airport.getAirportLocation().getCountry();
+            case "city" -> airport.getAirportLocation().getCity();
+            default -> throw new DomainException("Unknown grouping criteria: " + criteria);
+        }));
     }
 
     private void validateIataCode(String iataCode) {

@@ -42,8 +42,8 @@ class SearchRoutesHttpTest {
 
     @Test
     void shouldSearchRoutesByOriginAndDestination() throws Exception {
-        when(routeService.searchRoutes("OPO", "LIS"))
-                .thenReturn(List.of(route("OPO-LIS")));
+        Route r = route("OPO-LIS");
+        when(routeService.searchRoutes("OPO", "LIS")).thenReturn(List.of(r));
 
         mockMvc.perform(get("/api/routes")
                         .param("origin", "OPO")

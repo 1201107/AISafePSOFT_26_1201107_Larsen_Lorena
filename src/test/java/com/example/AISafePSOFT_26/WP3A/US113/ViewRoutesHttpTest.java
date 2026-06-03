@@ -42,8 +42,8 @@ class ViewRoutesHttpTest {
 
     @Test
     void shouldReturnRoutesFromAirport() throws Exception {
-        when(routeService.getRoutesFromAirport("OPO"))
-                .thenReturn(List.of(route("OPO-LIS")));
+        Route r = route("OPO-LIS");
+        when(routeService.getRoutesFromAirport("OPO")).thenReturn(List.of(r));
 
         mockMvc.perform(get("/api/routes/from/OPO"))
                 .andExpect(status().isOk())
@@ -55,8 +55,8 @@ class ViewRoutesHttpTest {
 
     @Test
     void shouldReturnRouteDetails() throws Exception {
-        when(routeService.getRouteDetails(1L))
-                .thenReturn(route("OPO-LIS"));
+        Route r = route("OPO-LIS");
+        when(routeService.getRouteDetails(1L)).thenReturn(r);
 
         mockMvc.perform(get("/api/routes/1"))
                 .andExpect(status().isOk())
