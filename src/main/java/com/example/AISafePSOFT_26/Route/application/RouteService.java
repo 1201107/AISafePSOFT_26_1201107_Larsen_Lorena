@@ -3,6 +3,10 @@ package com.example.AISafePSOFT_26.Route.application;
 import com.example.AISafePSOFT_26.Airport.domain.Airport;
 import com.example.AISafePSOFT_26.Airport.domain.AirportStatus;
 import com.example.AISafePSOFT_26.Airport.infrastructure.AirportRepository;
+import com.example.AISafePSOFT_26.Aircraft.domain.Aircraft;
+import com.example.AISafePSOFT_26.Aircraft.domain.AircraftAvailability;
+import com.example.AISafePSOFT_26.Flight.domain.Flight;
+import com.example.AISafePSOFT_26.Flight.infrastructure.FlightRepository;
 import com.example.AISafePSOFT_26.Route.domain.Route;
 import com.example.AISafePSOFT_26.Route.domain.RouteHistory;
 import com.example.AISafePSOFT_26.Route.domain.RouteRequirements;
@@ -11,94 +15,92 @@ import com.example.AISafePSOFT_26.Route.domain.RouteType;
 import com.example.AISafePSOFT_26.Route.infrastructure.RouteRepository;
 import com.example.AISafePSOFT_26.UseCase;
 import com.example.AISafePSOFT_26.exceptions.DomainException;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @UseCase
+@Transactional
 public class RouteService {
     private final RouteRepository routeRepository;
+    private final FlightRepository flightRepository;
     private final AirportRepository airportRepository;
 
-    public RouteService(RouteRepository routeRepository, AirportRepository airportRepository) {
+    @Autowired
+    public RouteService(RouteRepository routeRepository, FlightRepository flightRepository,
+            AirportRepository airportRepository) {
         this.routeRepository = routeRepository;
+        this.flightRepository = flightRepository;
         this.airportRepository = airportRepository;
     }
 
-    public Route createRoute(String routeName, String originIataCode, String destinationIataCode,
-                             Double estimatedFlightTimeHours, RouteType type,
-                             RouteRequirements requirements) {
-        validateRouteName(routeName);
-        validateFlightTime(estimatedFlightTimeHours);
-        validateDifferentAirports(originIataCode, destinationIataCode);
+    public RouteService(RouteRepository routeRepository, FlightRepository flightRepository) {
+        this(routeRepository, flightRepository, null);
+    }
 
+    public RouteService(RouteRepository routeRepository, AirportRepository airportRepository) {
+        this(routeRepository, null, airportRepository);
+    }
+
+    public Optional<Route> getRouteById(Long routeId) {
+        return routeRepository.findByRouteId(routeId);
+    }
+
+    public Route createRoute(String routeName, String originIataCode,
+            String destinationIataCode, Double estimatedFlightTimeHours,
+            RouteType type, RouteRequirements routeRequirements) {
+        validateIataCode(originIataCode);
+        validateIataCode(destinationIataCode);
+        if (originIataCode.equals(destinationIataCode)) {
+            throw new DomainException("Origin and destination airports must be different");
+        }
+        if (estimatedFlightTimeHours == null || estimatedFlightTimeHours <= 0) {
+            throw new DomainException("Estimated flight time must be positive");
+        }
         if (routeRepository.findByRouteName(routeName).isPresent()) {
             throw new DomainException("Route already exists");
         }
 
-        Airport originAirport = findOperationalAirport(originIataCode, "Origin airport does not exist");
-        Airport destinationAirport = findOperationalAirport(destinationIataCode, "Destination airport does not exist");
+        Airport origin = findAirport(originIataCode, "Origin airport does not exist");
+        Airport destination = findAirport(destinationIataCode, "Destination airport does not exist");
+        if (origin.getStatus() != AirportStatus.OPERATIONAL
+                || destination.getStatus() != AirportStatus.OPERATIONAL) {
+            throw new DomainException("Airport is not operational");
+        }
 
-        Route route = new Route(
-                requirements,
-                RouteStatus.ACTIVE,
+        Route route = new Route(routeRequirements, RouteStatus.ACTIVE,
                 type == null ? RouteType.DIRECT : type,
-                new RouteHistory(LocalDate.now(), 0),
-                estimatedFlightTimeHours,
-                originAirport,
-                destinationAirport,
-                routeName
-        );
-
+                new RouteHistory(LocalDate.now(), 0), estimatedFlightTimeHours,
+                origin, destination, routeName);
         return routeRepository.save(route);
     }
 
-    public Route getRouteDetails(Long routeId) {
-        return findRoute(routeId);
-    }
-
     public RouteHistory getRouteHistory(Long routeId) {
-        return findRoute(routeId).getRouteHistory();
-    }
-
-    public List<Route> getRoutesFromAirport(String airportIataCode) {
-        validateIataCode(airportIataCode);
-        if (airportRepository.findByIataCode(airportIataCode).isEmpty()) {
-            throw new DomainException("Airport does not exist");
-        }
-        return routeRepository.findByOriginAirport_IataCode(airportIataCode);
-    }
-
-    public List<Route> searchRoutes(String originIataCode, String destinationIataCode) {
-        Specification<Route> spec = (root, query, cb) -> cb.conjunction();
-
-        if (originIataCode != null) {
-            validateIataCode(originIataCode);
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("originAirport").get("iataCode"), originIataCode));
-        }
-
-        if (destinationIataCode != null) {
-            validateIataCode(destinationIataCode);
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("destinationAirport").get("iataCode"), destinationIataCode));
-        }
-
-        return routeRepository.findAll(spec);
+        return getRouteDetails(routeId).getRouteHistory();
     }
 
     public Route updateRoute(Long routeId, String destinationIataCode,
-                             Double estimatedFlightTimeHours, RouteStatus status) {
-        Route route = findRoute(routeId);
+            Double estimatedFlightTimeHours, RouteStatus status) {
+        Route route = routeRepository.findByRouteId(routeId)
+                .orElseThrow(() -> new DomainException("Route does not exist"));
 
         if (destinationIataCode != null) {
-            validateDifferentAirports(route.getOriginAirport().getIataCode(), destinationIataCode);
-            Airport destinationAirport = findOperationalAirport(
-                    destinationIataCode,
-                    "Destination airport does not exist"
-            );
-            route.changeDestination(destinationAirport);
+            validateIataCode(destinationIataCode);
+            if (route.getOriginAirport().getIataCode().equals(destinationIataCode)) {
+                throw new DomainException("Origin and destination airports must be different");
+            }
+            Airport destination = findAirport(destinationIataCode,
+                    "Destination airport does not exist");
+            if (destination.getStatus() != AirportStatus.OPERATIONAL) {
+                throw new DomainException("Airport is not operational");
+            }
+            route.changeDestination(destination);
         }
 
         if (estimatedFlightTimeHours != null) {
@@ -106,55 +108,140 @@ public class RouteService {
         }
 
         if (status != null) {
-            changeStatus(route, status);
+            if (status == RouteStatus.ACTIVE) {
+                route.activateRoute();
+            } else if (status == RouteStatus.INACTIVE) {
+                route.suspendRoute();
+            } else if (status == RouteStatus.ARCHIVED) {
+                route.retireRoute();
+                route.getRouteHistory().endRoute(LocalDate.now());
+            }
         }
 
         return routeRepository.save(route);
     }
 
-    private Route findRoute(Long routeId) {
+    public List<Route> getRoutesFromAirport(String airportIataCode) {
+        validateIataCode(airportIataCode);
+        findAirport(airportIataCode, "Airport does not exist");
+        return routeRepository.findByOriginAirport_IataCode(airportIataCode);
+    }
+
+    public Route getRouteDetails(Long routeId) {
         return routeRepository.findByRouteId(routeId)
                 .orElseThrow(() -> new DomainException("Route does not exist"));
     }
 
-    private Airport findOperationalAirport(String iataCode, String notFoundMessage) {
-        validateIataCode(iataCode);
-        Airport airport = airportRepository.findByIataCode(iataCode)
-                .orElseThrow(() -> new DomainException(notFoundMessage));
+    public List<Route> searchRoutes(String originIataCode, String destinationIataCode) {
+        if (originIataCode != null) {
+            validateIataCode(originIataCode);
+        }
+        if (destinationIataCode != null) {
+            validateIataCode(destinationIataCode);
+        }
 
-        if (airport.getStatus() != AirportStatus.OPERATIONAL) {
+        Specification<Route> spec = (root, query, cb) -> cb.conjunction();
+        if (originIataCode != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("originAirport").get("iataCode"), originIataCode));
+        }
+        if (destinationIataCode != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("destinationAirport").get("iataCode"), destinationIataCode));
+        }
+        return routeRepository.findAll(spec);
+    }
+
+    public Flight scheduleFlight(Long routeId, Aircraft aircraft,
+            LocalDateTime scheduledDeparture, LocalDateTime scheduledArrival) {
+        Route route = routeRepository.findByRouteId(routeId)
+                .orElseThrow(() -> new DomainException("Route does not exist"));
+        validateFlightSchedule(route, aircraft, scheduledDeparture, scheduledArrival);
+
+        Flight flight = new Flight(route, aircraft, scheduledDeparture, scheduledArrival);
+        route.getRouteHistory().updateRouteUsage(1);
+        routeRepository.save(route);
+        return flightRepository.save(flight);
+    }
+
+    public List<Flight> getScheduledFlightsForAircraft(String registrationNumber) {
+        return flightRepository.findByAircraft_RegistrationNumber(registrationNumber);
+    }
+
+    public List<Route> listActiveRoutes(String sortBy) {
+        Sort sort = "distance".equalsIgnoreCase(sortBy)
+                ? Sort.by(Sort.Direction.ASC, "distanceKm")
+                : Sort.by(Sort.Direction.DESC, "routeHistory.routeUsage");
+        return routeRepository.findByStatus(RouteStatus.ACTIVE, sort);
+    }
+
+    public Double calculateTotalRouteDistance() {
+        return routeRepository.findAll()
+                .stream()
+                .mapToDouble(route -> route.getDistanceKm() == null ? 0.0 : route.getDistanceKm())
+                .sum();
+    }
+
+    public List<Route> searchAlternativeRoutes(String originIataCode, String destinationIataCode) {
+        Specification<Route> spec = (root, query, cb) -> cb.and(
+                cb.equal(root.get("status"), RouteStatus.ACTIVE),
+                cb.equal(root.get("originAirport").get("iataCode"), originIataCode),
+                cb.equal(root.get("destinationAirport").get("iataCode"), destinationIataCode)
+        );
+        return routeRepository.findAll(spec);
+    }
+
+    private void validateFlightSchedule(Route route, Aircraft aircraft,
+            LocalDateTime scheduledDeparture, LocalDateTime scheduledArrival) {
+        if (aircraft == null) {
+            throw new DomainException("Aircraft does not exist");
+        }
+        if (scheduledDeparture == null || scheduledArrival == null
+                || !scheduledArrival.isAfter(scheduledDeparture)) {
+            throw new DomainException("Scheduled arrival must be after departure");
+        }
+        if (route.getStatus() != RouteStatus.ACTIVE) {
+            throw new DomainException("Route is not active");
+        }
+        if (route.getOriginAirport().getStatus() != AirportStatus.OPERATIONAL
+                || route.getDestinationAirport().getStatus() != AirportStatus.OPERATIONAL) {
             throw new DomainException("Airport is not operational");
         }
-
-        return airport;
-    }
-
-    private void changeStatus(Route route, RouteStatus status) {
-        if (status == RouteStatus.ACTIVE) {
-            route.activateRoute();
-        } else if (status == RouteStatus.INACTIVE) {
-            route.suspendRoute();
-        } else if (status == RouteStatus.ARCHIVED) {
-            route.retireRoute();
+        if (aircraft.getStatus() != AircraftAvailability.AVAILABLE) {
+            throw new DomainException("Aircraft is not available");
+        }
+        if (aircraftRange(aircraft) < requiredRange(route)) {
+            throw new DomainException("Aircraft range does not comply with route requirements");
+        }
+        boolean aircraftBusy = flightRepository
+                .existsByAircraft_RegistrationNumberAndScheduledDepartureLessThanAndScheduledArrivalGreaterThan(
+                        aircraft.getRegistrationNumber(), scheduledArrival, scheduledDeparture);
+        if (aircraftBusy) {
+            throw new DomainException("Aircraft is already scheduled for this period");
         }
     }
 
-    private void validateRouteName(String routeName) {
-        if (routeName == null || routeName.isBlank()) {
-            throw new DomainException("Route name is required");
+    private Double aircraftRange(Aircraft aircraft) {
+        if (aircraft.getMeanRange() != null) {
+            return aircraft.getMeanRange();
         }
+        return aircraft.getModel().getAircraftModelSpecs().getMaximumRange();
     }
 
-    private void validateFlightTime(Double estimatedFlightTimeHours) {
-        if (estimatedFlightTimeHours == null || estimatedFlightTimeHours <= 0) {
-            throw new DomainException("Estimated flight time must be positive");
+    private Double requiredRange(Route route) {
+        if (route.getRouteRequirements() != null
+                && route.getRouteRequirements().getRequiredRange() != null) {
+            return route.getRouteRequirements().getRequiredRange();
         }
+        return route.getDistanceKm();
     }
 
-    private void validateDifferentAirports(String originIataCode, String destinationIataCode) {
-        if (originIataCode != null && originIataCode.equals(destinationIataCode)) {
-            throw new DomainException("Origin and destination airports must be different");
+    private Airport findAirport(String iataCode, String message) {
+        if (airportRepository == null) {
+            throw new DomainException(message);
         }
+        return airportRepository.findByIataCode(iataCode)
+                .orElseThrow(() -> new DomainException(message));
     }
 
     private void validateIataCode(String iataCode) {

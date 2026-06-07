@@ -3,8 +3,6 @@ package com.example.AISafePSOFT_26.Route.domain;
 import com.example.AISafePSOFT_26.Airport.domain.Airport;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
-
 @Entity
 @Table(name = "company_routes")
 public class Route {
@@ -40,6 +38,9 @@ public class Route {
     @Column(nullable = false)
     private Double estimatedFlightTimeHours;
 
+    @Column(nullable = false)
+    private Double distanceKm;
+
     @Embedded
     private RouteRequirements routeRequirements;
 
@@ -49,18 +50,26 @@ public class Route {
     public Route(RouteRequirements routeRequirements, RouteStatus status, RouteType type,
             RouteHistory routeHistory, Double estimatedFlightTimeHours, Airport originAirport,
             Airport destinationAirport,String routeName) {
+        this(routeRequirements, status, type, routeHistory, estimatedFlightTimeHours,
+                0.0, originAirport, destinationAirport, routeName);
+    }
+
+    public Route(RouteRequirements routeRequirements, RouteStatus status, RouteType type,
+            RouteHistory routeHistory, Double estimatedFlightTimeHours, Double distanceKm,
+            Airport originAirport, Airport destinationAirport,String routeName) {
         this.routeRequirements = routeRequirements;
         this.status = status;
         this.type = type;
         this.routeHistory = routeHistory;
         this.estimatedFlightTimeHours = estimatedFlightTimeHours;
+        this.distanceKm = distanceKm;
         this.originAirport = originAirport;
         this.destinationAirport = destinationAirport;
         this.routeName = routeName;
     }
 
     public void activateRoute() {
-        if (status == RouteStatus.ARCHIVED) {
+        if (status == RouteStatus.INACTIVE) {
             throw new IllegalStateException(
                     "Retired routes cannot be activated"
             );
@@ -79,9 +88,6 @@ public class Route {
     }
 
     public void retireRoute() {
-        if (routeHistory != null) {
-            routeHistory.endRoute(LocalDate.now());
-        }
         this.status = RouteStatus.ARCHIVED;
     }
 
@@ -111,6 +117,33 @@ public class Route {
         this.destinationAirport = newDestination;
     }
 
+    public void updateRoute(String routeName, RouteStatus status, RouteType type,
+            RouteHistory routeHistory, Double estimatedFlightTimeHours, Double distanceKm,
+            Airport originAirport, Airport destinationAirport,
+            RouteRequirements routeRequirements) {
+        if (originAirport == null) {
+            throw new IllegalArgumentException("Origin airport cannot be null");
+        }
+        if (destinationAirport == null) {
+            throw new IllegalArgumentException("Destination airport cannot be null");
+        }
+        if (originAirport.equals(destinationAirport)) {
+            throw new IllegalArgumentException("Origin and destination airports cannot be equal");
+        }
+        if (estimatedFlightTimeHours == null || estimatedFlightTimeHours <= 0) {
+            throw new IllegalArgumentException("Estimated flight time must be positive");
+        }
+        this.routeName = routeName;
+        this.status = status;
+        this.type = type;
+        this.routeHistory = routeHistory;
+        this.estimatedFlightTimeHours = estimatedFlightTimeHours;
+        this.distanceKm = distanceKm;
+        this.originAirport = originAirport;
+        this.destinationAirport = destinationAirport;
+        this.routeRequirements = routeRequirements;
+    }
+
     public boolean isOperational() {
 
         return status == RouteStatus.ACTIVE;
@@ -118,6 +151,10 @@ public class Route {
 
     public Long getRouteId() {
         return routeId;
+    }
+
+    public String getRouteName() {
+        return routeName;
     }
 
     public RouteStatus getStatus() {
@@ -144,15 +181,11 @@ public class Route {
         return estimatedFlightTimeHours;
     }
 
+    public Double getDistanceKm() {
+        return distanceKm;
+    }
+
     public RouteRequirements getRouteRequirements() {
         return routeRequirements;
-    }
-
-    public String getRouteName() {
-        return routeName;
-    }
-
-    public Long getVersion() {
-        return version;
     }
 }

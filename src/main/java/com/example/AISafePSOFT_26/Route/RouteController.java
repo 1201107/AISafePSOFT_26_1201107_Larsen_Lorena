@@ -7,7 +7,6 @@ import com.example.AISafePSOFT_26.Route.domain.RouteRequirements;
 import com.example.AISafePSOFT_26.Route.domain.RouteStatus;
 import com.example.AISafePSOFT_26.Route.domain.RouteType;
 import com.example.AISafePSOFT_26.exceptions.DomainException;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,31 +24,27 @@ public class RouteController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RouteResponse createRoute(@Valid @RequestBody AddRouteRequest request) {
+    public RouteResponse createRoute(@RequestBody CreateRouteRequest request) {
         if (request.requirements() == null) {
             throw new DomainException("Route requirements are required");
         }
-
-        RouteRequirements requirements = new RouteRequirements(
-                request.requirements().requiredRange(),
-                request.requirements().requiredCapacity()
-        );
-
-        Route route = routeService.createRoute(
+        return RouteResponse.from(routeService.createRoute(
                 request.routeName(),
                 request.originIataCode(),
                 request.destinationIataCode(),
                 request.estimatedFlightTimeHours(),
-                request.type() == null ? null : RouteType.valueOf(request.type()),
-                requirements
-        );
-
-        return RouteResponse.from(route);
+                request.type(),
+                request.requirements()
+        ));
     }
 
-    @GetMapping("/{routeId}")
-    public RouteResponse getRouteDetails(@PathVariable Long routeId) {
-        return RouteResponse.from(routeService.getRouteDetails(routeId));
+    @PatchMapping("/{routeId}")
+    public RouteResponse updateRoute(@PathVariable Long routeId,
+            @RequestBody UpdateRouteRequest request) {
+        return RouteResponse.from(routeService.updateRoute(routeId,
+                request.destinationIataCode(),
+                request.estimatedFlightTimeHours(),
+                request.status()));
     }
 
     @GetMapping("/{routeId}/history")
@@ -65,6 +60,11 @@ public class RouteController {
                 .toList();
     }
 
+    @GetMapping("/{routeId}")
+    public RouteResponse getRouteDetails(@PathVariable Long routeId) {
+        return RouteResponse.from(routeService.getRouteDetails(routeId));
+    }
+
     @GetMapping
     public List<RouteResponse> searchRoutes(
             @RequestParam(required = false) String origin,
@@ -75,72 +75,73 @@ public class RouteController {
                 .toList();
     }
 
-    @PatchMapping("/{routeId}")
-    public RouteResponse updateRoute(@PathVariable Long routeId,
-                                     @Valid @RequestBody UpdateRouteRequest request) {
-        Route route = routeService.updateRoute(
-                routeId,
-                request.destinationIataCode(),
-                request.estimatedFlightTimeHours(),
-                request.status() == null ? null : RouteStatus.valueOf(request.status())
-        );
-
-        return RouteResponse.from(route);
+    @GetMapping("/active")
+    public List<RouteResponse> listActiveRoutes(
+            @RequestParam(defaultValue = "popularity") String sortBy) {
+        return routeService.listActiveRoutes(sortBy)
+                .stream()
+                .map(RouteResponse::from)
+                .toList();
     }
 
-    record AddRouteRequest(String routeName, String originIataCode,
-                           String destinationIataCode, Double estimatedFlightTimeHours,
-                           String type, RouteRequirementsRequest requirements) {}
+    @GetMapping("/total-distance")
+    public TotalDistanceResponse calculateTotalDistance() {
+        return new TotalDistanceResponse(routeService.calculateTotalRouteDistance());
+    }
 
-    record RouteRequirementsRequest(Double requiredRange, Integer requiredCapacity) {}
+    @GetMapping("/alternatives")
+    public List<RouteResponse> searchAlternativeRoutes(
+            @RequestParam String origin,
+            @RequestParam String destination) {
+        return routeService.searchAlternativeRoutes(origin, destination)
+                .stream()
+                .map(RouteResponse::from)
+                .toList();
+    }
+
+    public record TotalDistanceResponse(Double totalDistanceKm) {
+    }
+
+    record CreateRouteRequest(String routeName, String originIataCode,
+            String destinationIataCode, Double estimatedFlightTimeHours,
+            RouteType type, RouteRequirements requirements) {
+    }
 
     record UpdateRouteRequest(String destinationIataCode,
-                              Double estimatedFlightTimeHours, String status) {}
+            Double estimatedFlightTimeHours, RouteStatus status) {
+    }
 
     public record RouteResponse(Long routeId, String routeName, RouteStatus status,
-                                RouteType type, String originIataCode,
-                                String destinationIataCode, Double estimatedFlightTimeHours,
-                                RouteRequirementsResponse requirements,
-                                RouteHistoryResponse history) {
-        static RouteResponse from(Route route) {
-            return new RouteResponse(
-                    route.getRouteId(),
-                    route.getRouteName(),
-                    route.getStatus(),
-                    route.getType(),
+            RouteType type, String originIataCode,
+            String destinationIataCode, Double estimatedFlightTimeHours,
+            Double distanceKm,
+            RouteRequirementsResponse routeRequirements,
+            RouteHistoryResponse routeHistory) {
+
+        public static RouteResponse from(Route route) {
+            return new RouteResponse(route.getRouteId(), route.getRouteName(),
+                    route.getStatus(), route.getType(),
                     route.getOriginAirport().getIataCode(),
                     route.getDestinationAirport().getIataCode(),
-                    route.getEstimatedFlightTimeHours(),
+                    route.getEstimatedFlightTimeHours(), route.getDistanceKm(),
                     RouteRequirementsResponse.from(route.getRouteRequirements()),
-                    RouteHistoryResponse.from(route.getRouteHistory())
-            );
+                    RouteHistoryResponse.from(route.getRouteHistory()));
         }
     }
 
-    public record RouteRequirementsResponse(Double requiredRange, Integer requiredCapacity) {
-        static RouteRequirementsResponse from(RouteRequirements requirements) {
-            if (requirements == null) {
-                return null;
-            }
-            return new RouteRequirementsResponse(
-                    requirements.getRequiredRange(),
-                    requirements.getRequiredCapacity()
-            );
+    public record RouteRequirementsResponse(Double requiredRange,
+            Integer requiredCapacity) {
+        public static RouteRequirementsResponse from(RouteRequirements requirements) {
+            return new RouteRequirementsResponse(requirements.getRequiredRange(),
+                    requirements.getRequiredCapacity());
         }
     }
 
     public record RouteHistoryResponse(LocalDate routeBegin,
-                                       LocalDate routeFinish,
-                                       Integer routeUsage) {
-        static RouteHistoryResponse from(RouteHistory history) {
-            if (history == null) {
-                return null;
-            }
-            return new RouteHistoryResponse(
-                    history.getRouteBegin(),
-                    history.getRouteFinish(),
-                    history.getRouteUsage()
-            );
+            LocalDate routeFinish, Integer routeUsage) {
+        public static RouteHistoryResponse from(RouteHistory history) {
+            return new RouteHistoryResponse(history.getRouteBegin(),
+                    history.getRouteFinish(), history.getRouteUsage());
         }
     }
 }

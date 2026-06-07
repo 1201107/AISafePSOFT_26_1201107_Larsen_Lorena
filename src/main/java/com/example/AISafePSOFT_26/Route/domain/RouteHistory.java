@@ -25,7 +25,7 @@ public class RouteHistory {
         this.routeFinish = routeFinish;
     }
 
-    private void updateRouteUsage(Integer routeUsage) {
+    public void updateRouteUsage(Integer routeUsage) {
         this.routeUsage += routeUsage;
     }
 
