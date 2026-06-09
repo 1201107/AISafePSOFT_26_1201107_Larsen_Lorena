@@ -21,6 +21,26 @@ public class MaintenanceReportService {
     }
 
     public record TurnaroundAverage(String aircraftType, Double averageDays) {}
+    public record MaintenanceCostReport(String group, Double totalCost) {}
+
+    public List<MaintenanceRecord> ongoingMaintenanceActivities() {
+        return maintenanceRecordRepository.findByStatus(MaintenanceStatus.ONGOING);
+    }
+
+    public List<MaintenanceCostReport> maintenanceCosts(String groupBy) {
+        Map<String, Double> totals = maintenanceRecordRepository.findAll()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        record -> reportGroup(record, groupBy),
+                        Collectors.summingDouble(this::recordCost)
+                ));
+
+        return totals.entrySet()
+                .stream()
+                .map(e -> new MaintenanceCostReport(e.getKey(), e.getValue()))
+                .sorted(Comparator.comparing(MaintenanceCostReport::group))
+                .toList();
+    }
 
     public List<TurnaroundAverage> averageTurnaroundTimePerAircraftType() {
         List<MaintenanceRecord> completed = maintenanceRecordRepository.findByStatus(MaintenanceStatus.COMPLETED);
@@ -42,5 +62,19 @@ public class MaintenanceReportService {
                 ))
                 .sorted(Comparator.comparing(TurnaroundAverage::aircraftType))
                 .toList();
+    }
+
+    private String reportGroup(MaintenanceRecord record, String groupBy) {
+        if ("model".equalsIgnoreCase(groupBy)) {
+            return record.getAircraft().getModel().getModelName();
+        }
+        return record.getAircraft().getRegistrationNumber();
+    }
+
+    private Double recordCost(MaintenanceRecord record) {
+        return record.getUsedParts()
+                .stream()
+                .mapToDouble(part -> part.getQuantity() * part.getPrice())
+                .sum();
     }
 }

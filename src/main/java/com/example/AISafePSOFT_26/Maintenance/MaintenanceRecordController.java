@@ -136,6 +136,25 @@ public class MaintenanceRecordController {
                 .toList();
     }
 
+    // US219 - atividades de manutencao em curso na frota
+    @GetMapping("/ongoing")
+    public List<MaintenanceRecordResponse> ongoingMaintenanceActivities() {
+        return maintenanceReportService.ongoingMaintenanceActivities()
+                .stream()
+                .map(MaintenanceRecordResponse::from)
+                .toList();
+    }
+
+    // US220 - custos de manutencao por aeronave ou modelo
+    @GetMapping("/reports/costs")
+    public List<MaintenanceCostReportResponse> maintenanceCosts(
+            @RequestParam(defaultValue = "aircraft") String groupBy) {
+        return maintenanceReportService.maintenanceCosts(groupBy)
+                .stream()
+                .map(r -> new MaintenanceCostReportResponse(r.group(), r.totalCost()))
+                .toList();
+    }
+
     // US222 — alertas de manutenção por horas de voo ou dias de calendário
     @GetMapping("/alerts")
     public List<MaintenanceAlertResponse> maintenanceAlerts(
@@ -210,6 +229,8 @@ public class MaintenanceRecordController {
     }
 
     record TurnaroundAverageResponse(String aircraftType, Double averageDays) {}
+
+    record MaintenanceCostReportResponse(String group, Double totalCost) {}
 
     record MaintenanceAlertResponse(String registrationNumber,
                                     String aircraftModel,
