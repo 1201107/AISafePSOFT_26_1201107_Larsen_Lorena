@@ -212,7 +212,6 @@ Authorization: Bearer {{token}}
 GET http://localhost:8081/api/airports/grouped?by=country
 Authorization: Bearer {{token}}
 
-
 ### WP#4A ENDPOINTS
 
 ### US117 - GET MAINTENANCE TEMPLATE BY ID (us117)
@@ -236,4 +235,17 @@ Authorization: Bearer {{token}}
   "status": "ONGOING"
 }
 
+### WP#4B ENDPOINTS
+
+### US221 - TURNAROUND AVERAGE PER AIRCRAFT TYPE (us221)
+GET http://localhost:8081/api/maintenance/turnaround-average
+Authorization: Bearer {{token}}
+
+### US222 - MAINTENANCE ALERTS WITH DEFAULT THRESHOLDS (us222)
+GET http://localhost:8081/api/maintenance/alerts
+Authorization: Bearer {{token}}
+
+### US222 - MAINTENANCE ALERTS WITH CUSTOM THRESHOLDS (us222)
+GET http://localhost:8081/api/maintenance/alerts?calendarDaysThreshold=90&flightHoursThreshold=300
+Authorization: Bearer {{token}}
 

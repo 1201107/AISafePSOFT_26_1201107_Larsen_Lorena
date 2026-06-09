@@ -1,8 +1,14 @@
 package com.example.AISafePSOFT_26.WP4A.US119;
 
 import com.example.AISafePSOFT_26.Aircraft.domain.Aircraft;
+import com.example.AISafePSOFT_26.Aircraft.application.AircraftSearchService;
 import com.example.AISafePSOFT_26.Maintenance.MaintenanceRecordController;
+import com.example.AISafePSOFT_26.Maintenance.aplication.AddMaintenanceRecordUseCase;
+import com.example.AISafePSOFT_26.Maintenance.aplication.AddMaintenanceTemplateUseCase;
+import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceAlertService;
 import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceRecordProgressService;
+import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceReportService;
+import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceTemplateSearchService;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceRecord;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceTemplate;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceStatus;
@@ -31,14 +37,15 @@ class MaintenanceRecordHttpTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private MaintenanceRecordProgressService maintenanceRecordProgressService;
-
-    @MockBean
-    private JwtService jwtService;
-
-    @MockBean
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    @MockBean private MaintenanceRecordProgressService maintenanceRecordProgressService;
+    @MockBean private MaintenanceReportService maintenanceReportService;
+    @MockBean private MaintenanceAlertService maintenanceAlertService;
+    @MockBean private MaintenanceTemplateSearchService maintenanceTemplateSearchService;
+    @MockBean private AddMaintenanceTemplateUseCase addMaintenanceTemplateUseCase;
+    @MockBean private AddMaintenanceRecordUseCase addMaintenanceRecordUseCase;
+    @MockBean private AircraftSearchService aircraftSearchService;
+    @MockBean private JwtService jwtService;
+    @MockBean private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Test
     void shouldGetRecordByIdSuccessfully() throws Exception {

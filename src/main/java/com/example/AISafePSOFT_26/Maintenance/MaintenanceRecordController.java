@@ -4,7 +4,9 @@ import com.example.AISafePSOFT_26.Aircraft.application.AircraftSearchService;
 import com.example.AISafePSOFT_26.Aircraft.domain.Aircraft;
 import com.example.AISafePSOFT_26.Maintenance.aplication.AddMaintenanceRecordUseCase;
 import com.example.AISafePSOFT_26.Maintenance.aplication.AddMaintenanceTemplateUseCase;
+import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceAlertService;
 import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceRecordProgressService;
+import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceReportService;
 import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceTemplateSearchService;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceAttribute;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceRecord;
@@ -33,17 +35,23 @@ public class MaintenanceRecordController {
     private final AircraftSearchService aircraftSearchService;
     private final MaintenanceTemplateSearchService maintenanceTemplateSearchService;
     private final MaintenanceRecordProgressService maintenanceRecordProgressService;
+    private final MaintenanceReportService maintenanceReportService;
+    private final MaintenanceAlertService maintenanceAlertService;
 
     public MaintenanceRecordController(AddMaintenanceTemplateUseCase addMaintenanceTemplateUseCase,
                                        AddMaintenanceRecordUseCase addMaintenanceRecordUseCase,
                                        AircraftSearchService aircraftSearchService,
                                        MaintenanceTemplateSearchService maintenanceTemplateSearchService,
-                                       MaintenanceRecordProgressService maintenanceRecordProgressService) {
+                                       MaintenanceRecordProgressService maintenanceRecordProgressService,
+                                       MaintenanceReportService maintenanceReportService,
+                                       MaintenanceAlertService maintenanceAlertService) {
         this.addMaintenanceTemplateUseCase = addMaintenanceTemplateUseCase;
         this.addMaintenanceRecordUseCase = addMaintenanceRecordUseCase;
         this.aircraftSearchService = aircraftSearchService;
         this.maintenanceTemplateSearchService = maintenanceTemplateSearchService;
         this.maintenanceRecordProgressService = maintenanceRecordProgressService;
+        this.maintenanceReportService = maintenanceReportService;
+        this.maintenanceAlertService = maintenanceAlertService;
     }
 
     // WP3 — criar template
@@ -119,6 +127,33 @@ public class MaintenanceRecordController {
         return MaintenanceRecordResponse.from(record);
     }
 
+    // US221 — tempo médio de manutenção por tipo de aeronave
+    @GetMapping("/turnaround-average")
+    public List<TurnaroundAverageResponse> turnaroundAverage() {
+        return maintenanceReportService.averageTurnaroundTimePerAircraftType()
+                .stream()
+                .map(t -> new TurnaroundAverageResponse(t.aircraftType(), t.averageDays()))
+                .toList();
+    }
+
+    // US222 — alertas de manutenção por horas de voo ou dias de calendário
+    @GetMapping("/alerts")
+    public List<MaintenanceAlertResponse> maintenanceAlerts(
+            @RequestParam(defaultValue = "180") int calendarDaysThreshold,
+            @RequestParam(defaultValue = "500") double flightHoursThreshold) {
+        return maintenanceAlertService.findAircraftDueForMaintenance(calendarDaysThreshold, flightHoursThreshold)
+                .stream()
+                .map(a -> new MaintenanceAlertResponse(
+                        a.registrationNumber(),
+                        a.aircraftModel(),
+                        a.totalFlightHours(),
+                        a.lastMaintenanceDate(),
+                        a.daysSinceLastMaintenance(),
+                        a.alertReason()
+                ))
+                .toList();
+    }
+
     // DTOs
     record AddRecordShortRequest(@NotBlank String registrationNumber,
                                  @NotNull Long templateId,
@@ -173,4 +208,13 @@ public class MaintenanceRecordController {
             );
         }
     }
+
+    record TurnaroundAverageResponse(String aircraftType, Double averageDays) {}
+
+    record MaintenanceAlertResponse(String registrationNumber,
+                                    String aircraftModel,
+                                    Double totalFlightHours,
+                                    LocalDate lastMaintenanceDate,
+                                    Long daysSinceLastMaintenance,
+                                    String alertReason) {}
 }
