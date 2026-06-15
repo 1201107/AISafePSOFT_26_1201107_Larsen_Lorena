@@ -6,15 +6,21 @@ import com.example.AISafePSOFT_26.Aircraft.domain.*;
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftLifeCycleUpdaterService;
 import com.example.AISafePSOFT_26.AircraftCatalog.application.AircraftModelSearchService;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
+import com.example.AISafePSOFT_26.Route.RouteController;
+import com.example.AISafePSOFT_26.Route.application.RouteSearchService;
 import com.example.AISafePSOFT_26.exceptions.DomainException;
 import com.example.AISafePSOFT_26.exceptions.ResourceNotFoundException;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/hangar")
@@ -23,12 +29,14 @@ public class HangarController {
     private final AircraftModelSearchService aircraftModelSearchService;
     private final AircraftLifeCycleUpdaterService aircraftLifeCycleUpdaterService;
     private final AircraftSearchService aircraftSearchService;
+    private final RouteSearchService routeSearchService;
 
-    public HangarController(AddAircraftUseCase addAircraftUseCase, AircraftModelSearchService aircraftModelSearchService, AircraftLifeCycleUpdaterService aircraftLifeCycleUpdaterService, AircraftSearchService aircraftSearchService) {
+    public HangarController(AddAircraftUseCase addAircraftUseCase, AircraftModelSearchService aircraftModelSearchService, AircraftLifeCycleUpdaterService aircraftLifeCycleUpdaterService, AircraftSearchService aircraftSearchService, RouteSearchService routeSearchService) {
         this.addAircraftUseCase = addAircraftUseCase;
         this.aircraftModelSearchService = aircraftModelSearchService;
         this.aircraftLifeCycleUpdaterService = aircraftLifeCycleUpdaterService;
         this.aircraftSearchService = aircraftSearchService;
+        this.routeSearchService = routeSearchService;
     }
 
     /**
@@ -52,6 +60,7 @@ public class HangarController {
                 AircraftAvailability.valueOf(request.availability()));
         addAircraftUseCase.execute(aircraft);
     }
+
     /**
      * Request body for POST /hangar/aircraft
      */
@@ -99,21 +108,81 @@ public class HangarController {
         aircraftLifeCycleUpdaterService.changeAvailability(aircraft,AircraftAvailability.valueOf(request.availability()));
     }
 
+    /**
+     * Gets an aircraft that passes in the chosen filtering
+     */
+    //TODO: pagination
     @GetMapping("/aircraft")
-    public List<AircraftResponse> getAircraftsWithFiltering(
-            @RequestParam(required = false) String model,
-            @RequestParam(required = false) String status,
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate manufacturingDate) {
-        return aircraftSearchService
-                .findAircraftsMatchingFilter(
-                        model,
-                        status,
-                        manufacturingDate
-                )
+    public List<AircraftResponse> getAircraftsWithFiltering(@RequestParam(required = false) String model, @RequestParam(required = false) String status, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate manufacturingDate) {
+        return aircraftSearchService.findAircraftsMatchingFilter(model,status,manufacturingDate)
                 .stream()
                 .map(AircraftResponse::from)
                 .toList();
+    }
+
+    /**
+     * Returns a list of Routes that are compatible with the chosen aircraft
+     * */
+    //TODO: pagination
+    @GetMapping("/aircraft/{registrationNumber}/compatible-routes")
+    public List<RouteController.RouteResponse> getCompatibleRoutes(@PathVariable String registrationNumber) {
+        Aircraft aircraft = aircraftSearchService
+                .spotAircraftInHangar(registrationNumber)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Aircraft does not exist in hangar"
+                        )
+                );
+        return routeSearchService.findCompatibleRoutes(aircraft).stream().map(RouteController.RouteResponse::from).toList();
+    }
+
+
+    /**
+     * Gets all aircrafts grouped by their availability
+     */
+    @GetMapping("/aircraft-availability")
+    public Map<AircraftAvailability, List<String>> getAircraftsAvailability() {
+        Map<AircraftAvailability, List<String>> result = new EnumMap<>(AircraftAvailability.class);
+        List<Aircraft> aircrafts = aircraftSearchService.findAll();
+
+        for (AircraftAvailability availability : AircraftAvailability.values()) {
+            List<String> registrations =aircraftSearchService.findAircraftsByAvailability(aircrafts, availability)
+                            .stream().map(Aircraft::getRegistrationNumber)
+                            .toList();
+            result.put(availability, registrations);
+        }
+        return result;
+    }
+
+    /**
+     * Gets the real-time aircraft availability status
+     */
+    @GetMapping("/status-summary")
+    public Map<AircraftAvailability, Long> getAircraftAvailabilitySummary() {
+        return Arrays.stream(AircraftAvailability.values())
+                .collect(Collectors.toMap(
+                        status -> status,
+                        aircraftSearchService::countByAvailability
+                ));
+    }
+
+    /**
+     * Gets all Aircrafts and returns them in descending order
+     */
+    @GetMapping("/operational-hours")
+    public Map<String, Double> getOperationalHours(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.DESC, "totalOperationalHours"));
+
+        Page<Aircraft> aircraftPage = aircraftSearchService.findPages(pageable);
+
+        return aircraftPage.getContent().stream()
+                .collect(Collectors.toMap(
+                        Aircraft::getRegistrationNumber,
+                        Aircraft::getTotalOperationalHours,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
     }
 
     /**
@@ -122,7 +191,6 @@ public class HangarController {
     public record AircraftResponse(String registrationNumber, String modelName, AircraftAvailability status,
             LocalDate manufacturingDate, Double totalOperationalHours, Double totalFlightHours,
             Double meanRange, List<String> features) {
-
         public static AircraftResponse from(Aircraft aircraft) {
             return new AircraftResponse(aircraft.getRegistrationNumber(),
                     aircraft.getModel().getModelName(), aircraft.getStatus(),

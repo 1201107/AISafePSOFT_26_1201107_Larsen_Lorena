@@ -89,7 +89,6 @@ public class MaintenanceRecord {
     }
 
     public void updateDuration(Double realDuration) {
-
         if (realDuration == null || realDuration <= 0) {
             throw new IllegalArgumentException(
                     "Duration must be positive"
@@ -100,7 +99,6 @@ public class MaintenanceRecord {
     }
 
     public void assignTechnician(Collaborator technician) {
-
         if (technician == null) {
             throw new IllegalArgumentException(
                     "Technician cannot be null"
@@ -113,7 +111,6 @@ public class MaintenanceRecord {
     }
 
     public void addUsedPart(UsedPart part) {
-
         if (part == null) {
             throw new IllegalArgumentException(
                     "Used part cannot be null"
@@ -148,6 +145,12 @@ public class MaintenanceRecord {
 
         this.status = MaintenanceStatus.COMPLETED;
         this.doneList = new DoneList(notes, tasksDone);
+        this.endDate = endDate;
+    }
+
+    public void markAsCompleted(DoneList doneList,LocalDate endDate) {
+        this.status = MaintenanceStatus.COMPLETED;
+        this.doneList = doneList;
         this.endDate = endDate;
     }
 

@@ -63,8 +63,7 @@ public class Aircraft {
     )
     private List<AircraftCertification> certifications = new ArrayList<>();
 
-    protected Aircraft() {
-    }
+    protected Aircraft() {}
 
     public Aircraft(String registrationNumber, AircraftModel model,LocalDate manufacturingDate,
                     Double totalOperationalHours, Double totalFlightHours) {
@@ -73,7 +72,7 @@ public class Aircraft {
         this.manufacturingDate = manufacturingDate;
         this.totalOperationalHours = totalOperationalHours;
         this.totalFlightHours = totalFlightHours;
-
+        this.meanRange=model.getAircraftModelSpecs().getMaximumRange();
         this.status = AircraftAvailability.INACTIVE;
     }
 
@@ -87,6 +86,10 @@ public class Aircraft {
 
     public void retireAircraft() {
         this.status = AircraftAvailability.INACTIVE;
+    }
+
+    public void sendAircraftInFlight() {
+        this.status = AircraftAvailability.IN_FLIGHT;
     }
 
     public void installComponent(InstalledComponent component) {

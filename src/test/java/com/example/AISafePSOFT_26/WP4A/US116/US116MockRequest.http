@@ -7,7 +7,8 @@ Content-Type: application/json
 }
 
 ###
-@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2ZGVmNGY5Zi0yY2RiLTQzNTQtYmEyZi05Y2I2ZjkyYTY0NTAiLCJyb2xlcyI6WyJNQUlOVEVOQU5DRV9URUNITklDSUFOIl0sImlhdCI6MTc3OTYwODQ1OCwiZXhwIjoxNzc5NjEyMDU4fQ.30gjcE6BlMPJ1JfUaHRPLx-bSmARRghmxagjWtW7-tQ
+@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzM2M4M2Y1Ni0wOTNhLTRkNzUtODc0NS0xYmZlM2M2N2E1NjciLCJyb2xlcyI6WyJNQUlOVEVOQU5DRV9URUNITklDSUFOIl0sImlhdCI6MTc3OTg3ODM0NCwiZXhwIjoxNzc5ODgxOTQ0fQ.s4c-WK0zhwxWWtI9YQfF0KaX0h4TqOeLYWE7zm7XQKc
+
 ###
 POST http://localhost:8081/api/maintenance/record
 Content-Type: application/json

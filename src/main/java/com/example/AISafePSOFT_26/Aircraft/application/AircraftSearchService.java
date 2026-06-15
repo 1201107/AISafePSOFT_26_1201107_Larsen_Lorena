@@ -4,14 +4,14 @@ import com.example.AISafePSOFT_26.Aircraft.domain.Aircraft;
 import com.example.AISafePSOFT_26.Aircraft.domain.AircraftAvailability;
 import com.example.AISafePSOFT_26.Aircraft.infrastructure.AircraftRepository;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
-import com.example.AISafePSOFT_26.AircraftCatalog.infrastructure.AircraftModelRepository;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AircraftSearchService {
@@ -49,5 +49,38 @@ public class AircraftSearchService {
         }
 
         return aircraftRepository.findAll(spec);
+    }
+
+    public List<Map.Entry<AircraftModel, Double>> findMostUsedModelsByFlyingAircraftHours() {
+        return aircraftRepository.findAll().stream()
+                .collect(Collectors.groupingBy(
+                        Aircraft::getModel,
+                        Collectors.summingDouble(Aircraft::getTotalFlightHours)
+                ))
+                .entrySet().stream()
+                .sorted(Map.Entry.<AircraftModel, Double>comparingByValue().reversed())
+                .toList();
+    }
+
+    public List<Aircraft> findAll(){
+        return aircraftRepository.findAll();
+    }
+
+    public Page<Aircraft> findPages(Pageable pageable) {
+        return aircraftRepository.findAll(pageable);
+    }
+
+    public long countByAvailability(AircraftAvailability availability) {
+        return aircraftRepository.countByStatus(availability);
+    }
+
+    public List<Aircraft> findAircraftsByAvailability(List<Aircraft> aircrafts,AircraftAvailability status) {
+        List<Aircraft> filteredAircrafts = new ArrayList<>();
+        for(Aircraft aircraft : aircrafts){
+            if(aircraft.getStatus() == status){
+                filteredAircrafts.add(aircraft);
+            }
+        }
+        return filteredAircrafts;
     }
 }

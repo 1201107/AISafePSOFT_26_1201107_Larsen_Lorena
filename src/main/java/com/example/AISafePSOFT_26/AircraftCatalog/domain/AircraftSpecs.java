@@ -31,7 +31,6 @@ public class AircraftSpecs {
         return maximumRangeKm;
     }
 
-
     public Double getCruisingSpeed() {
         return cruisingSpeedKph;
     }
@@ -40,4 +39,19 @@ public class AircraftSpecs {
         return standardSeatingCapacity;
     }
 
+    public void changeStandardSeatingCapacity(Integer standardSeatingCapacity) {
+        this.standardSeatingCapacity = standardSeatingCapacity;
+    }
+
+    public void changeMaximumRangeKm(Double maximumRangeKm) {
+        this.maximumRangeKm = maximumRangeKm;
+    }
+
+    public void changeFuelCapacityLiters(Double fuelCapacityLiters) {
+        this.fuelCapacityLiters = fuelCapacityLiters;
+    }
+
+    public void changeCruisingSpeedKph(Double cruisingSpeedKph) {
+        this.cruisingSpeedKph = cruisingSpeedKph;
+    }
 }

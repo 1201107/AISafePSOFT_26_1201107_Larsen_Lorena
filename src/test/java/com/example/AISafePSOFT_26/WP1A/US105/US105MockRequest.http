@@ -7,7 +7,9 @@ Content-Type: application/json
 }
 
 ###
-@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYjFkYjNkZi01ZTZlLTQxYWQtOGZkNi0xY2RhZGVhMGU3YjUiLCJyb2xlcyI6WyJBVENDIl0sImlhdCI6MTc3OTYzMzk1MSwiZXhwIjoxNzc5NjM3NTUxfQ.RHfe32UUFZWKTWOJv6dfGoDX97LuWmLnIwtcT9x2ugQ
+@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyOTZhNWU2ZC1kNmQxLTRkNDktYjczMy05YjQzMWJmMTI0NjEiLCJyb2xlcyI6WyJBVENDIl0sImlhdCI6MTc4MTM2NTQ3MiwiZXhwIjoxNzgxMzY5MDcyfQ.WQn8Ak658q-DxtD0YorHAH-zlq_QdaAOcFBDP4wJluI
+
+
 ###
 PATCH http://localhost:8081/api/hangar/aircraft/CS-TU
 Content-Type: application/json

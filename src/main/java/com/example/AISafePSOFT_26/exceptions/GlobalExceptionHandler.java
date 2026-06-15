@@ -84,10 +84,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDetails> handleOther(Exception ex,
                                                     HttpServletRequest request) {
 
+        ex.printStackTrace();
+
         return buildError(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Internal Server Error",
-                "Unexpected error",
+                ex.getMessage(),
                 request.getRequestURI(),
                 null
         );

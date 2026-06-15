@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -50,10 +51,20 @@ public class AircraftModel {
     }
 
     public AircraftSpecs getAircraftModelSpecs() {
+        if(aircraftModelSpecs == null) {
+            aircraftModelSpecs = new AircraftSpecs();
+        }
         return aircraftModelSpecs;
     }
 
     public List<String> getModelImage() {
+        if (modelImage == null) {
+            modelImage = new ArrayList<>();
+        }
         return modelImage;
+    }
+
+    public void changeManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
     }
 }

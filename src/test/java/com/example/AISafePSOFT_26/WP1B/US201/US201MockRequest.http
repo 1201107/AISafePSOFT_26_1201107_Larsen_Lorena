@@ -1,0 +1,34 @@
+POST http://localhost:8081/auth/login
+Content-Type: application/json
+
+{
+  "username": "backoffice",
+  "password": "backoffice123"
+}
+
+###
+
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OGMxMjg2ZS05YjE5LTRlZTYtOWYyYy04OTQ5NGZiMGY2ZDQiLCJyb2xlcyI6WyJCQUNLT0ZGSUNFIl0sImlhdCI6MTc4MTQ4MTU4MywiZXhwIjoxNzgxNDg1MTgzfQ.JMNIsvDW6jWQThGL79zPpB-3Rz-0imhn8Tp1-VBTFgQ
+
+
+@model = 737-800
+
+PATCH http://localhost:8081/api/catalog/model/{{model}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "modelName": "737-800",
+  "manufacturer": "ISEP",
+  "modelImage": [
+    "https://example.com/23t.jpg",
+    "https://example.com/images/a320-side.jpg",
+    "seila.jpg"
+  ],
+  "specs": {
+    "fuelCapacityLiters": 20,
+    "maximumRangeKm": 60,
+    "cruisingSpeedKph": 80,
+    "standardSeatingCapacity": 80
+  }
+}

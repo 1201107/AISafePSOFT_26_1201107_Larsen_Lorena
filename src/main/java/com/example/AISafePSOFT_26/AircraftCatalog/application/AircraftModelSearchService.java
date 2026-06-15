@@ -8,12 +8,9 @@ import java.util.Optional;
 
 @Service
 public class AircraftModelSearchService {
-
     private final AircraftModelRepository aircraftModelRepository;
 
-    public AircraftModelSearchService(
-            AircraftModelRepository aircraftModelRepository
-    ) {
+    public AircraftModelSearchService(AircraftModelRepository aircraftModelRepository) {
         this.aircraftModelRepository = aircraftModelRepository;
     }
 

@@ -7,7 +7,8 @@ Content-Type: application/json
 }
 
 ###
-@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1YzcyMGE1OS1mOTg5LTRhNjYtOTNlZS1lYzJlMWMwYzE4OTUiLCJyb2xlcyI6WyJCQUNLT0ZGSUNFIl0sImlhdCI6MTc3OTYzMzkxOCwiZXhwIjoxNzc5NjM3NTE4fQ.PiGj3wf16J7o6uTCrrxkC8HixE-PeYBB2aCb73U2WOQ
+@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxYmUyOGQyZS0xNGFiLTRkZjgtODQ3Zi01NTU2ZDA0MGFlYWQiLCJyb2xlcyI6WyJCQUNLT0ZGSUNFIl0sImlhdCI6MTc4MTM2NTQwMywiZXhwIjoxNzgxMzY5MDAzfQ.f-gyBtF1SMdAv1INsKVc-ohhlLa-qksGvxIxcuCl1GQ
+
 
 POST http://localhost:8081/api/catalog/model
 Content-Type: application/json

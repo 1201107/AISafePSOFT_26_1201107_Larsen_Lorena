@@ -1,0 +1,18 @@
+POST http://localhost:8081/auth/login
+Content-Type: application/json
+
+{
+  "username": "atcc",
+  "password": "atcc123"
+}
+
+###
+
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlMThkNWZjOS0yODMyLTQ2ZDMtYjgxZS02ZGExYzAwZDFkN2MiLCJyb2xlcyI6WyJBVENDIl0sImlhdCI6MTc4MTQ4MTY3MiwiZXhwIjoxNzgxNDg1MjcyfQ.MQSkbmD_tt2MzFn2aqo5BfmCtfYpejt2iQGCFo-exgE
+
+GET http://localhost:8081/api/hangar/operational-hours
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+
+

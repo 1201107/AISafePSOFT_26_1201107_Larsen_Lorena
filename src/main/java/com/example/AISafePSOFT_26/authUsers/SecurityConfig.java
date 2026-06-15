@@ -38,11 +38,20 @@ public class SecurityConfig {
                     auth.requestMatchers(GET, "/api/welcome").permitAll();
                     auth.requestMatchers("/api/swagger-ui/**").permitAll();
                     auth.requestMatchers("/api/docs/**").permitAll();
+
                     auth.requestMatchers(POST, "/api/catalog/model").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
+                    auth.requestMatchers(PATCH, "/api/catalog/model/{modelName}").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
+                    auth.requestMatchers(PATCH, "/api/catalog/rankings").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
+
                     auth.requestMatchers(POST, "/api/hangar/aircraft").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET,"/api/hangar/aircraft").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET,"/api/hangar/aircraft/{id}").hasAnyRole(Role.BACKOFFICE.name(),Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(PATCH,"/api/hangar/aircraft/{id}").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET,"/api/hangar/aircraft/{registrationNumber}/compatible-routes").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET,"/api/hangar/aircraft-availability").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET,"/api/hangar/operational-hours").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET,"/api/hangar/status-summary").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+
                     auth.requestMatchers(POST, "/api/maintenance/record").hasAnyRole(Role.MAINTENANCE_TECHNICIAN.name(),Role.ADMIN.name());
                     auth.requestMatchers(POST, "/api/airports").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
                     auth.requestMatchers(POST, "/api/airports/{iataCode}/certifications").hasAnyRole(Role.BACKOFFICE.name(),Role.ATCC.name(),Role.ADMIN.name());

@@ -14,4 +14,12 @@ public class SeatingPack {
         this.seatingCapacity = seatingCapacity;
         this.seatingOrientation = seatingOrientation;
     }
+
+    public Integer getSeatingCapacity() {
+        return seatingCapacity;
+    }
+
+    public String getSeatingOrientation() {
+        return seatingOrientation;
+    }
 }
