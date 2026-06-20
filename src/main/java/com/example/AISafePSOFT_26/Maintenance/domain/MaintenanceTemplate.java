@@ -27,13 +27,9 @@ public class MaintenanceTemplate {
     @Enumerated(EnumType.STRING)
     private MaintenanceAttribute attribute;
 
-    public MaintenanceTemplate(
-            String name,
-            Double expectedDuration,
-            Map<String, Boolean> templateChecklist,
-            MaintenanceType operation,
-            MaintenanceAttribute attribute
-    ) {
+    public MaintenanceTemplate(String name,Double expectedDuration,
+            Map<String, Boolean> templateChecklist,MaintenanceType operation,
+                               MaintenanceAttribute attribute) {
         this.name = name;
         this.expectedDuration = expectedDuration;
         this.templateChecklist = templateChecklist;
@@ -42,7 +38,6 @@ public class MaintenanceTemplate {
     }
 
     protected MaintenanceTemplate() {}
-
 
     public Long getTemplateId() {
         return templateId;
@@ -66,5 +61,9 @@ public class MaintenanceTemplate {
 
     public MaintenanceAttribute getAttribute() {
         return attribute;
+    }
+
+    public void changeAttribute(MaintenanceAttribute attribute) {
+        this.attribute = attribute;
     }
 }

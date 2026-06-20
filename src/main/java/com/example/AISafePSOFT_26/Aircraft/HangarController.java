@@ -4,6 +4,7 @@ import com.example.AISafePSOFT_26.Aircraft.application.AddAircraftUseCase;
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftSearchService;
 import com.example.AISafePSOFT_26.Aircraft.domain.*;
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftLifeCycleUpdaterService;
+import com.example.AISafePSOFT_26.Aircraft.infrastructure.CalculationsService;
 import com.example.AISafePSOFT_26.AircraftCatalog.application.AircraftModelSearchService;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
 import com.example.AISafePSOFT_26.Route.RouteController;
@@ -18,7 +19,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
+
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -62,12 +66,6 @@ public class HangarController {
     }
 
     /**
-     * Request body for POST /hangar/aircraft
-     */
-    public record AddAircraftRequest(String registrationNumber, String modelName, LocalDate manufacturingDate,
-                              Double totalOperationalHours, Double totalFlightHours, String availability) {}
-
-    /**
      * Selects an aircraft with a specific Id.
      */
     @GetMapping("/aircraft/{registrationNumber}")
@@ -83,17 +81,25 @@ public class HangarController {
     }
 
     /**
-    *Request body for PATCH /hangar/aircraft{id}
-    */
-    public record  PatchAircraftAvailabilityRequest(String registrationNumber,String availability) {}
+     * Get aircraft instance status
+     */
+    @GetMapping("/aircraft/{registrationNumber}/status")
+    public AircraftStatusResponse getAircraftStatus(@PathVariable String registrationNumber) {
+        Aircraft aircraft = aircraftSearchService
+                .spotAircraftInHangar(registrationNumber)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Aircraft does not exist in hangar"
+                        )
+                );
+        return new AircraftStatusResponse(aircraft.getStatus(),Instant.now().truncatedTo(ChronoUnit.MINUTES));
+    }
 
     /**
     * Changes aircraft availability to the requested valid value.
     */
     @PatchMapping("/aircraft/{registrationNumber}")
-    public void changeAircraft(
-            @PathVariable String registrationNumber,
-            @Valid @RequestBody PatchAircraftAvailabilityRequest request) {
+    public void changeAircraft(@PathVariable String registrationNumber,@Valid @RequestBody PatchAircraftAvailabilityRequest request) {
         if (!registrationNumber.equals(request.registrationNumber())) {
             throw new DomainException("Non matching info");
         }
@@ -111,13 +117,15 @@ public class HangarController {
     /**
      * Gets an aircraft that passes in the chosen filtering
      */
-    //TODO: pagination
     @GetMapping("/aircraft")
-    public List<AircraftResponse> getAircraftsWithFiltering(@RequestParam(required = false) String model, @RequestParam(required = false) String status, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate manufacturingDate) {
-        return aircraftSearchService.findAircraftsMatchingFilter(model,status,manufacturingDate)
-                .stream()
-                .map(AircraftResponse::from)
-                .toList();
+    public List<AircraftResponse> getAircraftsWithFiltering(@RequestParam(required = false) String model,
+            @RequestParam(required = false) String status,@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate manufacturingDate,@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return aircraftSearchService
+                .findAircraftsMatchingFilter(model, status, manufacturingDate, pageable)
+                .map(AircraftResponse::from).toList();
     }
 
     /**
@@ -166,6 +174,7 @@ public class HangarController {
                 ));
     }
 
+
     /**
      * Gets all Aircrafts and returns them in descending order
      */
@@ -186,6 +195,18 @@ public class HangarController {
     }
 
     /**
+     * Request body for POST /hangar/aircraft
+     */
+    public record AddAircraftRequest(String registrationNumber, String modelName, LocalDate manufacturingDate,
+                                     Double totalOperationalHours, Double totalFlightHours, String availability) {}
+
+    /**
+     *Request body for PATCH /hangar/aircraft{id}
+     */
+    public record  PatchAircraftAvailabilityRequest(String registrationNumber,String availability) {}
+
+
+    /**
     * Response body representing an aircraft.
     */
     public record AircraftResponse(String registrationNumber, String modelName, AircraftAvailability status,
@@ -200,4 +221,15 @@ public class HangarController {
             );
         }
     }
-}
+
+    /**
+     * Response body representing an aircraft availability and its timestamp
+     */
+    public record AircraftStatusResponse(AircraftAvailability status, Instant timestamp) {}
+
+
+    /**
+     * Graph value from an aircraft to view its own utilization rate
+     */
+    public record UtilizationInfo(String registrationNumber,LocalDate period,Double utilizationRate) {}}
+

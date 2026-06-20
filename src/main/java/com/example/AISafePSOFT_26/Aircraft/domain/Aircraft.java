@@ -72,7 +72,7 @@ public class Aircraft {
         this.manufacturingDate = manufacturingDate;
         this.totalOperationalHours = totalOperationalHours;
         this.totalFlightHours = totalFlightHours;
-        this.meanRange=model.getAircraftModelSpecs().getMaximumRange();
+        this.meanRange=0.0;
         this.status = AircraftAvailability.INACTIVE;
     }
 
@@ -219,5 +219,15 @@ public class Aircraft {
 
     public SeatingPack getSeatingPack() {
         return seatingPack;
+    }
+
+    public void updateMeanRange(Double newMeanRange) {
+        if(meanRange!=null){
+            this.meanRange += newMeanRange;
+        }else{
+            throw new IllegalStateException(
+                    "Range to update can not be null"
+            );
+        }
     }
 }

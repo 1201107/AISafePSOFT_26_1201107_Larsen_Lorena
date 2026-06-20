@@ -5,6 +5,7 @@ import com.example.AISafePSOFT_26.Route.domain.Route;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "company_flights")
@@ -33,6 +34,12 @@ public class Flight {
 
     @Column(nullable = false)
     private LocalDateTime scheduledArrival;
+
+    @Column
+    private LocalDateTime timeOfDeparture;
+
+    @Column
+    private LocalDateTime timeOfArrival;
 
     protected Flight() {
     }
@@ -81,15 +88,21 @@ public class Flight {
             );
         }
         this.flightStatus = FlightStatus.IN_PROGRESS;
+        this.timeOfDeparture = LocalDateTime.now();
     }
 
     public void completeFlight() {
-        if (flightStatus != FlightStatus.IN_PROGRESS) {
+        if (this.flightStatus != FlightStatus.IN_PROGRESS) {
             throw new IllegalStateException(
                     "Flight is not in progress"
             );
         }
         this.flightStatus = FlightStatus.ARRIVED;
+        this.timeOfArrival = LocalDateTime.now();
+        Double hours=getFlightHours();
+        this.aircraft.updateOperationalHours(hours);
+        this.aircraft.updateFlightHours(hours);
+        this.aircraft.updateMeanRange(this.route.getDistanceKm());
     }
 
     public void cancelFlight() {
@@ -127,5 +140,16 @@ public class Flight {
 
     public LocalDateTime getScheduledArrival() {
         return scheduledArrival;
+    }
+
+    public Double getFlightHours() {
+        if(this.flightStatus == FlightStatus.ARRIVED) {
+            Long minutes=ChronoUnit.MINUTES.between(this.timeOfDeparture, this.timeOfArrival);
+            if(minutes<10){
+                return ChronoUnit.MINUTES.between(this.scheduledDeparture, this.scheduledArrival)/60.0;
+            }
+            return minutes/60.0;
+        }
+        return null;
     }
 }

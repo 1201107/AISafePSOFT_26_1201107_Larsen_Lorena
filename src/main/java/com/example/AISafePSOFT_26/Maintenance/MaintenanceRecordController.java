@@ -1,13 +1,11 @@
 package com.example.AISafePSOFT_26.Maintenance;
 
+import com.example.AISafePSOFT_26.Aircraft.HangarController;
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftSearchService;
 import com.example.AISafePSOFT_26.Aircraft.domain.Aircraft;
-import com.example.AISafePSOFT_26.Maintenance.aplication.AddMaintenanceRecordUseCase;
-import com.example.AISafePSOFT_26.Maintenance.aplication.AddMaintenanceTemplateUseCase;
-import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceAlertService;
-import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceRecordProgressService;
-import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceReportService;
-import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceTemplateSearchService;
+import com.example.AISafePSOFT_26.AircraftCatalog.ModelCatalogController;
+import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftSpecs;
+import com.example.AISafePSOFT_26.Maintenance.aplication.*;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceAttribute;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceRecord;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceStatus;
@@ -18,6 +16,8 @@ import com.example.AISafePSOFT_26.exceptions.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +37,7 @@ public class MaintenanceRecordController {
     private final MaintenanceRecordProgressService maintenanceRecordProgressService;
     private final MaintenanceReportService maintenanceReportService;
     private final MaintenanceAlertService maintenanceAlertService;
+    private final MaintenanceRecordSearchService maintenanceRecordSearchService;
 
     public MaintenanceRecordController(AddMaintenanceTemplateUseCase addMaintenanceTemplateUseCase,
                                        AddMaintenanceRecordUseCase addMaintenanceRecordUseCase,
@@ -44,7 +45,7 @@ public class MaintenanceRecordController {
                                        MaintenanceTemplateSearchService maintenanceTemplateSearchService,
                                        MaintenanceRecordProgressService maintenanceRecordProgressService,
                                        MaintenanceReportService maintenanceReportService,
-                                       MaintenanceAlertService maintenanceAlertService) {
+                                       MaintenanceAlertService maintenanceAlertService, MaintenanceRecordSearchService maintenanceRecordSearchService) {
         this.addMaintenanceTemplateUseCase = addMaintenanceTemplateUseCase;
         this.addMaintenanceRecordUseCase = addMaintenanceRecordUseCase;
         this.aircraftSearchService = aircraftSearchService;
@@ -52,11 +53,11 @@ public class MaintenanceRecordController {
         this.maintenanceRecordProgressService = maintenanceRecordProgressService;
         this.maintenanceReportService = maintenanceReportService;
         this.maintenanceAlertService = maintenanceAlertService;
+        this.maintenanceRecordSearchService = maintenanceRecordSearchService;
     }
 
     // WP3 — criar template
     @PostMapping("/templates")
-    @ResponseStatus(HttpStatus.CREATED)
     public MaintenanceTemplateResponse addTemplate(@Valid @RequestBody AddTemplateRequest request) {
         MaintenanceTemplate template = addMaintenanceTemplateUseCase.execute(
                 request.name(),
@@ -88,7 +89,6 @@ public class MaintenanceRecordController {
 
     // WP3 — criar registo curto
     @PostMapping("/record")
-    @ResponseStatus(HttpStatus.CREATED)
     public void addRecord(@Valid @RequestBody AddRecordShortRequest request) {
         Aircraft aircraft = aircraftSearchService
                 .spotAircraftInHangar(request.registrationNumber())
@@ -173,6 +173,46 @@ public class MaintenanceRecordController {
                 .toList();
     }
 
+    @PatchMapping("/records/{id}")
+    public void updateRecord(@PathVariable Long id,@RequestBody ChangeAttributeRequest request) {
+        MaintenanceRecord record = maintenanceRecordProgressService
+                .findById(id)
+                .orElseThrow(() ->
+                        new DomainException("Maintenance Record does not exist"));
+
+        maintenanceRecordProgressService.changeRecordAttribute(record,request.attribute());
+    }
+
+    @GetMapping("/records")
+    public List<MaintenanceRecordResponse> getRecordsWithFiltering(
+            @RequestParam(required = false) String aircraft,
+            @RequestParam(required = false) String attribute,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate initialDate,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate finalDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Aircraft aircraftObj = null;
+
+        if (aircraft != null) {
+            aircraftObj = aircraftSearchService
+                    .spotAircraftInHangar(aircraft)
+                    .orElseThrow(() ->
+                            new DomainException("Aircraft does not exist"));
+        }
+
+        return maintenanceRecordSearchService
+                .findRecordsMatchingFilter(aircraftObj, attribute, initialDate, finalDate, pageable)
+                .map(MaintenanceRecordResponse::from)
+                .toList();
+    }
+
     // DTOs
     record AddRecordShortRequest(@NotBlank String registrationNumber,
                                  @NotNull Long templateId,
@@ -185,6 +225,8 @@ public class MaintenanceRecordController {
                               @NotNull Map<String, Boolean> templateChecklist,
                               @NotBlank String operation,
                               @NotBlank String attribute) {}
+
+    public record ChangeAttributeRequest(MaintenanceAttribute attribute) {}
 
     record UpdateRecordStatusRequest(@NotBlank String status) {}
 
@@ -208,8 +250,7 @@ public class MaintenanceRecordController {
 
     record MaintenanceRecordResponse(Long id,
                                      String aircraftRegistration,
-                                     Long templateId,
-                                     String templateName,
+                                     MaintenanceTemplateResponse template,
                                      Double durationHours,
                                      String description,
                                      LocalDate startDate,
@@ -218,8 +259,7 @@ public class MaintenanceRecordController {
             return new MaintenanceRecordResponse(
                     r.getRecordId(),
                     r.getAircraft().getRegistrationNumber(),
-                    r.getMaintenanceTemplate().getTemplateId(),
-                    r.getMaintenanceTemplate().getName(),
+                    MaintenanceTemplateResponse.from(r.getMaintenanceTemplate()),
                     r.getDurationHours(),
                     r.getDescription(),
                     r.getStartDate(),

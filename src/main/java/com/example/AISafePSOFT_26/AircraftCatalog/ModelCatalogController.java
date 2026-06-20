@@ -110,7 +110,6 @@ public class ModelCatalogController {
         return List.of();
     }
 
-
     /**
      * Request body for PATCH /catalog/model/{modelName}
      */

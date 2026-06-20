@@ -51,7 +51,7 @@ public class Route {
             RouteHistory routeHistory, Double estimatedFlightTimeHours, Airport originAirport,
             Airport destinationAirport,String routeName) {
         this(routeRequirements, status, type, routeHistory, estimatedFlightTimeHours,
-                0.0, originAirport, destinationAirport, routeName);
+                1.0, originAirport, destinationAirport, routeName);
     }
 
     public Route(RouteRequirements routeRequirements, RouteStatus status, RouteType type,
@@ -145,7 +145,6 @@ public class Route {
     }
 
     public boolean isOperational() {
-
         return status == RouteStatus.ACTIVE;
     }
 
@@ -187,5 +186,9 @@ public class Route {
 
     public RouteRequirements getRouteRequirements() {
         return routeRequirements;
+    }
+
+    public void changeRouteRange(Double distanceKm){
+        this.distanceKm = distanceKm;
     }
 }

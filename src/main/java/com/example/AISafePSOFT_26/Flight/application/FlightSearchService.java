@@ -5,6 +5,7 @@ import com.example.AISafePSOFT_26.Flight.domain.Flight;
 import com.example.AISafePSOFT_26.Flight.infrastructure.FlightRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,4 +29,9 @@ public class FlightSearchService {
                 .sorted(Map.Entry.<Aircraft, Long>comparingByValue().reversed())
                 .toList();
     }
+
+    public List<Flight> findByAircraftRegistrationNumberAndScheduledDepartureBetween(String registrationNumber, LocalDateTime start,LocalDateTime end){
+        return flightRepository.findByAircraftRegistrationNumberAndScheduledDepartureBetween(registrationNumber,start, end);
+    }
+
 }

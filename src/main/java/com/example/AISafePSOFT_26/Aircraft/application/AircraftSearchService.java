@@ -25,11 +25,10 @@ public class AircraftSearchService {
         return aircraftRepository.findById(id);
     }
 
-    public List<Aircraft> findAircraftsMatchingFilter(String model,
-            String status,LocalDate manufacturingDate) {
-
+    public Page<Aircraft> findAircraftsMatchingFilter(String model,String status,LocalDate manufacturingDate,Pageable pageable) {
         Specification<Aircraft> spec =
                 (root, query, cb) -> cb.conjunction();
+
         if (model != null) {
             spec = spec.and((root, query, cb) ->
                     cb.equal(root.get("model").get("modelName"), model));
@@ -48,7 +47,7 @@ public class AircraftSearchService {
                     cb.equal(root.get("manufacturingDate"), manufacturingDate));
         }
 
-        return aircraftRepository.findAll(spec);
+        return aircraftRepository.findAll(spec, pageable);
     }
 
     public List<Map.Entry<AircraftModel, Double>> findMostUsedModelsByFlyingAircraftHours() {

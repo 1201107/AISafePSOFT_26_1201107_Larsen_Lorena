@@ -41,7 +41,7 @@ public class SecurityConfig {
 
                     auth.requestMatchers(POST, "/api/catalog/model").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
                     auth.requestMatchers(PATCH, "/api/catalog/model/{modelName}").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
-                    auth.requestMatchers(PATCH, "/api/catalog/rankings").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET, "/api/catalog/rankings").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
 
                     auth.requestMatchers(POST, "/api/hangar/aircraft").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET,"/api/hangar/aircraft").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
@@ -51,15 +51,19 @@ public class SecurityConfig {
                     auth.requestMatchers(GET,"/api/hangar/aircraft-availability").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET,"/api/hangar/operational-hours").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET,"/api/hangar/status-summary").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET,"/api/hangar/aircraft/{registrationNumber}/status").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET,"/api/hangar/view/utilization").permitAll();
 
                     auth.requestMatchers(POST, "/api/maintenance/record").hasAnyRole(Role.MAINTENANCE_TECHNICIAN.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET, "/api/maintenance/record/{id}").hasAnyRole(Role.MAINTENANCE_TECHNICIAN.name(),Role.ADMIN.name());
+                    auth.requestMatchers(PATCH,"/api/maintenance/{recordId}/complete").hasAnyRole(Role.MAINTENANCE_TECHNICIAN.name(),Role.MAINTENANCE_SUPERVISOR.name(),Role.ADMIN.name());
+                    auth.requestMatchers(PATCH, "/api/maintenance/record/{id}").hasAnyRole(Role.MAINTENANCE_TECHNICIAN.name(),Role.ADMIN.name());
+
                     auth.requestMatchers(POST, "/api/airports").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
                     auth.requestMatchers(POST, "/api/airports/{iataCode}/certifications").hasAnyRole(Role.BACKOFFICE.name(),Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET, "/api/airports").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET, "/api/airports/{iataCode}").hasAnyRole(Role.BACKOFFICE.name(),Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(PATCH, "/api/airports/{iataCode}/status").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
-                    auth.requestMatchers(POST, "/api/maintenance/record").hasAnyRole(Role.MAINTENANCE_TECHNICIAN.name(),Role.ADMIN.name());
-                    auth.requestMatchers(PATCH,"/api/maintenance/{recordId}/complete").hasAnyRole(Role.MAINTENANCE_TECHNICIAN.name(),Role.MAINTENANCE_SUPERVISOR.name(),Role.ADMIN.name());
                     if (h2ConsoleEnabled) {
                         auth.requestMatchers("/h2-console/**").permitAll();
                     }

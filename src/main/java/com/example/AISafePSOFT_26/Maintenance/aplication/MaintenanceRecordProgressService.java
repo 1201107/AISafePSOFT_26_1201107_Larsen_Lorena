@@ -1,5 +1,6 @@
 package com.example.AISafePSOFT_26.Maintenance.aplication;
 
+import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceAttribute;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceRecord;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceStatus;
 import com.example.AISafePSOFT_26.Maintenance.domain.UsedPart;
@@ -59,6 +60,10 @@ public class MaintenanceRecordProgressService {
         MaintenanceRecord record = findRecord(recordId);
         record.markAsCompleted(notes, tasksDone, endDate);
         return maintenanceRecordRepository.save(record);
+    }
+
+    public void changeRecordAttribute(MaintenanceRecord record, MaintenanceAttribute attribute) {
+        record.getMaintenanceTemplate().changeAttribute(attribute);
     }
 
     private MaintenanceRecord findRecord(Long recordId) {

@@ -703,7 +703,6 @@ public class Bootstrap implements ApplicationRunner {
         Airport cdg = airportRepository.findByIataCode("CDG").orElseThrow();
         Airport lhr = airportRepository.findByIataCode("LHR").orElseThrow();
 
-
         routeRepository.save(new Route(
                 new RouteRequirements(1000.0, 100),
                 RouteStatus.ACTIVE,
@@ -858,7 +857,6 @@ public class Bootstrap implements ApplicationRunner {
     }
 
     private void seedFlights() {
-
         Aircraft csTua = aircraftRepository
                 .findByRegistrationNumber("CS-TUA")
                 .orElseThrow();
@@ -879,8 +877,7 @@ public class Bootstrap implements ApplicationRunner {
 
         Flight f1 = new Flight(
                 routes.stream()
-                        .filter(r -> r.getOriginAirport().getIataCode().equals("OPO")
-                                && r.getDestinationAirport().getIataCode().equals("LIS"))
+                        .filter(r -> r.getRouteName().equals("Pati&Patatá"))
                         .findFirst()
                         .orElseThrow(),
                 csTua,
@@ -888,10 +885,10 @@ public class Bootstrap implements ApplicationRunner {
                 LocalDateTime.of(2026, 6, 15, 9, 0)
         );
 
+
         Flight f2 = new Flight(
                 routes.stream()
-                        .filter(r -> r.getOriginAirport().getIataCode().equals("OPO")
-                                && r.getDestinationAirport().getIataCode().equals("MAD"))
+                        .filter(r -> r.getRouteName().equals("Iberia Connect"))
                         .findFirst()
                         .orElseThrow(),
                 dAbxa,
@@ -899,10 +896,10 @@ public class Bootstrap implements ApplicationRunner {
                 LocalDateTime.of(2026, 6, 15, 12, 0)
         );
 
+
         Flight f3 = new Flight(
                 routes.stream()
-                        .filter(r -> r.getOriginAirport().getIataCode().equals("LIS")
-                                && r.getDestinationAirport().getIataCode().equals("MAD"))
+                        .filter(r -> r.getRouteName().equals("TAP Express"))
                         .findFirst()
                         .orElseThrow(),
                 fHxka,
@@ -910,10 +907,10 @@ public class Bootstrap implements ApplicationRunner {
                 LocalDateTime.of(2026, 6, 15, 15, 20)
         );
 
+
         Flight f4 = new Flight(
                 routes.stream()
-                        .filter(r -> r.getOriginAirport().getIataCode().equals("MAD")
-                                && r.getDestinationAirport().getIataCode().equals("CDG"))
+                        .filter(r -> r.getRouteName().equals("Air France Iberia Codeshare"))
                         .findFirst()
                         .orElseThrow(),
                 fHxka,
@@ -921,10 +918,10 @@ public class Bootstrap implements ApplicationRunner {
                 LocalDateTime.of(2026, 6, 16, 11, 20)
         );
 
+
         Flight f5 = new Flight(
                 routes.stream()
-                        .filter(r -> r.getOriginAirport().getIataCode().equals("CDG")
-                                && r.getDestinationAirport().getIataCode().equals("LHR"))
+                        .filter(r -> r.getRouteName().equals("Air France - British Airways Alliance"))
                         .findFirst()
                         .orElseThrow(),
                 csTua,
@@ -932,10 +929,10 @@ public class Bootstrap implements ApplicationRunner {
                 LocalDateTime.of(2026, 6, 16, 14, 15)
         );
 
+
         Flight f6 = new Flight(
                 routes.stream()
-                        .filter(r -> r.getOriginAirport().getIataCode().equals("LHR")
-                                && r.getDestinationAirport().getIataCode().equals("LIS"))
+                        .filter(r -> r.getRouteName().equals("British Airways"))
                         .findFirst()
                         .orElseThrow(),
                 n789dl,
@@ -943,9 +940,109 @@ public class Bootstrap implements ApplicationRunner {
                 LocalDateTime.of(2026, 6, 17, 13, 40)
         );
 
-        flightRepository.saveAll(List.of(
-                f1, f2, f3, f4, f5, f6
-        ));
+
+        Flight f7 = new Flight(
+                routes.stream()
+                        .filter(r -> r.getRouteName().equals("Iberia Regional"))
+                        .findFirst()
+                        .orElseThrow(),
+                dAbxa,
+                LocalDateTime.of(2025, 7, 10, 8, 0),
+                LocalDateTime.of(2025, 7, 10, 9, 30)
+        );
+
+
+        Flight f8 = new Flight(
+                routes.stream()
+                        .filter(r -> r.getRouteName().equals("British Airways"))
+                        .findFirst()
+                        .orElseThrow(),
+                n789dl,
+                LocalDateTime.of(2025, 9, 5, 14, 0),
+                LocalDateTime.of(2025, 9, 5, 16, 20)
+        );
+
+
+        Flight f9 = new Flight(
+                routes.stream()
+                        .filter(r -> r.getRouteName().equals("Air France"))
+                        .findFirst()
+                        .orElseThrow(),
+                csTua,
+                LocalDateTime.of(2025, 11, 20, 7, 30),
+                LocalDateTime.of(2025, 11, 20, 9, 45)
+        );
+
+
+        Flight f10 = new Flight(
+                routes.stream()
+                        .filter(r -> r.getRouteName().equals("TAP Express"))
+                        .findFirst()
+                        .orElseThrow(),
+                fHxka,
+                LocalDateTime.of(2026, 1, 12, 10, 0),
+                LocalDateTime.of(2026, 1, 12, 11, 20)
+        );
+
+
+        Flight f11 = new Flight(
+                routes.stream()
+                        .filter(r -> r.getRouteName().equals("Air France Iberia Codeshare"))
+                        .findFirst()
+                        .orElseThrow(),
+                fHxka,
+                LocalDateTime.of(2026, 2, 18, 13, 0),
+                LocalDateTime.of(2026, 2, 18, 15, 10)
+        );
+
+
+        Flight f12 = new Flight(
+                routes.stream()
+                        .filter(r -> r.getRouteName().equals("Pati&Patatá"))
+                        .findFirst()
+                        .orElseThrow(),
+                csTua,
+                LocalDateTime.of(2026, 3, 22, 8, 0),
+                LocalDateTime.of(2026, 3, 22, 9, 0)
+        );
+
+
+        Flight f13 = new Flight(
+                routes.stream()
+                        .filter(r -> r.getRouteName().equals("British Airways"))
+                        .findFirst()
+                        .orElseThrow(),
+                n789dl,
+                LocalDateTime.of(2026, 4, 15, 16, 0),
+                LocalDateTime.of(2026, 4, 15, 18, 30)
+        );
+
+
+        Flight f14 = new Flight(
+                routes.stream()
+                        .filter(r -> r.getRouteName().equals("Air France"))
+                        .findFirst()
+                        .orElseThrow(),
+                dAbxa,
+                LocalDateTime.of(2026, 5, 25, 9, 0),
+                LocalDateTime.of(2026, 5, 25, 11, 0)
+        );
+
+        List<Flight> completedFlights = List.of(
+                f1,f3,f4,f7,f8,f9,f10,f11,f12,f13,f14
+        );
+
+        completedFlights.forEach(f -> {
+            f.startFlight();
+            f.completeFlight();
+        });
+
+        flightRepository.saveAll(
+                List.of(
+                        f1,f2,f3,f4,f5,f6,
+                        f7,f8,f9,f10,f11,f12,f13,f14
+                )
+        );
     }
 
     private void seedMaintenance() {

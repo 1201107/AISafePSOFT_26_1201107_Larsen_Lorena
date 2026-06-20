@@ -9,7 +9,7 @@ Content-Type: application/json
 ###
 @registrationNumber = CS-TUA
 
-@token =eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5YTViYzFmNC0yYjc4LTQ3ZGUtOTllNy04NDhiM2FiOGNlMTYiLCJyb2xlcyI6WyJBVENDIl0sImlhdCI6MTc4MTQ4MjM0MiwiZXhwIjoxNzgxNDg1OTQyfQ.n5K7Ujsl5u3IMUGW_3jUEdilzFxYzqC5s2sSlA8ZCb0
+@token =eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzODJkYjQ2Ni1lMGRjLTQ3MTQtYjUxZi0wYjJhZmZlOWVjOGYiLCJyb2xlcyI6WyJBVENDIl0sImlhdCI6MTc4MTY5MzQ0NywiZXhwIjoxNzgxNjk3MDQ3fQ.mGyn_0tGqR1e7cTt5CNRF1ysYWM8rQrdhrRaFacKep0
 
 
 GET http://localhost:8081/api/hangar/aircraft/{{registrationNumber}}/compatible-routes

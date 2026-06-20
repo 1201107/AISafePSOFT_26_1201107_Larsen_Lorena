@@ -20,11 +20,6 @@ Authorization: Bearer {{token}}
 {
   "modelName": "737-800",
   "manufacturer": "ISEP",
-  "modelImage": [
-    "https://example.com/23t.jpg",
-    "https://example.com/images/a320-side.jpg",
-    "seila.jpg"
-  ],
   "specs": {
     "fuelCapacityLiters": 20,
     "maximumRangeKm": 60,

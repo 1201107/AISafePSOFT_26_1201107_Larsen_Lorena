@@ -8,11 +8,12 @@ Content-Type: application/json
 
 ###
 
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OGMxMjg2ZS05YjE5LTRlZTYtOWYyYy04OTQ5NGZiMGY2ZDQiLCJyb2xlcyI6WyJCQUNLT0ZGSUNFIl0sImlhdCI6MTc4MTQ4MTY0MiwiZXhwIjoxNzgxNDg1MjQyfQ.gUg7IxNOH-qXAJoKk6x3fCCAjewgRqeOVZ604IZoeq8
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1MjgwYTdhOS03YTgzLTQ2ZjMtODBkNi02MzYwN2RlNjk1YTciLCJyb2xlcyI6WyJCQUNLT0ZGSUNFIl0sImlhdCI6MTc4MTY5MzM3OCwiZXhwIjoxNzgxNjk2OTc4fQ.Y2vaCAhsOXq0w9xXnk3vUCEHkn08chGlzUCbYTRV6pg
+
 
 GET http://localhost:8081/api/catalog/rankings?mode=assignments
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer {{token}}0
 
 
 ###

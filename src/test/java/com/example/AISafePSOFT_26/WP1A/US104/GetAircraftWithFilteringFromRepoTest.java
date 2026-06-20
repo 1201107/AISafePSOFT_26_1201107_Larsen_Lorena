@@ -6,16 +6,21 @@ import com.example.AISafePSOFT_26.Aircraft.application.AircraftLifeCycleUpdaterS
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftSearchService;
 import com.example.AISafePSOFT_26.Aircraft.domain.Aircraft;
 import com.example.AISafePSOFT_26.Aircraft.domain.AircraftAvailability;
+import com.example.AISafePSOFT_26.Aircraft.infrastructure.CalculationsService;
 import com.example.AISafePSOFT_26.AircraftCatalog.application.AircraftModelSearchService;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
+import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftSpecs;
 import com.example.AISafePSOFT_26.Route.application.RouteSearchService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class GetAircraftWithFilteringFromRepoTest {
@@ -37,16 +42,18 @@ class GetAircraftWithFilteringFromRepoTest {
                 mock(AircraftModelSearchService.class),
                 aircraftLifeCycleUpdaterService,
                 aircraftSearchService,
-                mock(RouteSearchService.class)
-        );
+                mock(RouteSearchService.class));
     }
 
     @Test
     void shouldReturnFilteredAircrafts() {
 
-        AircraftModel model = mock(AircraftModel.class);
-
-        when(model.getModelName()).thenReturn("Airbus A320");
+        AircraftModel model = new AircraftModel(
+                "737-800",
+                "Boeing",
+                new AircraftSpecs(70500.0, 5436.0, 842.0, 189),
+                List.of("b737-800-front.jpg", "b737-800-side.jpg", "b737-800-cabin.jpg")
+        );
 
         Aircraft aircraft = new Aircraft(
                 "CS-TST",
@@ -62,16 +69,19 @@ class GetAircraftWithFilteringFromRepoTest {
         );
 
         when(aircraftSearchService.findAircraftsMatchingFilter(
-                "Airbus A320",
-                "AVAILABLE",
-                LocalDate.of(2020, 1, 1)
-        )).thenReturn(List.of(aircraft));
+                eq("Boeing 737-800"),
+                eq("AVAILABLE"),
+                eq(LocalDate.of(2020, 1, 1)),
+                any(Pageable.class)
+        )).thenReturn(new PageImpl<>(List.of(aircraft)));
 
         List<HangarController.AircraftResponse> response =
                 hangarController.getAircraftsWithFiltering(
-                        "Airbus A320",
+                        "Boeing 737-800",
                         "AVAILABLE",
-                        LocalDate.of(2020, 1, 1)
+                        LocalDate.of(2020, 1, 1),
+                        0,
+                        10
                 );
 
         assertNotNull(response);
@@ -83,7 +93,7 @@ class GetAircraftWithFilteringFromRepoTest {
         assertEquals("CS-TST",
                 aircraftResponse.registrationNumber());
 
-        assertEquals("Airbus A320",
+        assertEquals("737-800",
                 aircraftResponse.modelName());
 
         assertEquals(AircraftAvailability.AVAILABLE,
@@ -100,9 +110,10 @@ class GetAircraftWithFilteringFromRepoTest {
 
         verify(aircraftSearchService, times(1))
                 .findAircraftsMatchingFilter(
-                        "Airbus A320",
-                        "AVAILABLE",
-                        LocalDate.of(2020, 1, 1)
+                        eq("Boeing 737-800"),
+                        eq("AVAILABLE"),
+                        eq(LocalDate.of(2020, 1, 1)),
+                        any(Pageable.class)
                 );
     }
 }

@@ -6,6 +6,7 @@ import com.example.AISafePSOFT_26.Aircraft.application.AircraftLifeCycleUpdaterS
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftSearchService;
 import com.example.AISafePSOFT_26.Aircraft.domain.Aircraft;
 import com.example.AISafePSOFT_26.Aircraft.domain.AircraftAvailability;
+import com.example.AISafePSOFT_26.Aircraft.infrastructure.CalculationsService;
 import com.example.AISafePSOFT_26.AircraftCatalog.application.AircraftModelSearchService;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
 import com.example.AISafePSOFT_26.Route.application.RouteSearchService;
