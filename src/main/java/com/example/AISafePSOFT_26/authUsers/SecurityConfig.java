@@ -73,6 +73,7 @@ public class SecurityConfig {
 
                     auth.requestMatchers(GET, "/api/routes/export/geojson").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET, "/api/routes/export/kml").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET, "/api/flights/reports/route-utilization").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
 
                     auth.requestMatchers(GET, "/api/maintenance/parts/inventory").hasAnyRole(Role.MAINTENANCE_SUPERVISOR.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET, "/api/maintenance/parts/low-stock").hasAnyRole(Role.MAINTENANCE_SUPERVISOR.name(),Role.ADMIN.name());

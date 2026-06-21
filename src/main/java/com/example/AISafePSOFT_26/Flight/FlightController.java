@@ -2,6 +2,7 @@ package com.example.AISafePSOFT_26.Flight;
 
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftSearchService;
 import com.example.AISafePSOFT_26.Aircraft.domain.Aircraft;
+import com.example.AISafePSOFT_26.Flight.application.FlightUtilizationReportService;
 import com.example.AISafePSOFT_26.Flight.domain.Flight;
 import com.example.AISafePSOFT_26.Flight.domain.FlightStatus;
 import com.example.AISafePSOFT_26.Route.application.RouteService;
@@ -20,11 +21,14 @@ import java.util.List;
 public class FlightController {
     private final RouteService routeService;
     private final AircraftSearchService aircraftSearchService;
+    private final FlightUtilizationReportService flightUtilizationReportService;
 
     public FlightController(RouteService routeService,
-            AircraftSearchService aircraftSearchService) {
+            AircraftSearchService aircraftSearchService,
+            FlightUtilizationReportService flightUtilizationReportService) {
         this.routeService = routeService;
         this.aircraftSearchService = aircraftSearchService;
+        this.flightUtilizationReportService = flightUtilizationReportService;
     }
 
     @PostMapping("/scheduled")
@@ -47,6 +51,14 @@ public class FlightController {
                 .toList();
     }
 
+    @GetMapping("/reports/route-utilization")
+    public List<RouteUtilizationReportResponse> getRouteUtilizationReport() {
+        return flightUtilizationReportService.getRouteUtilizationReport()
+                .stream()
+                .map(RouteUtilizationReportResponse::from)
+                .toList();
+    }
+
     record ScheduleFlightRequest(
             @NotNull Long routeId,
             @NotBlank String aircraftRegistrationNumber,
@@ -65,6 +77,17 @@ public class FlightController {
                     flight.getFlightStatus(),
                     flight.getScheduledDeparture(),
                     flight.getScheduledArrival());
+        }
+    }
+
+    public record RouteUtilizationReportResponse(Long routeId, String routeName,
+            String originIata, String destinationIata, Long flightCount) {
+
+        public static RouteUtilizationReportResponse from(
+                FlightUtilizationReportService.RouteUtilizationReport report) {
+            return new RouteUtilizationReportResponse(report.routeId(),
+                    report.routeName(), report.originIata(), report.destinationIata(),
+                    report.flightCount());
         }
     }
 }
