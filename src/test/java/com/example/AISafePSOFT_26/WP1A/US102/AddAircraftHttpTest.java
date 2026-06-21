@@ -4,8 +4,11 @@ import com.example.AISafePSOFT_26.Aircraft.HangarController;
 import com.example.AISafePSOFT_26.Aircraft.application.AddAircraftUseCase;
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftLifeCycleUpdaterService;
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftSearchService;
+import com.example.AISafePSOFT_26.Aircraft.application.FuelEfficiencyService;
 import com.example.AISafePSOFT_26.AircraftCatalog.application.AircraftModelSearchService;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
+import com.example.AISafePSOFT_26.Flight.application.FlightSearchService;
+import com.example.AISafePSOFT_26.Route.application.RouteSearchService;
 import com.example.AISafePSOFT_26.authUsers.application.JwtService;
 import com.example.AISafePSOFT_26.authUsers.infrastructure.JwtAuthenticationFilter;
 import org.junit.jupiter.api.Test;
@@ -42,6 +45,15 @@ class AddAircraftHttpTest {
 
     @MockBean
     private AircraftSearchService aircraftSearchService;
+
+    @MockBean
+    private RouteSearchService routeSearchService;
+
+    @MockBean
+    private FlightSearchService flightSearchService;
+
+    @MockBean
+    private FuelEfficiencyService fuelEfficiencyService;
 
     @MockBean
     private JwtService jwtService;

@@ -33,6 +33,8 @@ class MaintenanceCostReportHttpTest {
     @MockBean private AddMaintenanceTemplateUseCase addMaintenanceTemplateUseCase;
     @MockBean private AddMaintenanceRecordUseCase addMaintenanceRecordUseCase;
     @MockBean private AircraftSearchService aircraftSearchService;
+    @MockBean private MaintenanceRecordSearchService maintenanceRecordSearchService;
+    @MockBean private PartsInventoryService partsInventoryService;
     @MockBean private JwtService jwtService;
     @MockBean private JwtAuthenticationFilter jwtAuthenticationFilter;
 

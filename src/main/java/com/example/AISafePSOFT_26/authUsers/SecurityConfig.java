@@ -54,6 +54,8 @@ public class SecurityConfig {
                     auth.requestMatchers(GET,"/api/hangar/analytics/operational-hours").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET,"/api/hangar/analytics/status-summary").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET,"/api/hangar/analytics/fuel-efficiency").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET,"/api/hangar/analytics/fuel-efficiency/aircraft").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET,"/api/hangar/analytics/fuel-efficiency/routes").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
 
                     auth.requestMatchers(GET,"/api/hangar/view/utilization").permitAll();
 
@@ -68,6 +70,12 @@ public class SecurityConfig {
                     auth.requestMatchers(GET, "/api/airports/{iataCode}").hasAnyRole(Role.BACKOFFICE.name(),Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(PATCH, "/api/airports/{iataCode}/status").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
                     auth.requestMatchers(POST, "/api/airports/import").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
+
+                    auth.requestMatchers(GET, "/api/routes/export/geojson").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET, "/api/routes/export/kml").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
+
+                    auth.requestMatchers(GET, "/api/maintenance/parts/inventory").hasAnyRole(Role.MAINTENANCE_SUPERVISOR.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET, "/api/maintenance/parts/low-stock").hasAnyRole(Role.MAINTENANCE_SUPERVISOR.name(),Role.ADMIN.name());
 
                     if (h2ConsoleEnabled) {
                         auth.requestMatchers("/h2-console/**").permitAll();

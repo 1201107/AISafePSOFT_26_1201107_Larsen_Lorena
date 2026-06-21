@@ -1,0 +1,54 @@
+### US228 - Export route network in standard aviation formats
+
+### Login como Backoffice Operator
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "backoffice",
+  "password": "password"
+}
+
+> {%
+  client.global.set("token", response.body.token);
+%}
+
+---
+
+### Exportar rede de rotas em formato GeoJSON
+GET http://localhost:8080/api/routes/export/geojson
+Authorization: Bearer {{token}}
+Accept: application/geo+json
+
+---
+
+### Exportar rede de rotas em formato KML
+GET http://localhost:8080/api/routes/export/kml
+Authorization: Bearer {{token}}
+Accept: application/vnd.google-earth.kml+xml
+
+---
+
+### Tentar exportar sem autenticação (deve retornar 401/403)
+GET http://localhost:8080/api/routes/export/geojson
+
+---
+
+### Login como ATCC (não tem permissão para exportar)
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "atcc",
+  "password": "password"
+}
+
+> {%
+  client.global.set("atcc_token", response.body.token);
+%}
+
+---
+
+### Tentar exportar como ATCC (deve retornar 403)
+GET http://localhost:8080/api/routes/export/geojson
+Authorization: Bearer {{atcc_token}}

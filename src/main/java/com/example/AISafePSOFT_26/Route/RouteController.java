@@ -1,5 +1,6 @@
 package com.example.AISafePSOFT_26.Route;
 
+import com.example.AISafePSOFT_26.Route.application.RouteExportService;
 import com.example.AISafePSOFT_26.Route.application.RouteService;
 import com.example.AISafePSOFT_26.Route.domain.Route;
 import com.example.AISafePSOFT_26.Route.domain.RouteHistory;
@@ -8,6 +9,8 @@ import com.example.AISafePSOFT_26.Route.domain.RouteStatus;
 import com.example.AISafePSOFT_26.Route.domain.RouteType;
 import com.example.AISafePSOFT_26.exceptions.DomainException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -17,9 +20,11 @@ import java.util.List;
 @RequestMapping("/api/routes")
 public class RouteController {
     private final RouteService routeService;
+    private final RouteExportService routeExportService;
 
-    public RouteController(RouteService routeService) {
+    public RouteController(RouteService routeService, RouteExportService routeExportService) {
         this.routeService = routeService;
+        this.routeExportService = routeExportService;
     }
 
     @PostMapping
@@ -87,6 +92,22 @@ public class RouteController {
     @GetMapping("/total-distance")
     public TotalDistanceResponse calculateTotalDistance() {
         return new TotalDistanceResponse(routeService.calculateTotalRouteDistance());
+    }
+
+    // US228 — exportar rede de rotas em GeoJSON
+    @GetMapping("/export/geojson")
+    public ResponseEntity<String> exportGeoJson() {
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf("application/geo+json"))
+                .body(routeExportService.exportAsGeoJson());
+    }
+
+    // US228 — exportar rede de rotas em KML
+    @GetMapping("/export/kml")
+    public ResponseEntity<String> exportKml() {
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf("application/vnd.google-earth.kml+xml"))
+                .body(routeExportService.exportAsKml());
     }
 
     @GetMapping("/alternatives")

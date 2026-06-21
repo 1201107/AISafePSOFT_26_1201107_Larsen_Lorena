@@ -7,6 +7,7 @@ import com.example.AISafePSOFT_26.AircraftCatalog.ModelCatalogController;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftSpecs;
 import com.example.AISafePSOFT_26.Maintenance.aplication.*;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceAttribute;
+import com.example.AISafePSOFT_26.Maintenance.domain.UsedPart;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceRecord;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceStatus;
 import com.example.AISafePSOFT_26.Maintenance.domain.MaintenanceTemplate;
@@ -38,6 +39,7 @@ public class MaintenanceRecordController {
     private final MaintenanceReportService maintenanceReportService;
     private final MaintenanceAlertService maintenanceAlertService;
     private final MaintenanceRecordSearchService maintenanceRecordSearchService;
+    private final PartsInventoryService partsInventoryService;
 
     public MaintenanceRecordController(AddMaintenanceTemplateUseCase addMaintenanceTemplateUseCase,
                                        AddMaintenanceRecordUseCase addMaintenanceRecordUseCase,
@@ -45,7 +47,9 @@ public class MaintenanceRecordController {
                                        MaintenanceTemplateSearchService maintenanceTemplateSearchService,
                                        MaintenanceRecordProgressService maintenanceRecordProgressService,
                                        MaintenanceReportService maintenanceReportService,
-                                       MaintenanceAlertService maintenanceAlertService, MaintenanceRecordSearchService maintenanceRecordSearchService) {
+                                       MaintenanceAlertService maintenanceAlertService,
+                                       MaintenanceRecordSearchService maintenanceRecordSearchService,
+                                       PartsInventoryService partsInventoryService) {
         this.addMaintenanceTemplateUseCase = addMaintenanceTemplateUseCase;
         this.addMaintenanceRecordUseCase = addMaintenanceRecordUseCase;
         this.aircraftSearchService = aircraftSearchService;
@@ -54,6 +58,7 @@ public class MaintenanceRecordController {
         this.maintenanceReportService = maintenanceReportService;
         this.maintenanceAlertService = maintenanceAlertService;
         this.maintenanceRecordSearchService = maintenanceRecordSearchService;
+        this.partsInventoryService = partsInventoryService;
     }
 
     // WP3 — criar template
@@ -213,6 +218,27 @@ public class MaintenanceRecordController {
                 .toList();
     }
 
+    // US226 — inventário de peças usadas em manutenção
+    @GetMapping("/parts/inventory")
+    public List<PartUsageSummaryResponse> partsInventory() {
+        return partsInventoryService.getPartsUsageSummary()
+                .stream()
+                .map(s -> new PartUsageSummaryResponse(
+                        s.partSerialNumber(), s.totalQuantityUsed(), s.totalCost(), s.timesUsedInRecords()))
+                .toList();
+    }
+
+    // US226 — alertas de stock baixo de peças
+    @GetMapping("/parts/low-stock")
+    public List<LowStockAlertResponse> lowStockAlerts(
+            @RequestParam(defaultValue = "10") int threshold) {
+        return partsInventoryService.getLowStockAlerts(threshold)
+                .stream()
+                .map(a -> new LowStockAlertResponse(
+                        a.partSerialNumber(), a.totalQuantityUsed(), a.timesUsedInRecords(), a.alertMessage()))
+                .toList();
+    }
+
     // DTOs
     record AddRecordShortRequest(@NotBlank String registrationNumber,
                                  @NotNull Long templateId,
@@ -278,4 +304,14 @@ public class MaintenanceRecordController {
                                     LocalDate lastMaintenanceDate,
                                     Long daysSinceLastMaintenance,
                                     String alertReason) {}
+
+    record PartUsageSummaryResponse(String partSerialNumber,
+                                    Integer totalQuantityUsed,
+                                    Double totalCost,
+                                    Long timesUsedInRecords) {}
+
+    record LowStockAlertResponse(String partSerialNumber,
+                                 Integer totalQuantityUsed,
+                                 Long timesUsedInRecords,
+                                 String alertMessage) {}
 }

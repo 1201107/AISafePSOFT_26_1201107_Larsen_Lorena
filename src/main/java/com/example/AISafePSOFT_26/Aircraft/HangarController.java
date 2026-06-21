@@ -2,6 +2,7 @@ package com.example.AISafePSOFT_26.Aircraft;
 
 import com.example.AISafePSOFT_26.Aircraft.application.AddAircraftUseCase;
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftSearchService;
+import com.example.AISafePSOFT_26.Aircraft.application.FuelEfficiencyService;
 import com.example.AISafePSOFT_26.Aircraft.domain.*;
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftLifeCycleUpdaterService;
 import com.example.AISafePSOFT_26.AircraftCatalog.application.AircraftModelSearchService;
@@ -35,14 +36,22 @@ public class HangarController {
     private final AircraftSearchService aircraftSearchService;
     private final RouteSearchService routeSearchService;
     private final FlightSearchService flightSearchService;
+    private final FuelEfficiencyService fuelEfficiencyService;
 
-    public HangarController(AddAircraftUseCase addAircraftUseCase, AircraftModelSearchService aircraftModelSearchService, AircraftLifeCycleUpdaterService aircraftLifeCycleUpdaterService, AircraftSearchService aircraftSearchService, RouteSearchService routeSearchService, FlightSearchService flightSearchService) {
+    public HangarController(AddAircraftUseCase addAircraftUseCase,
+                            AircraftModelSearchService aircraftModelSearchService,
+                            AircraftLifeCycleUpdaterService aircraftLifeCycleUpdaterService,
+                            AircraftSearchService aircraftSearchService,
+                            RouteSearchService routeSearchService,
+                            FlightSearchService flightSearchService,
+                            FuelEfficiencyService fuelEfficiencyService) {
         this.addAircraftUseCase = addAircraftUseCase;
         this.aircraftModelSearchService = aircraftModelSearchService;
         this.aircraftLifeCycleUpdaterService = aircraftLifeCycleUpdaterService;
         this.aircraftSearchService = aircraftSearchService;
         this.routeSearchService = routeSearchService;
         this.flightSearchService = flightSearchService;
+        this.fuelEfficiencyService = fuelEfficiencyService;
     }
 
     /**
@@ -211,6 +220,22 @@ public class HangarController {
                         (a, b) -> a,
                         LinkedHashMap::new
                 ));
+    }
+
+    /**
+     * US227 — Fuel efficiency per aircraft: L/km based on model specs.
+     */
+    @GetMapping("/analytics/fuel-efficiency/aircraft")
+    public List<FuelEfficiencyService.AircraftFuelEfficiency> getFuelEfficiencyPerAircraft() {
+        return fuelEfficiencyService.getFuelEfficiencyPerAircraft();
+    }
+
+    /**
+     * US227 — Estimated fuel consumption per route, averaged across aircraft that flew it.
+     */
+    @GetMapping("/analytics/fuel-efficiency/routes")
+    public List<FuelEfficiencyService.RouteFuelEfficiency> getFuelEfficiencyPerRoute() {
+        return fuelEfficiencyService.getFuelEfficiencyPerRoute();
     }
 
     /**

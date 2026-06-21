@@ -4,9 +4,12 @@ import com.example.AISafePSOFT_26.Aircraft.HangarController;
 import com.example.AISafePSOFT_26.Aircraft.application.AddAircraftUseCase;
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftLifeCycleUpdaterService;
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftSearchService;
+import com.example.AISafePSOFT_26.Aircraft.application.FuelEfficiencyService;
 import com.example.AISafePSOFT_26.AircraftCatalog.application.AircraftModelSearchService;
 import com.example.AISafePSOFT_26.Aircraft.domain.Aircraft;
 import com.example.AISafePSOFT_26.Aircraft.domain.AircraftAvailability;
+import com.example.AISafePSOFT_26.Flight.application.FlightSearchService;
+import com.example.AISafePSOFT_26.Route.application.RouteSearchService;
 import com.example.AISafePSOFT_26.authUsers.application.JwtService;
 import com.example.AISafePSOFT_26.authUsers.infrastructure.JwtAuthenticationFilter;
 
@@ -44,6 +47,15 @@ class PatchAircraftHttpTest {
 
     @MockBean
     private AircraftModelSearchService aircraftModelSearchService;
+
+    @MockBean
+    private RouteSearchService routeSearchService;
+
+    @MockBean
+    private FlightSearchService flightSearchService;
+
+    @MockBean
+    private FuelEfficiencyService fuelEfficiencyService;
 
     @MockBean
     private JwtService jwtService;

@@ -7,7 +7,9 @@ import com.example.AISafePSOFT_26.Maintenance.aplication.AddMaintenanceTemplateU
 import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceAlertService;
 import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceRecordProgressService;
 import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceReportService;
+import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceRecordSearchService;
 import com.example.AISafePSOFT_26.Maintenance.aplication.MaintenanceTemplateSearchService;
+import com.example.AISafePSOFT_26.Maintenance.aplication.PartsInventoryService;
 import com.example.AISafePSOFT_26.authUsers.application.JwtService;
 import com.example.AISafePSOFT_26.authUsers.infrastructure.JwtAuthenticationFilter;
 import org.junit.jupiter.api.Test;
@@ -39,6 +41,8 @@ class MaintenanceAlertHttpTest {
     @MockBean private AddMaintenanceTemplateUseCase addMaintenanceTemplateUseCase;
     @MockBean private AddMaintenanceRecordUseCase addMaintenanceRecordUseCase;
     @MockBean private AircraftSearchService aircraftSearchService;
+    @MockBean private MaintenanceRecordSearchService maintenanceRecordSearchService;
+    @MockBean private PartsInventoryService partsInventoryService;
     @MockBean private JwtService jwtService;
     @MockBean private JwtAuthenticationFilter jwtAuthenticationFilter;
 

@@ -19,6 +19,19 @@ The system must support data exploration and reporting for metrics such as:
 - Monthly average flights per route
 - Maintenance turnaround time
 
+### Parts Inventory & Low-Stock Alerts (US226)
+As a Maintenance Supervisor, the system must aggregate all parts consumed across maintenance records (by serial number), reporting total quantity used and cost. The system must also provide low-stock alerts for parts whose total consumption reaches a configurable threshold.
+
+### Fuel Efficiency Metrics (US227)
+As an ATCC, the system must calculate fuel efficiency metrics:
+- Per aircraft: fuel consumption rate (L/km) derived from the model's fuel capacity and maximum range.
+- Per route: average estimated fuel consumption (L/km and total litres) calculated from the aircraft that actually flew each route.
+
+### Route Network Export (US228)
+As a Backoffice Operator, the system must export the full route network in standard geospatial formats:
+- **GeoJSON** (`application/geo+json`): a FeatureCollection where each route is a Feature with LineString geometry (using airport lat/lon) and properties including routeName, status, type, distanceKm, origin, and destination IATA codes.
+- **KML** (`application/vnd.google-earth.kml+xml`): a KML Document with one Placemark per route, containing a LineString with origin and destination coordinates.
+
 ### Audit
 The system must keep track of route history.
 

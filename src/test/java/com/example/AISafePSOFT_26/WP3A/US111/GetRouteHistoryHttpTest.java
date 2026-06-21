@@ -1,6 +1,7 @@
 package com.example.AISafePSOFT_26.WP3A.US111;
 
 import com.example.AISafePSOFT_26.Route.RouteController;
+import com.example.AISafePSOFT_26.Route.application.RouteExportService;
 import com.example.AISafePSOFT_26.Route.application.RouteService;
 import com.example.AISafePSOFT_26.Route.domain.RouteHistory;
 import com.example.AISafePSOFT_26.authUsers.application.JwtService;
@@ -27,6 +28,9 @@ class GetRouteHistoryHttpTest {
 
     @MockBean
     private RouteService routeService;
+
+    @MockBean
+    private RouteExportService routeExportService;
 
     @MockBean
     private JwtService jwtService;

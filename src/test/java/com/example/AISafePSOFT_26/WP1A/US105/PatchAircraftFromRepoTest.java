@@ -9,6 +9,7 @@ import com.example.AISafePSOFT_26.Aircraft.domain.AircraftAvailability;
 import com.example.AISafePSOFT_26.Aircraft.infrastructure.CalculationsService;
 import com.example.AISafePSOFT_26.AircraftCatalog.application.AircraftModelSearchService;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
+import com.example.AISafePSOFT_26.Aircraft.application.FuelEfficiencyService;
 import com.example.AISafePSOFT_26.Flight.application.FlightSearchService;
 import com.example.AISafePSOFT_26.Route.application.RouteSearchService;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +41,8 @@ class PatchAircraftFromRepoTest {
                 aircraftLifeCycleUpdaterService,
                 aircraftSearchService,
                 mock(RouteSearchService.class),
-                mock(FlightSearchService.class)
+                mock(FlightSearchService.class),
+                mock(FuelEfficiencyService.class)
         );
     }
 

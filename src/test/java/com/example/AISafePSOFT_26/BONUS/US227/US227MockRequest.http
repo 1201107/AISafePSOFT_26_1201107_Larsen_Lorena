@@ -1,19 +1,26 @@
-POST http://localhost:8081/auth/login
+### US227 — Fuel Efficiency Metrics per Aircraft and per Route (ATCC)
+
+### 1. Login as ATCC
+POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "username": "atcc",
-  "password": "atcc123"
+  "username": "atcc@airline.com",
+  "password": "password123"
 }
+
+> {%
+  client.global.set("token", response.body.token);
+%}
 
 ###
 
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3MjQ1YThiOC0xM2Y5LTRkMjgtYmMwOC1hYWRkMGFlNGY0NmMiLCJyb2xlcyI6WyJBVENDIl0sImlhdCI6MTc4MjAwMDU3NiwiZXhwIjoxNzgyMDA0MTc2fQ.MziY0IWNGbl22puAgjL_MV6nilKtLcbY5Ls4sPYHGIc
-
-
-GET http://localhost:8081/api/hangar/analytics/fuel-efficiency
-Content-Type: application/json
+### 2. Get fuel efficiency per aircraft (L/km — lower is better)
+GET http://localhost:8080/api/hangar/analytics/fuel-efficiency/aircraft
 Authorization: Bearer {{token}}
 
+###
 
-
+### 3. Get estimated fuel efficiency per route (based on actual flights)
+GET http://localhost:8080/api/hangar/analytics/fuel-efficiency/routes
+Authorization: Bearer {{token}}
