@@ -4,9 +4,9 @@ import com.example.AISafePSOFT_26.Aircraft.application.AddAircraftUseCase;
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftSearchService;
 import com.example.AISafePSOFT_26.Aircraft.domain.*;
 import com.example.AISafePSOFT_26.Aircraft.application.AircraftLifeCycleUpdaterService;
-import com.example.AISafePSOFT_26.Aircraft.infrastructure.CalculationsService;
 import com.example.AISafePSOFT_26.AircraftCatalog.application.AircraftModelSearchService;
 import com.example.AISafePSOFT_26.AircraftCatalog.domain.AircraftModel;
+import com.example.AISafePSOFT_26.Flight.application.FlightSearchService;
 import com.example.AISafePSOFT_26.Route.RouteController;
 import com.example.AISafePSOFT_26.Route.application.RouteSearchService;
 import com.example.AISafePSOFT_26.exceptions.DomainException;
@@ -34,13 +34,15 @@ public class HangarController {
     private final AircraftLifeCycleUpdaterService aircraftLifeCycleUpdaterService;
     private final AircraftSearchService aircraftSearchService;
     private final RouteSearchService routeSearchService;
+    private final FlightSearchService flightSearchService;
 
-    public HangarController(AddAircraftUseCase addAircraftUseCase, AircraftModelSearchService aircraftModelSearchService, AircraftLifeCycleUpdaterService aircraftLifeCycleUpdaterService, AircraftSearchService aircraftSearchService, RouteSearchService routeSearchService) {
+    public HangarController(AddAircraftUseCase addAircraftUseCase, AircraftModelSearchService aircraftModelSearchService, AircraftLifeCycleUpdaterService aircraftLifeCycleUpdaterService, AircraftSearchService aircraftSearchService, RouteSearchService routeSearchService, FlightSearchService flightSearchService) {
         this.addAircraftUseCase = addAircraftUseCase;
         this.aircraftModelSearchService = aircraftModelSearchService;
         this.aircraftLifeCycleUpdaterService = aircraftLifeCycleUpdaterService;
         this.aircraftSearchService = aircraftSearchService;
         this.routeSearchService = routeSearchService;
+        this.flightSearchService = flightSearchService;
     }
 
     /**
@@ -131,7 +133,6 @@ public class HangarController {
     /**
      * Returns a list of Routes that are compatible with the chosen aircraft
      * */
-    //TODO: pagination
     @GetMapping("/aircraft/{registrationNumber}/compatible-routes")
     public List<RouteController.RouteResponse> getCompatibleRoutes(@PathVariable String registrationNumber) {
         Aircraft aircraft = aircraftSearchService
@@ -144,15 +145,13 @@ public class HangarController {
         return routeSearchService.findCompatibleRoutes(aircraft).stream().map(RouteController.RouteResponse::from).toList();
     }
 
-
     /**
      * Gets all aircrafts grouped by their availability
      */
-    @GetMapping("/aircraft-availability")
+    @GetMapping("/analytics/aircraft-availability")
     public Map<AircraftAvailability, List<String>> getAircraftsAvailability() {
         Map<AircraftAvailability, List<String>> result = new EnumMap<>(AircraftAvailability.class);
         List<Aircraft> aircrafts = aircraftSearchService.findAll();
-
         for (AircraftAvailability availability : AircraftAvailability.values()) {
             List<String> registrations =aircraftSearchService.findAircraftsByAvailability(aircrafts, availability)
                             .stream().map(Aircraft::getRegistrationNumber)
@@ -165,7 +164,7 @@ public class HangarController {
     /**
      * Gets the real-time aircraft availability status
      */
-    @GetMapping("/status-summary")
+    @GetMapping("/analytics/status-summary")
     public Map<AircraftAvailability, Long> getAircraftAvailabilitySummary() {
         return Arrays.stream(AircraftAvailability.values())
                 .collect(Collectors.toMap(
@@ -174,17 +173,37 @@ public class HangarController {
                 ));
     }
 
+    /**
+     * Gets the summary of the fuel efficiency metrics per aircraft and per route.
+     * Example Value for a real aircraft: 0.177 km/L <=> 5.65 L/km
+     */
+    @GetMapping("/analytics/fuel-efficiency")
+    public Map<String,Double> getFuelEfficiency(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+        Map<String, Double> fuelEfficiency = aircraftSearchService.findAll().stream()
+                .collect(Collectors.toMap(
+                        aircraft -> aircraft.getRegistrationNumber(),
+                        aircraft ->  Math.round(aircraft.getModel().getAircraftModelSpecs().getFuelCapacity()
+                                / aircraft.getModel().getAircraftModelSpecs().getMaximumRange()* 100.0) / 100.0
+                ));
+
+        flightSearchService.findAll().forEach(flight -> {
+            fuelEfficiency.put(
+                    "Flight "+flight.getFlightId().toString()+" :",
+                    Math.round(flight.getAircraft().getModel().getAircraftModelSpecs().getFuelCapacity()
+                            / flight.getRoute().getRouteRequirements().getRequiredRange()* 100.0) / 100.0
+            );
+        });
+        return fuelEfficiency;
+    }
 
     /**
      * Gets all Aircrafts and returns them in descending order
      */
-    @GetMapping("/operational-hours")
+    @GetMapping("/analytics/operational-hours")
     public Map<String, Double> getOperationalHours(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size,
                 Sort.by(Sort.Direction.DESC, "totalOperationalHours"));
-
         Page<Aircraft> aircraftPage = aircraftSearchService.findPages(pageable);
-
         return aircraftPage.getContent().stream()
                 .collect(Collectors.toMap(
                         Aircraft::getRegistrationNumber,
@@ -192,6 +211,17 @@ public class HangarController {
                         (a, b) -> a,
                         LinkedHashMap::new
                 ));
+    }
+
+    /**
+     * Gets all the aircrafts with the specified features
+     */
+    @GetMapping("/aicraft-features")
+    public List<AircraftResponse> getAircraftsWithFeatures(@RequestBody GetFeaturesRequest request) {
+        return aircraftSearchService.findAircraftWithFeature(request.features())
+                .stream()
+                .map(AircraftResponse::from)
+                .toList();
     }
 
     /**
@@ -205,6 +235,10 @@ public class HangarController {
      */
     public record  PatchAircraftAvailabilityRequest(String registrationNumber,String availability) {}
 
+    /**
+     * Request body for GET /hangar/aircraft-features
+     */
+    public record GetFeaturesRequest(List<String> features){}
 
     /**
     * Response body representing an aircraft.

@@ -14,6 +14,5 @@ public interface RouteRepository extends JpaRepository<Route, Long>, JpaSpecific
     Optional<Route> findByRouteName(String RouteName);
     List<Route> findByStatus(RouteStatus status, Sort sort);
     List<Route> findByOriginAirport_IataCode(String originIataCode);
-    List<Route> findByOriginAirport_IataCodeOrDestinationAirport_IataCode(
-            String originIataCode, String destinationIataCode);
+    List<Route> findByOriginAirport_IataCodeOrDestinationAirport_IataCode(String originIataCode, String destinationIataCode);
 }

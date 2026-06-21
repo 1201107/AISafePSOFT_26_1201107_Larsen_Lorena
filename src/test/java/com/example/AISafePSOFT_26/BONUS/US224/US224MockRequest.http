@@ -11,6 +11,13 @@ Content-Type: application/json
 @token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3MjQ1YThiOC0xM2Y5LTRkMjgtYmMwOC1hYWRkMGFlNGY0NmMiLCJyb2xlcyI6WyJBVENDIl0sImlhdCI6MTc4MjAwMDU3NiwiZXhwIjoxNzgyMDA0MTc2fQ.MziY0IWNGbl22puAgjL_MV6nilKtLcbY5Ls4sPYHGIc
 
 
-GET http://localhost:8081/api/hangar/view/utilization
+GET http://localhost:8081/api/hangar/aicraft-features
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+{
+  "features": [
+    "Wi-Fi",
+    "USB Charging"
+  ]
+}

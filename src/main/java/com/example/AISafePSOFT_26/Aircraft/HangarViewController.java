@@ -17,12 +17,13 @@ public class HangarViewController {
         this.calculationsService = calculationsService;
     }
 
+    /**
+     * Gets a graph with utilization per Aircraft
+     */
     @GetMapping("/utilization")
     public String utilizationPage(Model model) {
         List<HangarController.UtilizationInfo> data =
                 calculationsService.getUtilizationInfo();
-
-        System.out.println(data);
         model.addAttribute("utilizationData", data);
         return "utilization";
     }

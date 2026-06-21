@@ -8,8 +8,7 @@ Content-Type: application/json
 
 ###
 @id=1
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0OGU5YjkxYi1kNzEyLTQzZmMtODZiZS1jZTlkNTY5NWRhNmIiLCJyb2xlcyI6WyJNQUlOVEVOQU5DRV9URUNITklDSUFOIl0sImlhdCI6MTc4MTk1OTI2NiwiZXhwIjoxNzgxOTYyODY2fQ.d4dR2yih47j_K87D_CyubI8U_4KGEdH0Bv8zepmVOLY
-
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyODE3Mzg1OS0yMjEwLTQzNjctODExMy1kZjAwMWIzZGRjZjIiLCJyb2xlcyI6WyJNQUlOVEVOQU5DRV9URUNITklDSUFOIl0sImlhdCI6MTc4MjAwMDY2NywiZXhwIjoxNzgyMDA0MjY3fQ.KWfnoawllJfnrdvYWhSt750o84qJSrHMQueJjcqWRrg
 
 
 GET http://localhost:8081/api/maintenance/records/{{id}}

@@ -540,7 +540,7 @@ public class Bootstrap implements ApplicationRunner {
                 9800.0);
 
         a1.configureSeating(new SeatingPack(189, "3-3"));
-        a1.addFeature("WiFi");
+        a1.addFeature("Wi-Fi");
         a1.addFeature("USB Charging");
         a1.addCertification(new AircraftCertification(
                 "EASA Safety Compliance Approval",
@@ -562,7 +562,7 @@ public class Bootstrap implements ApplicationRunner {
                 14200.0);
 
         a2.configureSeating(new SeatingPack(189, "3-3"));
-        a2.addFeature("WiFi");
+        a2.addFeature("Wi-Fi");
         a2.addCertification(new AircraftCertification(
                 "ICAO Operational Certification",
                 "OPERATIONAL",
@@ -597,7 +597,7 @@ public class Bootstrap implements ApplicationRunner {
                 6100.0);
 
         a3.configureSeating(new SeatingPack(180, "3-3"));
-        a3.addFeature("WiFi");
+        a3.addFeature("Wi-Fi");
         a3.addFeature("In-flight Entertainment");
         a3.addCertification(new AircraftCertification(
                 "EASA Airworthiness Certificate",
@@ -685,6 +685,7 @@ public class Bootstrap implements ApplicationRunner {
                 2100.0);
 
         a6.configureSeating(new SeatingPack(132, "2-2"));
+        a6.addFeature("Wi-Fi");
         a6.addFeature("USB Charging");
         a6.installComponent(new InstalledComponent(
                 "PW1900G-001",

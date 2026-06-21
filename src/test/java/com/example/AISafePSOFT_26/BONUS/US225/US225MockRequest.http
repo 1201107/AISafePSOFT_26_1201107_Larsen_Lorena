@@ -1,0 +1,24 @@
+POST http://localhost:8081/auth/login
+Content-Type: application/json
+
+{
+  "username": "backoffice",
+  "password": "backoffice123"
+}
+
+###
+
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyZmNmMmQ4MS02ZWE1LTRhNmMtYWQ5MC03ZWY3YzliNzYwOTUiLCJyb2xlcyI6WyJCQUNLT0ZGSUNFIl0sImlhdCI6MTc4MjAwMDQ2NiwiZXhwIjoxNzgyMDA0MDY2fQ.d404GBOoyZDoE3pnAxc-q6HqPfX69QaFKfijm49Vse8
+
+
+POST http://localhost:8081/api/airports/import HTTP/1.1
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer {{token}}
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="airports.csv"
+
+< ./airports.csv
+--boundary--
+
+

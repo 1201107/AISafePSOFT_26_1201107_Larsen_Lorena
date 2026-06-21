@@ -2,11 +2,14 @@ package com.example.AISafePSOFT_26.Airport;
 
 import com.example.AISafePSOFT_26.Airport.application.AirportService;
 import com.example.AISafePSOFT_26.Airport.domain.*;
+import com.example.AISafePSOFT_26.Airport.application.AirportCsvService;
 import com.example.AISafePSOFT_26.Route.domain.*;
 import com.example.AISafePSOFT_26.exceptions.DomainException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,9 +19,11 @@ import java.util.Map;
 @RequestMapping("/api/airports")
 public class AirportController {
     private final AirportService airportService;
+    private final AirportCsvService airportCsvService;
 
-    public AirportController(AirportService airportService) {
+    public AirportController(AirportService airportService, AirportCsvService airportCsvService) {
         this.airportService = airportService;
+        this.airportCsvService = airportCsvService;
     }
 
     @PostMapping
@@ -175,6 +180,16 @@ public class AirportController {
                                 .map(AirportResponse::from)
                                 .toList()
                 ));
+    }
+
+    /**
+     * Posts the data of airports from a .csv file
+     */
+    @PostMapping("/import")
+    public ResponseEntity<String> importCsv(@RequestParam("file") MultipartFile file) throws Exception {
+        List<Airport> airports = airportCsvService.importFile(file.getInputStream());
+        airports.forEach(airportService::execute);
+        return ResponseEntity.ok("Imported " + airports.size() + " airports");
     }
 
     record AddAirportRequest(String iataCode, String airportType, String name,

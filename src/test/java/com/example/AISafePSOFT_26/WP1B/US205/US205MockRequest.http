@@ -8,15 +8,16 @@ Content-Type: application/json
 
 
 ###
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjNjJlNTYzNC01ZTJkLTQ2NTEtOTc0Ny04NTZiMjVlM2ZjNjgiLCJyb2xlcyI6WyJBVENDIl0sImlhdCI6MTc4MTY5NTIxMCwiZXhwIjoxNzgxNjk4ODEwfQ.a_To3AyyGAByUXvPhuOZlGOmnbJOLsFV4ezN4BTizl4
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkZDc1ZmEzNi1kYTZiLTQxYmEtYTA5Zi0xODQxYTA4NzAzOTEiLCJyb2xlcyI6WyJBVENDIl0sImlhdCI6MTc4MTk5Mjc4OCwiZXhwIjoxNzgxOTk2Mzg4fQ.BQLjI8YfEc8Fus4-UvkeF28_JEdvMgLmJIogacvUyxM
 
 
-GET http://localhost:8081/api/hangar/aircraft-availability
+
+GET http://localhost:8081/api/hangar/analytics/aircraft-availability
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 ###
-GET http://localhost:8081/api/hangar/status-summary
+GET http://localhost:8081/api/hangar/analytics/status-summary
 Content-Type: application/json
 Authorization: Bearer {{token}}
 

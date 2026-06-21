@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 public class FlightSearchService {
     private final FlightRepository flightRepository;
 
-
     public FlightSearchService(FlightRepository flightRepository) {
         this.flightRepository = flightRepository;
     }
@@ -32,6 +31,10 @@ public class FlightSearchService {
 
     public List<Flight> findByAircraftRegistrationNumberAndScheduledDepartureBetween(String registrationNumber, LocalDateTime start,LocalDateTime end){
         return flightRepository.findByAircraftRegistrationNumberAndScheduledDepartureBetween(registrationNumber,start, end);
+    }
+
+    public List<Flight> findAll(){
+        return flightRepository.findAll();
     }
 
 }

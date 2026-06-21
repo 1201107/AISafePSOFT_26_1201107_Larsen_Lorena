@@ -48,10 +48,13 @@ public class SecurityConfig {
                     auth.requestMatchers(GET,"/api/hangar/aircraft/{id}").hasAnyRole(Role.BACKOFFICE.name(),Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(PATCH,"/api/hangar/aircraft/{id}").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET,"/api/hangar/aircraft/{registrationNumber}/compatible-routes").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
-                    auth.requestMatchers(GET,"/api/hangar/aircraft-availability").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
-                    auth.requestMatchers(GET,"/api/hangar/operational-hours").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
-                    auth.requestMatchers(GET,"/api/hangar/status-summary").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET,"/api/hangar/aircraft/{registrationNumber}/status").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+
+                    auth.requestMatchers(GET,"/api/hangar/analytics/aircraft-availability").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET,"/api/hangar/analytics/operational-hours").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET,"/api/hangar/analytics/status-summary").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+                    auth.requestMatchers(GET,"/api/hangar/analytics/fuel-efficiency").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
+
                     auth.requestMatchers(GET,"/api/hangar/view/utilization").permitAll();
 
                     auth.requestMatchers(POST, "/api/maintenance/record").hasAnyRole(Role.MAINTENANCE_TECHNICIAN.name(),Role.ADMIN.name());
@@ -64,6 +67,8 @@ public class SecurityConfig {
                     auth.requestMatchers(GET, "/api/airports").hasAnyRole(Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(GET, "/api/airports/{iataCode}").hasAnyRole(Role.BACKOFFICE.name(),Role.ATCC.name(),Role.ADMIN.name());
                     auth.requestMatchers(PATCH, "/api/airports/{iataCode}/status").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
+                    auth.requestMatchers(POST, "/api/airports/import").hasAnyRole(Role.BACKOFFICE.name(),Role.ADMIN.name());
+
                     if (h2ConsoleEnabled) {
                         auth.requestMatchers("/h2-console/**").permitAll();
                     }

@@ -44,4 +44,8 @@ public class RouteSearchService {
         }
         return compatibleRoutes;
     }
+
+    public List<Route> findAll(){
+        return routeRepository.findAll();
+    }
 }

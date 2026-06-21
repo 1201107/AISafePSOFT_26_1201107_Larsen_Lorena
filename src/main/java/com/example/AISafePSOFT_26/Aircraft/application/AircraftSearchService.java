@@ -82,4 +82,17 @@ public class AircraftSearchService {
         }
         return filteredAircrafts;
     }
+
+    public List<Aircraft> findAircraftWithFeature(List<String> searchFeatures) {
+        List<Aircraft> filteredAircrafts = findAll();
+
+        if (searchFeatures == null || searchFeatures.isEmpty()) {
+            return null;
+        }
+
+        return filteredAircrafts.stream()
+                .filter(aircraft -> aircraft.getFeatures() != null &&
+                        new HashSet<>(aircraft.getFeatures()).containsAll(searchFeatures))
+                .collect(Collectors.toList());
+    }
 }
