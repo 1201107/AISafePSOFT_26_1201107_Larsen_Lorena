@@ -6,8 +6,10 @@ Content-Type: application/json
   "password": "backoffice123"
 }
 
+### adds a model to catalog
+
 ###
-@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxYmUyOGQyZS0xNGFiLTRkZjgtODQ3Zi01NTU2ZDA0MGFlYWQiLCJyb2xlcyI6WyJCQUNLT0ZGSUNFIl0sImlhdCI6MTc4MTM2NTQwMywiZXhwIjoxNzgxMzY5MDAzfQ.f-gyBtF1SMdAv1INsKVc-ohhlLa-qksGvxIxcuCl1GQ
+@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZWM5ZDU4ZC03YTEzLTRjYjktYTk0OC04NmY0MGEyMmVlMjkiLCJyb2xlcyI6WyJCQUNLT0ZGSUNFIl0sImlhdCI6MTc4MjA3MjgxMiwiZXhwIjoxNzgyMDc2NDEyfQ.qM-yNlPnFKqiVEniAWEGMaPIu9UNEKuFmrINQ5rLtFE
 
 
 POST http://localhost:8081/api/catalog/model

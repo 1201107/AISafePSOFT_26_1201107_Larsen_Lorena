@@ -17,11 +17,11 @@ public class Flight {
     @Version
     private Long version;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "route_id")
     private Route route;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "aircraft_registration")
     private Aircraft aircraft;
 

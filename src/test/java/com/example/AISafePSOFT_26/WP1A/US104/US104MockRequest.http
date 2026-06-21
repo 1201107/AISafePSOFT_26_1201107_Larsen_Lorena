@@ -6,9 +6,10 @@ Content-Type: application/json
   "password": "atcc123"
 }
 
-###
-@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhNGJjNGJmYi04NzU2LTRmY2UtYTEyOC0zMmVjYjc2NTY1OTEiLCJyb2xlcyI6WyJBVENDIl0sImlhdCI6MTc4MTY5Njg1NiwiZXhwIjoxNzgxNzAwNDU2fQ.xum-4uZ8koIYCX77LmOv-gZwgTZaJQ-fxNDx_fuRvmc
+### gets an aircraft with filters
 
+###
+@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1NTdlNTNkMS1iYjU5LTRhZjItYmFjZS01ZDM3MGI1YzAzYjAiLCJyb2xlcyI6WyJBVENDIl0sImlhdCI6MTc4MjA3MzAyMywiZXhwIjoxNzgyMDc2NjIzfQ.pobVwdd-b4hYuBhk_3ojY03KNCSeA-ZpZ6uEUkCrrGY
 
 ###
 GET http://localhost:8081/api/hangar/aircraft?model=A320&status=MAINTENANCE

@@ -186,10 +186,9 @@ public class AirportController {
      * Posts the data of airports from a .csv file
      */
     @PostMapping("/import")
-    public ResponseEntity<String> importCsv(@RequestParam("file") MultipartFile file) throws Exception {
+    public void importCsv(@RequestParam("file") MultipartFile file) throws Exception {
         List<Airport> airports = airportCsvService.importFile(file.getInputStream());
         airports.forEach(airportService::execute);
-        return ResponseEntity.ok("Imported " + airports.size() + " airports");
     }
 
     record AddAirportRequest(String iataCode, String airportType, String name,

@@ -6,9 +6,10 @@ Content-Type: application/json
   "password": "atcc123"
 }
 
-###
-@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyOTZhNWU2ZC1kNmQxLTRkNDktYjczMy05YjQzMWJmMTI0NjEiLCJyb2xlcyI6WyJBVENDIl0sImlhdCI6MTc4MTM2NTQ3MiwiZXhwIjoxNzgxMzY5MDcyfQ.WQn8Ak658q-DxtD0YorHAH-zlq_QdaAOcFBDP4wJluI
+### changes status of an aircraft
 
+###
+@token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1NTdlNTNkMS1iYjU5LTRhZjItYmFjZS01ZDM3MGI1YzAzYjAiLCJyb2xlcyI6WyJBVENDIl0sImlhdCI6MTc4MjA3Mjg5MCwiZXhwIjoxNzgyMDc2NDkwfQ.u1VDlVDF5nMo33AMuy5_2nFmxpLxzdCKrUtjruSWq_M
 
 ###
 PATCH http://localhost:8081/api/hangar/aircraft/CS-TU

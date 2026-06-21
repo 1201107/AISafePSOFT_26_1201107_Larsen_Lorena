@@ -6,10 +6,11 @@ Content-Type: application/json
   "password": "technician123"
 }
 
+### categorizes maintenance records by maintenance component
+
 ###
 @id=1
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyODE3Mzg1OS0yMjEwLTQzNjctODExMy1kZjAwMWIzZGRjZjIiLCJyb2xlcyI6WyJNQUlOVEVOQU5DRV9URUNITklDSUFOIl0sImlhdCI6MTc4MjAwMDY2NywiZXhwIjoxNzgyMDA0MjY3fQ.KWfnoawllJfnrdvYWhSt750o84qJSrHMQueJjcqWRrg
-
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwMjQ5ZDY2Zi0xNGJjLTRiZjMtYWViZi04M2VkOTZlMmVkMGIiLCJyb2xlcyI6WyJNQUlOVEVOQU5DRV9URUNITklDSUFOIl0sImlhdCI6MTc4MjA3MzY5NCwiZXhwIjoxNzgyMDc3Mjk0fQ.K9F0sMs56XFKHW7VwaL6NqsEe-1AU6s42NHNqzV9H8M
 
 GET http://localhost:8081/api/maintenance/records/{{id}}
 Content-Type: application/json

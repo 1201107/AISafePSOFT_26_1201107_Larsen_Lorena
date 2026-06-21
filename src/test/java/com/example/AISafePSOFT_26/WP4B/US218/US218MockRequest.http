@@ -6,11 +6,11 @@ Content-Type: application/json
   "password": "technician123"
 }
 
+### search maintenance records by aircraft, date range, or maintenance component
 
 ###
 
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyODE3Mzg1OS0yMjEwLTQzNjctODExMy1kZjAwMWIzZGRjZjIiLCJyb2xlcyI6WyJNQUlOVEVOQU5DRV9URUNITklDSUFOIl0sImlhdCI6MTc4MjAwMDcwNywiZXhwIjoxNzgyMDA0MzA3fQ.EuD4i8abR3LuzePThzj2JLWo816lMh2nKgqhMeDkDXg
-
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwMjQ5ZDY2Zi0xNGJjLTRiZjMtYWViZi04M2VkOTZlMmVkMGIiLCJyb2xlcyI6WyJNQUlOVEVOQU5DRV9URUNITklDSUFOIl0sImlhdCI6MTc4MjA3Mzc2MCwiZXhwIjoxNzgyMDc3MzYwfQ.laETEwwva6K-YTJTaXxjN98NBaF4strtsHNGiS2T2r0
 
 
 GET http://localhost:8081/api/maintenance/records?aircraft=CS-TUA&attribute=AIRFRAME&initialDate=2026-06-10

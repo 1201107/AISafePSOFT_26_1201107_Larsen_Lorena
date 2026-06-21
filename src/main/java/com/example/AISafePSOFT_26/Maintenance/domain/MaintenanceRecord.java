@@ -60,7 +60,7 @@ public class MaintenanceRecord {
     @Enumerated(EnumType.STRING)
     private MaintenanceStatus status;
 
-    protected MaintenanceRecord() {
+    public MaintenanceRecord() {
     }
 
     public MaintenanceRecord(Aircraft aircraft,MaintenanceTemplate maintenanceTemplate,

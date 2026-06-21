@@ -6,9 +6,10 @@ Content-Type: application/json
   "password": "backoffice123"
 }
 
-###
+### updates an aircraft model's specifications - 1201107
 
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OGMxMjg2ZS05YjE5LTRlZTYtOWYyYy04OTQ5NGZiMGY2ZDQiLCJyb2xlcyI6WyJCQUNLT0ZGSUNFIl0sImlhdCI6MTc4MTQ4MTU4MywiZXhwIjoxNzgxNDg1MTgzfQ.JMNIsvDW6jWQThGL79zPpB-3Rz-0imhn8Tp1-VBTFgQ
+###
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZWM5ZDU4ZC03YTEzLTRjYjktYTk0OC04NmY0MGEyMmVlMjkiLCJyb2xlcyI6WyJCQUNLT0ZGSUNFIl0sImlhdCI6MTc4MjA3MzA3MiwiZXhwIjoxNzgyMDc2NjcyfQ.c7iO4GMLEZNOoN_M5Kn9C6UV5ncuf_wF5h6qrUf574o
 
 
 @model = 737-800

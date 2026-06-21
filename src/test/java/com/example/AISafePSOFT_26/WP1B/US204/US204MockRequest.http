@@ -6,14 +6,16 @@ Content-Type: application/json
   "password": "backoffice123"
 }
 
+### sees the Top 5 most utilized aircraft models based on total flight hours or number of assignments - 1201107
+
 ###
 
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1MjgwYTdhOS03YTgzLTQ2ZjMtODBkNi02MzYwN2RlNjk1YTciLCJyb2xlcyI6WyJCQUNLT0ZGSUNFIl0sImlhdCI6MTc4MTY5MzM3OCwiZXhwIjoxNzgxNjk2OTc4fQ.Y2vaCAhsOXq0w9xXnk3vUCEHkn08chGlzUCbYTRV6pg
+@token =eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjOWVjMDQ0Mi02NjZjLTRiOTEtOTVkNS04ZjNkMTNmYTVhYzEiLCJyb2xlcyI6WyJCQUNLT0ZGSUNFIl0sImlhdCI6MTc4MjA3MzUwMywiZXhwIjoxNzgyMDc3MTAzfQ.OmqNKaGgdsf7fxSr_73vfHk48tWSvyK4UsG4rwnbG38
 
 
 GET http://localhost:8081/api/catalog/rankings?mode=assignments
 Content-Type: application/json
-Authorization: Bearer {{token}}0
+Authorization: Bearer {{token}}
 
 
 ###
