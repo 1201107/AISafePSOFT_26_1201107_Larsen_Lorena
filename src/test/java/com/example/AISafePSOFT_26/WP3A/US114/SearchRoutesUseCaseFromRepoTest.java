@@ -28,6 +28,7 @@ class SearchRoutesUseCaseFromRepoTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldSearchRoutesMatchingOriginAndDestinationFilters() {
         Route route = mock(Route.class);
         when(routeRepository.findAll(any(Specification.class)))
@@ -41,6 +42,7 @@ class SearchRoutesUseCaseFromRepoTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldSearchRoutesWithOnlyOriginFilter() {
         Route route = mock(Route.class);
         when(routeRepository.findAll(any(Specification.class)))
@@ -53,6 +55,7 @@ class SearchRoutesUseCaseFromRepoTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldSearchRoutesWithOnlyDestinationFilter() {
         Route route = mock(Route.class);
         when(routeRepository.findAll(any(Specification.class)))
@@ -65,6 +68,7 @@ class SearchRoutesUseCaseFromRepoTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldSearchAllRoutesWhenNoFiltersAreProvided() {
         Route route = mock(Route.class);
         when(routeRepository.findAll(any(Specification.class)))
@@ -77,6 +81,7 @@ class SearchRoutesUseCaseFromRepoTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldThrowExceptionWhenOriginIataCodeIsInvalid() {
         DomainException exception = assertThrows(
                 DomainException.class,
@@ -88,6 +93,7 @@ class SearchRoutesUseCaseFromRepoTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldThrowExceptionWhenDestinationIataCodeIsInvalid() {
         DomainException exception = assertThrows(
                 DomainException.class,

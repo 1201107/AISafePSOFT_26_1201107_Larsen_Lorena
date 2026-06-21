@@ -38,7 +38,7 @@ public class Aircraft {
 
     private Double meanRange;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "aircraft_features",
             joinColumns = @JoinColumn(name = "registration_number")

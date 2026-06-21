@@ -25,6 +25,7 @@ class SearchAlternativeRoutesUseCaseFromRepoTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldSearchAlternativeRoutesBetweenAirports() {
         Route route = mock(Route.class);
         when(routeRepository.findAll(any(Specification.class)))

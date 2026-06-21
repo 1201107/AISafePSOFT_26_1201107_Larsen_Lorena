@@ -1,6 +1,7 @@
 package com.example.AISafePSOFT_26.WP2B.US208;
 
 import com.example.AISafePSOFT_26.Airport.AirportController;
+import com.example.AISafePSOFT_26.Airport.application.AirportCsvService;
 import com.example.AISafePSOFT_26.Airport.application.AirportService;
 import com.example.AISafePSOFT_26.Airport.domain.*;
 import com.example.AISafePSOFT_26.authUsers.application.JwtService;
@@ -32,6 +33,9 @@ class UpdateAirportDetailsHttpTest {
 
     @MockBean
     private AirportService airportService;
+
+    @MockBean
+    private AirportCsvService airportCsvService;
 
     @MockBean
     private JwtService jwtService;

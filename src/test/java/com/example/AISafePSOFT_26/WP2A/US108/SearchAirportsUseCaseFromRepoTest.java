@@ -25,6 +25,7 @@ class SearchAirportsUseCaseFromRepoTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldSearchAirportsMatchingFilters() {
         Airport airport = mock(Airport.class);
         when(airportRepository.findAll(any(Specification.class)))

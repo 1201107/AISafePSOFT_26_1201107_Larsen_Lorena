@@ -1,7 +1,11 @@
 package com.example.AISafePSOFT_26.WP1A.US101;
 
+import com.example.AISafePSOFT_26.Aircraft.application.AircraftSearchService;
 import com.example.AISafePSOFT_26.AircraftCatalog.ModelCatalogController;
 import com.example.AISafePSOFT_26.AircraftCatalog.application.AddModelUseCase;
+import com.example.AISafePSOFT_26.AircraftCatalog.application.AircraftModelSearchService;
+import com.example.AISafePSOFT_26.AircraftCatalog.application.AircraftModelUpdater;
+import com.example.AISafePSOFT_26.Flight.application.FlightSearchService;
 import com.example.AISafePSOFT_26.authUsers.application.JwtService;
 import com.example.AISafePSOFT_26.authUsers.infrastructure.JwtAuthenticationFilter;
 
@@ -32,6 +36,18 @@ class AddModelHttpTest {
 
     @MockBean
     private AddModelUseCase addModelUseCase;
+
+    @MockBean
+    private AircraftModelSearchService aircraftModelSearchService;
+
+    @MockBean
+    private AircraftModelUpdater aircraftModelUpdater;
+
+    @MockBean
+    private FlightSearchService flightSearchService;
+
+    @MockBean
+    private AircraftSearchService aircraftSearchService;
 
     @MockBean
     private JwtService jwtService;
